@@ -1437,7 +1437,7 @@ float Kart::computeRelativeAngle(float a, float b) {
 int Kart::categorizeAngle(float a) {
     float abs_ = abs(a);
 
-    if (abs_ < 1.5) {
+    if (abs_ < 2) {
         return 0;
     } else if (abs_ < 8) {
         return 1;
@@ -1530,7 +1530,7 @@ void Kart::categorizeTurns(int* angle_category, float *angle, int max_nodes) {
                 ++count_wait_end_turn;
             }
 
-            bool new_turn_next = ((extract_sign(current_angle) != extract_sign(next_angle)) & (next_angle_cat > 0));
+            bool new_turn_next = (((extract_sign(current_angle) != extract_sign(next_angle)) | (current_angle_cat == 0)) & (next_angle_cat > 0));
 
             if (new_turn_next | count_wait_end_turn > 3) {
                 // end current turn
