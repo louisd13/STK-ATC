@@ -932,8 +932,6 @@ void World::moveKartTo(AbstractKart* kart, const btTransform &transform)
         pos.getBasis() * Vec3(0, 0.5f*kart->getKartHeight(), 0);
     pos.setOrigin(xyz);
     kart->setXYZ(xyz);
-    // Utiliser par l'oiseau mais done des grosses valeurs 
-    //std::cout << xyz.getX() << std::endl;
     kart->setRotation(pos.getRotation());
 
     kart->getBody()->setCenterOfMassTransform(pos);
@@ -1214,22 +1212,7 @@ void World::update(int ticks)
             dynamic_cast<SpareTireAI*>(m_karts[i]->getController());
         // Update all karts that are not eliminated
         if(!m_karts[i]->isEliminated() || (sta && sta->isMoving()))
-        // Moveable::update
             m_karts[i]->update(ticks);
-
-
-            static int tick_counter = 0;
-            constexpr int ticks_to_wait = 100;
-            tick_counter += ticks;
-            if (tick_counter >= ticks_to_wait){
-                Vec3 posit = m_karts[3]->getXYZ();
-                //Vec3 ppppp = posit.getSmoothedXYZ();
-               // std::cout << posit.getX() << std::endl;
-                //std::cout << ppppp.getX() << std::endl;
-                tick_counter -= ticks_to_wait; // Reset the counter
-            }
-            
-
         if (isStartPhase())
             m_karts[i]->makeKartRest();
     }

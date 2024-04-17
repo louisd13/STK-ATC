@@ -184,6 +184,9 @@ void OptionsScreenDevice::init()
     addListItem(actions, PA_LOOK_BACK);
     addListItem(actions, PA_RESCUE);
     addListItem(actions, PA_PAUSE_RACE);
+    /// our thingy ///
+    addListItem(actions, PA_GET_INFO);
+    //////////////////
 
 
     //I18N: Key binding section
@@ -285,6 +288,9 @@ void OptionsScreenDevice::updateInputButtons()
 
     //I18N: Key binding name
     renameRow(actions, i++, _("Look Back"), PA_LOOK_BACK);
+
+    //I18N: Key binding name
+    renameRow(actions, i++, _("Game Info"), PA_GET_INFO);
 
     //I18N: Key binding name
     renameRow(actions, i++, _("Rescue"), PA_RESCUE);

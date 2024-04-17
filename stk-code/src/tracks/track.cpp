@@ -1684,35 +1684,6 @@ void Track::update(int ticks)
     float dt = stk_config->ticks2Time(ticks);
     m_check_manager->update(dt);
     m_item_manager->update(ticks);
-    //Log::info("track update", "test");
-    // static int tick_counter = 0;
-    // constexpr int ticks_to_wait = 60;
-    // tick_counter += ticks;
-
-    // if (tick_counter >= ticks_to_wait) {
-    //     const Vec3 &vec = kart->getXYZ();
-    //     // Print using std::cout
-    //     //std::cout << "Vector: (" << vec.x << ", " << vec.y << ", " << vec.z << ")" << std::endl;
-    //     tick_counter -= ticks_to_wait; // Reset the counter
-    // }
-
-/* 
-
-    float wtt = DriveGraph::get()->getNode(m_current_graph_node)->getPathWidth();
-    static int tick_counter = 0;
-    constexpr int ticks_to_wait = 60;
-    tick_counter += ticks;
-
-    if (tick_counter >= ticks_to_wait) {
-
-
-        tick_counter -= ticks_to_wait; // Reset the counter
-    } */
-
-
-
-    //float distt = TrackSector::getRelativeDistanceToCenter();
-
 
     // TODO: enable onUpdate scripts if we ever find a compelling use for them
     //Scripting::ScriptEngine* script_engine = World::getWorld()->getScriptEngine();
@@ -2901,8 +2872,6 @@ bool Track::isOnGround(const Vec3& xyz, const Vec3& down, Vec3* hit_point,
 bool Track::findGround(AbstractKart *kart)
 {
     const Vec3 &xyz = kart->getXYZ();
-
-    //std::cout << xyz.getX() << std::endl;
     Vec3 down = kart->getTrans().getBasis() * Vec3(0, -10000.0f, 0);
 
     Vec3 hit_point, normal;
@@ -2932,7 +2901,7 @@ float Track::getTrackLength() const
 //-----------------------------------------------------------------------------
 float Track::getAngle(int n) const
 {
-    return DriveGraph::get()->getAngleToNext(n,0);
+    return DriveGraph::get()->getAngleToNext(n, 0);
 }   // getAngle
 
 //-----------------------------------------------------------------------------

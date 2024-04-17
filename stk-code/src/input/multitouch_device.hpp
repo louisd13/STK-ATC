@@ -27,7 +27,7 @@
 #include "utils/types.hpp"
 #include "IEventReceiver.h"
 
-#define NUMBER_OF_MULTI_TOUCHES 10
+#define NUMBER_OF_MULTI_TOUCHES 11
 
 enum MultitouchButtonType
 {
@@ -37,6 +37,9 @@ enum MultitouchButtonType
     BUTTON_NITRO,
     BUTTON_SKIDDING,
     BUTTON_LOOK_BACKWARDS,
+    /// our thingy ///
+    BUTTON_INFO,
+    //////////////////
     BUTTON_RESCUE,
     BUTTON_ESCAPE,
     BUTTON_UP,

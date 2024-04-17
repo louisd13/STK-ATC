@@ -42,6 +42,7 @@
 #include "utils/translation.hpp"
 
 #include <cstdlib>
+#include <iostream>
 
 PlayerController::PlayerController(AbstractKart *kart)
                 : Controller(kart)
@@ -68,6 +69,7 @@ void PlayerController::reset()
     m_prev_accel    = 0;
     m_prev_nitro    = false;
     m_penalty_ticks = 0;
+    m_prev_get_info = false;
 }   // reset
 
 // ----------------------------------------------------------------------------
@@ -83,6 +85,7 @@ void PlayerController::resetInputState()
     m_prev_brake            = 0;
     m_prev_accel            = 0;
     m_prev_nitro            = false;
+    m_prev_get_info = false;
     m_controls->reset();
 }   // resetInputState
 
@@ -215,6 +218,9 @@ bool PlayerController::action(PlayerAction action, int value, bool dry_run)
         break;
     case PA_RESCUE:
         SET_OR_TEST_GETTER(Rescue, value!=0);
+        break;
+    case PA_GET_INFO:
+        SET_OR_TEST_GETTER(Info, value!=0);
         break;
     case PA_FIRE:
         SET_OR_TEST_GETTER(Fire, value!=0);

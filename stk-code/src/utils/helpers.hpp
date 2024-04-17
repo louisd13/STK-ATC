@@ -27,8 +27,4 @@ float noise2d(float v1, float v2 = 0);
 
 inline int extract_sign(float f) { return ((f > 0) - (f < 0)); }
 
-int calculateIntensity(float value);
-
-/* int calculateDirection(float value); */
-char calculateDirection(float value);
 #endif

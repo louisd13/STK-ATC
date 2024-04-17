@@ -179,6 +179,7 @@ void EndController::update(int ticks)
     m_controls->setLookBack(false);
     m_controls->setNitro(false);
     m_controls->setBrake(false);
+    m_controls->setInfo(false); // TODO  check if useful
     m_controls->setAccel(1.0f);
 
     AIBaseLapController::update(ticks);

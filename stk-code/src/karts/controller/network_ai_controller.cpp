@@ -106,6 +106,10 @@ void NetworkAIController::convertAIToPlayerActions()
         m_ai_controls->getFire() ? 32768 : 0);
     all_actions.emplace_back(PA_NITRO,
         m_ai_controls->getNitro() ? 32768 : 0);
+/// our thingy ///
+    all_actions.emplace_back(PA_GET_INFO,
+        m_ai_controls->getInfo() ? 32768 : 0);
+        /////////////
     all_actions.emplace_back(PA_DRIFT,
         m_ai_controls->getSkidControl() == KartControl::SC_NONE ?
         0 : 32768);

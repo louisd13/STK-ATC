@@ -363,6 +363,9 @@ namespace Scripting
             engine->RegisterEnumValue("PlayerAction", "DRIFT", PA_DRIFT);
             engine->RegisterEnumValue("PlayerAction", "RESCUE", PA_RESCUE);
             engine->RegisterEnumValue("PlayerAction", "FIRE", PA_FIRE);
+            /// our thingy ///
+            engine->RegisterEnumValue("PlayerAction", "INFO", PA_GET_INFO);
+            //////////////////
             engine->RegisterEnumValue("PlayerAction", "LOOK_BACK", PA_LOOK_BACK);
             engine->RegisterEnumValue("PlayerAction", "PAUSE_RACE", PA_PAUSE_RACE);
             engine->RegisterEnumValue("PlayerAction", "MENU_UP", PA_MENU_UP);

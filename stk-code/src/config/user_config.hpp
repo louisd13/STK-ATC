@@ -803,8 +803,7 @@ namespace UserConfigParams
     PARAM_PREFIX bool m_material_debug PARAM_DEFAULT( false );
 
     /** If track debugging is enabled. */
-    //PARAM_PREFIX int m_track_debug PARAM_DEFAULT( false );
-    PARAM_PREFIX int m_track_debug PARAM_DEFAULT( true );
+    PARAM_PREFIX int m_track_debug PARAM_DEFAULT( false );
 
     /** True if check structures should be debugged. */
     PARAM_PREFIX bool m_check_debug PARAM_DEFAULT( false );

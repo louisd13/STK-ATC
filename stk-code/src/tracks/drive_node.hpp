@@ -194,10 +194,6 @@ public:
     bool        letAIIgnore() const                     { return m_ai_ignore; }
     // ------------------------------------------------------------------------
     virtual void getDistances(const Vec3 &xyz, Vec3 *result) const = 0;
-    //-------------------------------------------------------------------------
-    const std::vector<float>& getAngleToNext() const {
-        return m_angle_to_next;
-    }
 
 };   // DriveNode
 

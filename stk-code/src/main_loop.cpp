@@ -326,20 +326,6 @@ void MainLoop::updateRace(int ticks, bool fast_forward)
         RaceEventManager::get()->update(ticks, fast_forward);
     else
         World::getWorld()->updateWorld(ticks);
-        //Log::info("main loop", "updateRace()");
-        // Print something every 60 ticks
-/*         static int tick_counter = 0;
-        constexpr int ticks_to_wait = 120;
-        tick_counter += ticks;
-        double timme;
-        timme =  stk_config->ticks2Time(ticks);
-
-        if (tick_counter >= ticks_to_wait) {
-            std::cout << timme << "s" << std::endl;
-            tick_counter -= ticks_to_wait; // Reset the counter
-        } */
-       
-
 }   // updateRace
 
 //-----------------------------------------------------------------------------

@@ -126,8 +126,11 @@ enum PlayerAction
     PA_RESCUE,
     PA_FIRE,
     PA_LOOK_BACK,
+    /// our thingy ///
+    PA_GET_INFO,
+    //////////////////
     PA_PAUSE_RACE,
-
+    
     PA_MENU_UP,
     PA_MENU_DOWN,
     PA_MENU_LEFT,
@@ -156,6 +159,7 @@ static std::string KartActionStrings[PA_COUNT] = {std::string("steerLeft"),
                                                   std::string("rescue"),
                                                   std::string("fire"),
                                                   std::string("lookBack"),
+                                                  std::string("info"),
                                                   std::string("pauserace"),
                                                   std::string("menuUp"),
                                                   std::string("menuDown"),

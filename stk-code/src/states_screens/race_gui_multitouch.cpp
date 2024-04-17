@@ -20,6 +20,7 @@
 using namespace irr;
 
 #include <algorithm>
+#include <iostream>
 
 #include "config/user_config.hpp"
 #include "graphics/camera.hpp"
@@ -218,6 +219,7 @@ void RaceGUIMultitouch::createRaceGUI()
 
     float first_column_x = w - 2 * col_size;
     float second_column_x = w - 1 * col_size;
+    float third_column_x = w - 3 * col_size;
     float steering_wheel_margin = 0.6f * margin;
     float steering_wheel_x = steering_wheel_margin;
     steering_wheel_x += left_padding;
@@ -231,6 +233,7 @@ void RaceGUIMultitouch::createRaceGUI()
     {
         first_column_x = margin + 1 * col_size + left_padding;
         second_column_x = margin + left_padding;
+        third_column_x = margin + 1 * col_size + left_padding;
         steering_wheel_x = w - btn2_size - steering_wheel_margin;
         steering_accel_x = w - btn2_size / 2 - steering_accel_margin;
     }
@@ -268,6 +271,9 @@ void RaceGUIMultitouch::createRaceGUI()
                         int(btn_size), int(btn_size));
     m_device->addButton(BUTTON_LOOK_BACKWARDS,
                         int(first_column_x), int(h - 1 * col_size),
+                        int(btn_size), int(btn_size));
+    m_device->addButton(BUTTON_INFO,
+                        int(third_column_x), int(h - 1 * col_size),
                         int(btn_size), int(btn_size));
 } // createRaceGUI
 
@@ -505,6 +511,9 @@ void RaceGUIMultitouch::draw(const AbstractKart* kart,
                 {
                     btn_texture = m_screen_tex;
                 }
+                break;
+            case MultitouchButtonType::BUTTON_INFO: // nothing to show?
+                std::cout << "AAAAA" << std::endl;
                 break;
             default:
                 break;

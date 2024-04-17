@@ -33,7 +33,7 @@
 #include "utils/cpp2011.hpp"
 #include "utils/no_copy.hpp"
 #include "modes/linear_world.hpp"
-#include "utils/turn_info.hpp"
+#include "atc/turn_info.hpp"
 
 #include <SColor.h>
 
@@ -195,6 +195,8 @@ protected:
     int m_last_race_position;
 
     TurnInfo* turn_characteristics;
+
+    int m_last_printed_sector;
 
     
 

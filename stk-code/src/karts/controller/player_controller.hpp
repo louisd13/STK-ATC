@@ -32,6 +32,7 @@ protected:
     uint16_t       m_prev_accel;
     bool           m_prev_brake;
     bool           m_prev_nitro;
+    bool           m_prev_get_info;
 
     int            m_penalty_ticks;
 

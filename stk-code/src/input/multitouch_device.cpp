@@ -132,6 +132,9 @@ void MultitouchDevice::addButton(MultitouchButtonType type, int x, int y,
     case MultitouchButtonType::BUTTON_RIGHT:
         button->action = PA_STEER_RIGHT;
         break;
+    case MultitouchButtonType::BUTTON_INFO:
+        button->action = PA_GET_INFO;
+        break;
     default:
         button->action = PA_BEFORE_FIRST;
         break;
@@ -266,7 +269,7 @@ void MultitouchDevice::updateDeviceState(unsigned int event_id)
             if (button == NULL)
                 return false;
             return button->type >= BUTTON_FIRE &&
-                button->type <= BUTTON_LOOK_BACKWARDS;
+                button->type <= BUTTON_INFO;
         };
 
     const MultitouchEvent& event = m_events[event_id];

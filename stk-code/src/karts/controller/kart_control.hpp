@@ -51,6 +51,9 @@ private:
     bool  m_fire;
     /** True if the kart looks (and shoots) backwards. */
     bool  m_look_back;
+
+    /** True if get info is selected. */
+    bool  m_get_info;
 public:
     void setSteer(float f);
     void setAccel(float f);
@@ -60,6 +63,8 @@ public:
     void setRescue(bool b);
     void setFire(bool b);
     void setLookBack(bool b);
+
+    void setInfo(bool b);
 
     // ------------------------------------------------------------------------
     KartControl()
@@ -78,6 +83,8 @@ public:
         m_rescue    = false;
         m_fire      = false;
         m_look_back = false;
+        m_get_info  = false;
+
     }   // reset
     // ------------------------------------------------------------------------
     /** Tests if two KartControls are equal. 
@@ -91,6 +98,7 @@ public:
                m_skid      == other.m_skid    &&
                m_rescue    == other.m_rescue  &&
                m_fire      == other.m_fire    &&
+               m_get_info  == other.m_get_info&&
                m_look_back == other.m_look_back;
     }    // operator==
     // ------------------------------------------------------------------------
@@ -108,7 +116,9 @@ public:
               + (m_rescue    ?  4 : 0)
               + (m_fire      ?  8 : 0)
               + (m_look_back ? 16 : 0)
-              + (m_skid<<5);             // m_skid is in {0,1,2,3}
+              + (m_get_info  ? 32 : 0)
+              + (m_skid<<6);                 // m_skid is in {0,1,2,3}
+                           
     }   // getButtonsCompressed
     // ------------------------------------------------------------------------
     /** Sets the buttons from a compressed (1 byte) representation.
@@ -121,7 +131,8 @@ public:
         m_rescue    = (c &  4) != 0;
         m_fire      = (c &  8) != 0;
         m_look_back = (c & 16) != 0;
-        m_skid      = (SkidControl)((c & 96) >> 5);
+        m_get_info  = (c & 32) != 0;
+        m_skid      = (SkidControl)((c & 192) >> 6);
     }   // setButtonsCompressed
     // ------------------------------------------------------------------------
     /** Returns the current steering value in [-1, 1]. */
@@ -146,6 +157,9 @@ public:
     // ------------------------------------------------------------------------
     /** Returns if fire is selected. */
     bool getFire() const { return m_fire; }
+     // ------------------------------------------------------------------------
+    /** Returns if get info is selected. */
+    bool getInfo() const { return m_get_info; }
     // ------------------------------------------------------------------------
     /** Returns if the kart wants to look back (which also implies that it
      *  will fire backwards. */

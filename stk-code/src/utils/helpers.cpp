@@ -145,37 +145,3 @@ float noise2d(float v1, float v2) {
 
     return 130 * (m[0] * g[0] + m[1] * g[1] + m[2] * g[2]);
 }
-
-int calculateIntensity(float value) {
-    float absValue = std::abs(value);
-
-    if (absValue >= 0.75) {
-        return 3;
-    } else if (absValue >= 0.5) {
-        return 2;
-    } else if (absValue >= 0.25) {
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
-/* int calculateDirection(float value) {
-    if (value < 0) {
-        return -1;
-    } else if (value > 0) {
-        return 1;
-    } else {
-        return 0;
-    }
-} */
-
-char calculateDirection(float value) {
-    if (value < 0) {
-        return 'l';
-    } else if (value > 0) {
-        return 'r';
-    } else {
-        return 'c';
-    }
-}

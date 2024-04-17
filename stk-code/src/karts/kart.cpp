@@ -89,7 +89,6 @@
 #include "utils/string_utils.hpp"
 #include "utils/translation.hpp"
 #include "utils/vs.hpp"
-#include "utils/arduino_com.hpp"
 #include <math.h>
 
 #include <ICameraSceneNode.h>
@@ -101,7 +100,6 @@
 #include <limits>
 #include <cmath>
 
-ArduinoCom arduino("COM4");
 
 #if defined(WIN32) && !defined(__CYGWIN__)  && !defined(__MINGW32__)
    // Disable warning for using 'this' in base member initializer list
@@ -193,6 +191,9 @@ Kart::Kart (const std::string& ident, unsigned int world_kart_id,
     m_last_sound_material    = NULL;
     m_previous_terrain_sound = NULL;
 
+
+    m_last_printed_sector = 0;
+
 }   // Kart
 
 // -----------------------------------------------------------------------------
@@ -206,6 +207,8 @@ void Kart::init(RaceManager::KartType type)
 
     //////////////////////////
     scanTrackForRallye();
+
+
     //////////////////////////
 
     loadData(type, UserConfigParams::m_animated_characters);
@@ -1434,7 +1437,7 @@ float Kart::computeRelativeAngle(float a, float b) {
 int Kart::categorizeAngle(float a) {
     float abs_ = abs(a);
 
-    if (abs_ < 3) {
+    if (abs_ < 1.5) {
         return 0;
     } else if (abs_ < 8) {
         return 1;
@@ -1491,10 +1494,13 @@ void Kart::categorizeTurns(int* angle_category, float *angle, int max_nodes) {
         } else if ((extract_sign(current_angle) != extract_sign(next_angle)) & (next_angle_cat > 0)) {
             // the track is switching directions, end current turn and create new one no matter state
             turn.intensities[current_angle_cat] += 1;
+
+            // update max angle info
+
             // end current turn
             turn.sector_end = i;
             // store current turn
-            setTurnCharacteristics(turn, angle[index_max_angle]); // TODO
+            setTurnCharacteristics(turn, angle[i]); // current angle give turn direction
             index_max_angle = 0;
 
             // reset turn and state
@@ -1508,6 +1514,8 @@ void Kart::categorizeTurns(int* angle_category, float *angle, int max_nodes) {
             turn.intensities[current_angle_cat] += 1;
 
             if (current_angle_cat > next_angle_cat) {
+                index_max_angle = i;
+
                 // be ready to end the turn when necessary
                 current_state = WAIT_END_TURN;
                 count_wait_end_turn = 0;
@@ -1522,13 +1530,13 @@ void Kart::categorizeTurns(int* angle_category, float *angle, int max_nodes) {
                 ++count_wait_end_turn;
             }
 
-            bool new_turn_next = (extract_sign(current_angle) != extract_sign(next_angle));
+            bool new_turn_next = ((extract_sign(current_angle) != extract_sign(next_angle)) & (next_angle_cat > 0));
 
-            if (new_turn_next | (count_wait_end_turn > 7)) {
+            if (new_turn_next | count_wait_end_turn > 3) {
                 // end current turn
                 turn.sector_end = i;
                 // store current turn
-                setTurnCharacteristics(turn, angle[index_max_angle]); // TODO
+                setTurnCharacteristics(turn, angle[index_max_angle]);
                 index_max_angle = 0;
 
                 // reset turn and state
@@ -1578,92 +1586,12 @@ void Kart::scanTrackForRallye() {
             //printf("%f\n", angle_category[i]);
             printf("(i, relative angle to next sector, category): (%d, %f, %d)\n", i, wanted_angles[i], angle_category[i]);
         }
-        
-        /* if (i > 0) {
-            wanted_angles[i] = abs(base_angles[i+1]) - abs(track->getAngle(i));
-            // convert angle from radians to degrees
-            printf("%f\n", wanted_angles[i]*180/M_PI);
-        } */
     }
 
     wanted_angles[max_nodes-1] = computeRelativeAngle(base_angles[max_nodes-1], base_angles[0]); // ???
     angle_category[max_nodes-1] = categorizeAngle(wanted_angles[max_nodes-1]);
 
     categorizeTurns(angle_category, wanted_angles, max_nodes);
-
-    /////////////////////   PREVIOUS ANGLE ANALYSIS //////////////////////
-    /* // analyze the sectors values
-    float last_angle = 0;
-    float sum_angles_since_reset = 0;
-    float max_angle_since_reset = 0;
-
-    
-
-    int total_angles_since_reset = 0;
-    int index_start_turn = -1;
-
-    for (int i = 0; i < max_nodes; ++i) {
-        // faire un truc avec si le virage vient à moins de 5 alors c'est la fin du current virage
-        // tandis que si c'est pas un virage avant, alors il suffit qu'il soit à plus de 2 ? pour être un virage 
-
-
-
-        float curr_angle = wanted_angles[i];
-        //printf("(abs angle, relative angle to next sector): (%f, %f)\n", base_angles[i], curr_angle);
-        //printf("current angle: %f", curr_angle);
-
-
-        // si abs valeur < 2 alors reset last, sum, etc.
-        if (abs(curr_angle) < 4) {
-            // only store and reset if previous was an angle
-            if (total_angles_since_reset > 0) {
-                setTurnCharacteristics(index_start_turn, last_angle, max_angle_since_reset, total_angles_since_reset);
-
-                //printf("start sector: %d\ndirection: %d\nintensity: %d\nlength: %d\n", index_start_turn, turn_characteristics[index_start_turn].dir, turn_characteristics[index_start_turn].intensity, turn_characteristics[index_start_turn].length);
-
-                    // reset all values 
-                sum_angles_since_reset = 0;
-                max_angle_since_reset = 0;
-                total_angles_since_reset = 0;
-            }
-            
-            index_start_turn = i+1;
-
-        } else if (extract_sign(curr_angle) == extract_sign(last_angle)) {
-            //printf("add angle\n");
-            sum_angles_since_reset += abs(curr_angle);
-            max_angle_since_reset = (abs(curr_angle) > max_angle_since_reset) ? abs(curr_angle) : max_angle_since_reset; // max angle is positive
-            ++total_angles_since_reset;
-        } else {
-            if (extract_sign(wanted_angles[(i+1) % max_nodes] == extract_sign(last_angle))) {
-                // ignore change in direction if next angle is in same direction as previous one
-                continue;
-            }
-
-            // signs are different --> store old angle, reset
-            setTurnCharacteristics(index_start_turn, last_angle, max_angle_since_reset, total_angles_since_reset);
-
-            //TurnInfo turn = turn_characteristics[index_start_turn];
-            //printf("start sector: %d\ndirection: %d\nintensity: %d\nlength: %d\n", index_start_turn, turn.dir, turn.intensity, turn.length);
-
-
-            index_start_turn = i;
-            sum_angles_since_reset = curr_angle;
-            max_angle_since_reset = curr_angle;
-            total_angles_since_reset = 1;
-        } 
-        // si valeur du meme signe que celle davant, ajotuer a sum, increment total
-        // si valeur dun different signe ou abs < 2 alors faire les calculs de l-intensite du virage et stockage a indexstartturn
-
-        // par defaut stocker valeur nulle ? ou stocker un set avec les valeurs des virages
-
-        // petit virage < 5 secteurs
-        // moyen < 8 secteurs
-        // grand le reste 
-        // voir comment faire avec les valeurs
-        last_angle = curr_angle;
-    } */
-
 }
 
 void Kart::setTurnCharacteristics(TurnBasics turn, float angle) {
@@ -1678,6 +1606,8 @@ void Kart::setTurnCharacteristics(TurnBasics turn, float angle) {
     turn_characteristics[index].end_sector = turn.sector_end;
 }
 
+
+// Returns the highest intensity within turn
 int Kart::getTurnIntensity(int* intensities) {
     //int max_intensity = 0;
     //int n_angles_in_max = 0;
@@ -1690,25 +1620,6 @@ int Kart::getTurnIntensity(int* intensities) {
         }
     }
 }
-
-// angle must be positive
-/* int Kart::getTurnIntensity(float angle) {
-    float abs_ = abs(angle);
-
-    if (abs_ < 8) {
-        return 1;
-    } else if (abs_ < 15) {
-        return 2;
-    } else if (abs_ < 23) {
-        return 3;
-    } else if (abs_ < 30) {
-        return 4;
-    } else if (abs_ < 40) {
-        return 5;
-    } else {
-        return 6;
-    }
-} */
 
 
 TurnDirection Kart::getAngleDirection(float angle) {
@@ -1733,6 +1644,8 @@ TurnDirection Kart::getAngleDirection(float angle) {
  */
 void Kart::update(int ticks)
 {
+    static int lastPrintedSector = 0;
+
     if (m_network_finish_check_ticks > 0 &&
         World::getWorld()->getTicksSinceStart() >
         m_network_finish_check_ticks &&
@@ -1815,19 +1728,13 @@ void Kart::update(int ticks)
     // TODO fix pour le mode histoire (ne pas demander les tours etc. ? ou seulement en fonction de la map idk)
     
     if (world_player) {
-        // Si plus de 4 karts ? -> changer 3, comment recup size of index
         TrackSector* sector_player = world_player->getTrackSector(getWorldKartId());
-        /* TrackSector* sector_ai_1 = world_player->getTrackSector(0);
-        TrackSector* sector_ai_2 = world_player->getTrackSector(1);
-        TrackSector* sector_ai_3 = world_player->getTrackSector(2); */
-        //int lap = world_player->getLapForKart(getWorldKartId());
 
         if (sector_player) {
             float relativeDistance = sector_player->getRelativeDistanceToCenter();
             int id_Node = sector_player->getCurrentGraphNode();
             float distfromstart_player = sector_player->getDistanceFromStart(false);
-            //float distfromstart_ai_1 = sector_ai_1->getDistanceFromStart(false);
-            //float relative_dist_from_ai_1 = distfromstart_ai_1 - distfromstart_player;
+
             Track* currentTrack = Track::getCurrentTrack();
 
 
@@ -1848,42 +1755,19 @@ void Kart::update(int ticks)
 
                 unsigned int numNodes = DriveGraph::get()->getNumNodes();
 
-                /* std::cout << direction << intensity << std::endl;
-                std::cout << "dist from start: " << distfromstart_player << std::endl;
-                std::cout << "lap: " << lap << std::endl;
-                std::cout << "node id: " << id_Node << std::endl;
-                std::cout << "successor: " << successors[0] << std::endl; 
-                std::cout << "abs angle current: " << angle*180/M_PI << std::endl;  */
 
                 TurnInfo turn = turn_characteristics[id_Node];
 
-                if (m_controller->isLocalPlayerController() & turn.dir != NONE ) {
+/////////// PRINT TURN INFO /////////////////
+// only for local player, if there is a turn, and if this turn was not already printed
+                if ((m_controller->isLocalPlayerController()) & (turn.dir != NONE) & (m_last_printed_sector != id_Node)) {
                     std::string d = (turn.dir == LEFT) ? "LEFT" : "RIGHT";
                     std::cout << "direction: " << d << std::endl;
                     printf("intensity: %d\nstart sector: %d\nend sector: %d\n\n", turn.intensity, id_Node, turn.end_sector);
+
+                    m_last_printed_sector = id_Node;
                 } 
                 
-                
-
-                float angle_next = currentTrack->getAngle((id_Node+4) % numNodes);
-
-                //char d = (angle_next-angle < 0) ? 'l' : 'r';
-
-                /* std::cout << "abs angle next: " << angle_next*180/M_PI << std::endl;
-                std::cout << "direction of angle: " << d << std::endl;
-                std::cout << "angle compared to next: " << (abs(angle_next)-abs(angle))*180/M_PI << std::endl;
-             */ 
-
-                std::string dataToSend = "";
-                dataToSend += '<';
-                dataToSend += direction;
-                dataToSend += ',';
-                dataToSend += std::to_string(intensity);
-                dataToSend += ',';
-                dataToSend += std::to_string(onroad);
-                dataToSend += '>';
-                arduino.writeSerial(dataToSend);
-                std::cout << dataToSend << std::endl;
                 
                 tick_counter -= ticks_to_wait;
             }

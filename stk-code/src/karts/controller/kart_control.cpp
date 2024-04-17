@@ -74,6 +74,13 @@ void KartControl::setFire(bool b)
 }   // setFire
 
 // ----------------------------------------------------------------------------
+/** Sets if the player wants to display game info. */
+void KartControl::setInfo(bool b)
+{ 
+    m_get_info        = b; 
+}   // setInfo
+
+// ----------------------------------------------------------------------------
 /** Sets if the kart wants to look (and therefore also fires) backwards. */
 void KartControl::setLookBack(bool b)
 {
