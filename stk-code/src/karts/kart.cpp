@@ -89,6 +89,7 @@
 #include "utils/string_utils.hpp"
 #include "utils/translation.hpp"
 #include "utils/vs.hpp"
+#include "utils/arduino_com.hpp"
 #include <math.h>
 
 #include <ICameraSceneNode.h>
@@ -100,6 +101,7 @@
 #include <limits>
 #include <cmath>
 
+ArduinoCom arduino("COM4");
 
 #if defined(WIN32) && !defined(__CYGWIN__)  && !defined(__MINGW32__)
    // Disable warning for using 'this' in base member initializer list
@@ -1532,7 +1534,7 @@ void Kart::categorizeTurns(int* angle_category, float *angle, int max_nodes) {
 
             bool new_turn_next = (((extract_sign(current_angle) != extract_sign(next_angle)) | (current_angle_cat == 0)) & (next_angle_cat > 0));
 
-            if (new_turn_next | count_wait_end_turn > 3) {
+            if ((new_turn_next | count_wait_end_turn) > 3) {
                 // end current turn
                 turn.sector_end = i;
                 // store current turn
@@ -1734,7 +1736,7 @@ void Kart::update(int ticks)
             float relativeDistance = sector_player->getRelativeDistanceToCenter();
             int id_Node = sector_player->getCurrentGraphNode();
             float distfromstart_player = sector_player->getDistanceFromStart(false);
-
+            bool onroad = sector_player->isOnRoad();
             Track* currentTrack = Track::getCurrentTrack();
 
 
@@ -1767,7 +1769,17 @@ void Kart::update(int ticks)
 
                     m_last_printed_sector = id_Node;
                 } 
-                
+
+                std::string dataToSend = "";
+                dataToSend += '<';
+                dataToSend += direction;
+                dataToSend += ',';
+                dataToSend += std::to_string(intensity);
+                dataToSend += ',';
+                dataToSend += std::to_string(onroad);
+                dataToSend += '>';
+                arduino.writeSerial(dataToSend);
+                std::cout << dataToSend << std::endl; 
                 
                 tick_counter -= ticks_to_wait;
             }
