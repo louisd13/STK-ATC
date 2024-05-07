@@ -107,6 +107,14 @@ public:
         CUSTOM_NAME,    //!< Introduction (e.g. "I'm Tux!")
         CUSTOM_ATTACH,  //!< Played when something is attached to kart (Uh-Oh)
         CUSTOM_SHOOT,   //!< Played when weapon is used
+        CUSTOM_TURN_1,
+        CUSTOM_TURN_2,
+        CUSTOM_TURN_3,
+        CUSTOM_TURN_4,
+        CUSTOM_TURN_5,
+        CUSTOM_TURN_6,
+        LEFT,
+        RIGHT,
         NUM_CUSTOMS
     };
 

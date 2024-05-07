@@ -281,6 +281,15 @@ protected:
     SFXBuffer    *m_horn_sound;
     static const int CRASH_SOUND_COUNT = 3;
     SFXBuffer    *m_crash_sounds[CRASH_SOUND_COUNT];
+
+    //////////
+    static const int TURN_SOUNDS_COUNT = 6;
+    SFXBase *m_turn_sounds[TURN_SOUNDS_COUNT];
+
+    static const int TURN_DIRECTION_COUNT = 2;
+    SFXBase *m_turn_dir_sounds[TURN_DIRECTION_COUNT];
+    //////////
+
     SFXBuffer    *m_goo_sound;
     SFXBuffer    *m_boing_sound;
     /* Used to avoid re-play the sound during rewinding, if it's happening at
@@ -309,6 +318,11 @@ protected:
     int categorizeAngle(float a);
     void categorizeTurns(int* angle_category, float *angle, int max_nodes);
     bool currentAngleIsBiggerThanOther(float current_angle, float other_angle);
+
+
+    float *angles;
+    int *angle_category;
+    unsigned int max_nodes;
     ///////////////////////////
 
     void          updatePhysics(int ticks);
