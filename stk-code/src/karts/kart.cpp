@@ -101,7 +101,7 @@
 #include <limits>
 #include <cmath>
 
-ArduinoCom arduino("COM4");
+ArduinoCom arduino("COM3");
 
 #if defined(WIN32) && !defined(__CYGWIN__)  && !defined(__MINGW32__)
    // Disable warning for using 'this' in base member initializer list
@@ -1400,7 +1400,7 @@ void Kart::updatePositionAdIfDifferent(int ticks) {
 
 
 void Kart::announceInfos() {
-    std::cout << "current rank: " << m_race_position << std::endl;
+    //std::cout << "current rank: " << m_race_position << std::endl;
 
     for (int i = 0; i < 6; ++i) {
         m_turn_sounds[i]->play();
@@ -1411,7 +1411,7 @@ void Kart::announceInfos() {
 
 
 void Kart::announceRank(bool gainedRank) {
-    std::cout << "current rank: " << m_race_position << std::endl;
+    //std::cout << "current rank: " << m_race_position << std::endl;
 
     std::string display = gainedRank ? ":D" : ":(";
 
@@ -1786,7 +1786,7 @@ void Kart::update(int ticks)
             std::vector<unsigned int> successors;
 
             static int tick_counter = 0;
-            constexpr int ticks_to_wait = 100;
+            constexpr int ticks_to_wait = 20;
             tick_counter += ticks;
 
             static int tick_counter_for_out = 0;
@@ -1822,14 +1822,14 @@ void Kart::update(int ticks)
                     int nxt_angle_cat = angle_category[nxt_node];
 
                     if (nxt_angle_cat > 0) {
-                        std::cout << "node: "<< nxt_node << ", category: " << nxt_angle_cat << "\n" << std::endl;
+                        //std::cout << "node: "<< nxt_node << ", category: " << nxt_angle_cat << "\n" << std::endl;
                         m_turn_sounds[nxt_angle_cat-1]->play();
                     }
 
                     // print turn if any to announce
                     if (turn.dir != NONE) {
                         std::string d = (turn.dir == LEFT) ? "LEFT" : "RIGHT";
-                        std::cout << "direction: " << d << std::endl;
+                        //std::cout << "direction: " << d << std::endl;
                         printf("intensity: %d\nstart sector: %d\nend sector: %d\n\n", turn.intensity, id_Node, turn.end_sector);
                         m_turn_dir_sounds[int(turn.dir)]->play();
                     }
@@ -1845,8 +1845,8 @@ void Kart::update(int ticks)
                 dataToSend += ',';
                 dataToSend += std::to_string(angles[id_Node]);
                 dataToSend += '>';
-                //arduino.writeSerial(dataToSend);
-                std::cout << dataToSend << std::endl; 
+                arduino.writeSerial(dataToSend);
+                //std::cout << dataToSend << std::endl; 
                 
                 tick_counter -= ticks_to_wait;
             }
@@ -2250,11 +2250,9 @@ char Kart::calculateDirection(float value) {
 int Kart::calculateIntensity(float value) {
     float absValue = std::abs(value);
 
-    if (absValue >= 0.75) {
-        return 3;
-    } else if (absValue >= 0.5) {
+    if (absValue >= 0.66) {
         return 2;
-    } else if (absValue >= 0.25) {
+    } else if (absValue >= 0.23) {
         return 1;
     } else {
         return 0;

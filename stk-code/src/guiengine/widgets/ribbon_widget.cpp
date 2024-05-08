@@ -31,6 +31,7 @@
 #include "utils/string_utils.hpp"
 #include "utils/vs.hpp"
 
+#include <iostream>
 #include <IGUIElement.h>
 #include <IGUIEnvironment.h>
 #include <IGUIButton.h>
@@ -775,7 +776,7 @@ EventPropagation RibbonWidget::focused(const int playerID)
     }
 
     if (m_listener != NULL) m_listener->onRibbonWidgetFocus( this, playerID );
-
+    std::cout << "rw" << std::endl;
 
     return EVENT_LET;
 }   // focused

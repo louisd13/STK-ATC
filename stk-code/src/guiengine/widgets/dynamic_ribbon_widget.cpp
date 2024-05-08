@@ -789,6 +789,8 @@ void DynamicRibbonWidget::onRibbonWidgetFocus(RibbonWidget* emitter, const int p
     {
         emitter->m_selection[playerID] = emitter->m_children.size()-1;
     }
+    // only for main menu ? 
+
 
     updateLabel(emitter);
 
