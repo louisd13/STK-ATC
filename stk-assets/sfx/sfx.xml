@@ -48,6 +48,8 @@
    <sfx filename="turn5.ogg"          volume="0.5" positional="false" />
    <sfx filename="turn6.ogg"          volume="0.5" positional="false" />
 
+   <sfx filename="OUT.ogg"          volume="1.0" positional="false" />
+
    <sfx filename="left.ogg"          volume="1.0" positional="false" />
    <sfx filename="right.ogg"          volume="1.0" positional="false" />
    

@@ -288,6 +288,8 @@ protected:
 
     static const int TURN_DIRECTION_COUNT = 2;
     SFXBase *m_turn_dir_sounds[TURN_DIRECTION_COUNT];
+
+    SFXBase *out_sound;
     //////////
 
     SFXBuffer    *m_goo_sound;

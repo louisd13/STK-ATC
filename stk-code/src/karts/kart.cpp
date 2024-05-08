@@ -204,6 +204,8 @@ Kart::Kart (const std::string& ident, unsigned int world_kart_id,
 
     m_turn_dir_sounds[0] = SFXManager::get()->createSoundSource("left");
     m_turn_dir_sounds[1] = SFXManager::get()->createSoundSource("right");
+
+    out_sound = SFXManager::get()->createSoundSource("OUT");
     //////////////////
 
 
@@ -1787,6 +1789,10 @@ void Kart::update(int ticks)
             constexpr int ticks_to_wait = 100;
             tick_counter += ticks;
 
+            static int tick_counter_for_out = 0;
+            constexpr int ticks_to_wait_for_out = 1000;
+            tick_counter_for_out += ticks;
+
             if (tick_counter >= ticks_to_wait){
                 DriveGraph::get()->getSuccessors(id_Node, successors);
                 angle = currentTrack->getAngle(id_Node);
@@ -1798,6 +1804,16 @@ void Kart::update(int ticks)
 
 
                 TurnInfo turn = turn_characteristics[id_Node];
+
+
+                if ((m_controller->isLocalPlayerController()) & (tick_counter_for_out >= ticks_to_wait_for_out)) {
+                    // when against wall (i.e. no speed and too far on left or right of the driveline or even out of road)
+                    if ((!onroad) || ((m_speed < 0.1) & (intensity == 2))) {
+                        out_sound->play();
+                        tick_counter_for_out -= ticks_to_wait_for_out;
+                    }
+                }
+
 
 /////////// PRINT TURN INFO /////////////////
 // only for local player, if there is a turn, and if this turn was not already printed
