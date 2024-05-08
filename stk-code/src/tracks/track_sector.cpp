@@ -166,7 +166,7 @@ void TrackSector::rescue()
 float TrackSector::getRelativeDistanceToCenter() const
 {
     unsigned int numNodes = DriveGraph::get()->getNumNodes();
-    float w = DriveGraph::get()->getNode((m_current_graph_node+2) % numNodes)->getPathWidth();
+    float w = DriveGraph::get()->getNode((m_current_graph_node+4) % numNodes)->getPathWidth();
     // w * 0.5 is the distance from center of the quad to the left or right
     // This way we get a value between -1 and 1.
     float ratio = getDistanceToCenter()/(w*0.5f);
