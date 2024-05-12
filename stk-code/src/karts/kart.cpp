@@ -19,7 +19,6 @@
 
 #include "karts/kart.hpp"
 
-#include "audio/tts/tts.hpp"
 #include "audio/sfx_manager.hpp"
 #include "audio/sfx_base.hpp"
 #include "challenges/challenge_status.hpp"
@@ -92,7 +91,6 @@
 #include "utils/vs.hpp"
 #include "utils/arduino_com.hpp"
 #include <math.h>
-#include "audio/tts/tts.hpp"
 
 #include <thread>
 
@@ -104,7 +102,16 @@
 #include <iostream>
 #include <limits>
 #include <cmath>
+#include <cstdlib>
 
+/* // Function to be run in a separate thread
+void runEspeak(const std::string& text) {
+    std::string command = "espeak \"" + text + "\"";
+    
+    // Use system() to run the constructed command
+    system(command.c_str());
+}
+ */
 ArduinoCom arduino("COM3");
 
 #if defined(WIN32) && !defined(__CYGWIN__)  && !defined(__MINGW32__)
@@ -1695,11 +1702,10 @@ TurnDirection Kart::getAngleDirection(float angle) {
 }
 
 // used to make a different thread
-void Kart::setSpeech(std::string s) {
-    Tts *m_voice;
-    m_voice->setSpeech(s);
-}
-
+// void Kart::setSpeech(std::string s) {
+//     Tts *m_voice;
+//     m_voice->setSpeech(s);
+// }
 
 
 
@@ -1847,6 +1853,12 @@ void Kart::update(int ticks)
 
                         // CODE PROBLEMATIQUE
                         //std::thread{&Kart::setSpeech, std::ref("hey buddy")}.detach();
+
+                        std::string text = "wesh anouk";
+                        //std::thread t(runEspeak, text);
+                        speak(text);
+                        
+
 
 
                         tick_counter_for_out -= ticks_to_wait_for_out;

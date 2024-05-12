@@ -35,6 +35,10 @@
 #include "modes/linear_world.hpp"
 #include "atc/turn_info.hpp"
 //#include "audio/sfx_openal.hpp"
+#include <iostream>
+#include <thread>
+#include <string>
+
 
 #include <SColor.h>
 
@@ -74,6 +78,10 @@ class Kart : public AbstractKart
 private:
     int m_network_finish_check_ticks;
     int m_network_confirmed_finish_ticks;
+    void runEspeak(const std::string& text) {
+        std::string command = "espeak \"" + text + "\"";
+        system(command.c_str());
+    }
 protected:
     /** Offset of the graphical kart chassis from the physical chassis. */
     float m_graphical_y_offset;
@@ -656,6 +664,11 @@ public:
      *  indicating that this kart has really finished the race. */
     int getNetworkConfirmedFinishTicks() const OVERRIDE
                                    { return m_network_confirmed_finish_ticks; }
+
+    void speak(const std::string& text) {
+        std::thread t(&Kart::runEspeak, this, text);
+        t.detach(); // Detach the thread to run independently
+    }
 
 };   // Kart
 
