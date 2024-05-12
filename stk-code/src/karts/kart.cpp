@@ -19,6 +19,7 @@
 
 #include "karts/kart.hpp"
 
+#include "audio/tts/tts.hpp"
 #include "audio/sfx_manager.hpp"
 #include "audio/sfx_base.hpp"
 #include "challenges/challenge_status.hpp"
@@ -91,6 +92,9 @@
 #include "utils/vs.hpp"
 #include "utils/arduino_com.hpp"
 #include <math.h>
+#include "audio/tts/tts.hpp"
+
+#include <thread>
 
 #include <ICameraSceneNode.h>
 #include <IDummyTransformationSceneNode.h>
@@ -202,11 +206,22 @@ Kart::Kart (const std::string& ident, unsigned int world_kart_id,
     m_turn_sounds[4] = SFXManager::get()->createSoundSource("turn5");
     m_turn_sounds[5] = SFXManager::get()->createSoundSource("turn6");
 
-    m_turn_dir_sounds[0] = SFXManager::get()->createSoundSource("left");
-    m_turn_dir_sounds[1] = SFXManager::get()->createSoundSource("right");
+    m_turn_dir_sounds[0] = SFXManager::get()->createSoundSource("gauche");
+    m_turn_dir_sounds[1] = SFXManager::get()->createSoundSource("droite");
+    m_turn_dir_sounds[2] = SFXManager::get()->createSoundSource("tout-droit"); /////
 
-    out_sound = SFXManager::get()->createSoundSource("OUT");
+    out_sound = SFXManager::get()->createSoundSource("hors-piste");
+    left_wall_sound = SFXManager::get()->createSoundSource("face_mur_gauche"); /////
+    right_wall_sound = SFXManager::get()->createSoundSource("face_mur_droit"); ////
+    wrong_way_sound = SFXManager::get()->createSoundSource("mauvaise-direction"); ///////
+
+    for (int i = 0; i < NUMBER_SOUND_COUNT; ++i) {
+        m_number_sounds[i] = SFXManager::get()->createSoundSource(std::to_string(i+1)); ///////// 
+    }
+
+    //m_voice = new Tts;
     //////////////////
+    //out_sound->getBuffer().getDuration() 
 
 
     m_last_printed_sector = 0;
@@ -328,6 +343,8 @@ Kart::~Kart()
     delete m_max_speed;
     delete m_terrain_info;
     delete m_powerup;
+
+    //delete m_voice;
 
     if(m_controller)
         delete m_controller;
@@ -1677,6 +1694,12 @@ TurnDirection Kart::getAngleDirection(float angle) {
     }
 }
 
+// used to make a different thread
+void Kart::setSpeech(std::string s) {
+    Tts *m_voice;
+    m_voice->setSpeech(s);
+}
+
 
 
 
@@ -1809,7 +1832,29 @@ void Kart::update(int ticks)
                 if ((m_controller->isLocalPlayerController()) & (tick_counter_for_out >= ticks_to_wait_for_out)) {
                     // when against wall (i.e. no speed and too far on left or right of the driveline or even out of road)
                     if ((!onroad) || ((m_speed < 0.1) & (intensity == 2))) {
-                        out_sound->play();
+
+                        // #if _WIN32 || _WIN64
+                        // out_sound->play();
+                        // Sleep(1000);
+                        // m_turn_dir_sounds[0]->play();
+                        // #else
+                        // #define PRIuZ "zu"
+                        // out_sound->play();
+                        // #endif
+                        // SFXManager::get()->queue(SFXManager::SFX_PLAY, out_sound);
+                        //SFXManager::get()->queue(SFXManager::SFX_PLAY, m_turn_dir_sounds);
+                        //out_sound->play();
+
+                        // CODE PROBLEMATIQUE
+
+                        // #pragma omp parallel {
+                        //std::thread{&Kart::setSpeech, std::ref("hey buddy")}.detach();
+                            
+                        // }
+                        
+                        //delete m_voice;
+
+
                         tick_counter_for_out -= ticks_to_wait_for_out;
                     }
                 }

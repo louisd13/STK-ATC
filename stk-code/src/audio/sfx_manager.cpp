@@ -174,6 +174,30 @@ void SFXManager::queue(SFXCommands command,  SFXBase *sfx)
 #endif
 }   // queue
 
+// //----------------------------------------------------------------------------
+// /** Adds a sound effect command to the queue of the sfx manager. Openal 
+//  *  commands can sometimes cause a 5ms delay, so it is done in a separate 
+//  *  thread.
+//  *  \param command The command to execute.
+//  *  \param sfx The sound effect to be started.
+//  */
+// void SFXManager::queueTable(SFXCommands command,  SFXBase* sfx[])
+// {
+// #ifdef ENABLE_SOUND
+//     if (!UserConfigParams::m_enable_sound || STKProcess::getType() != PT_MAIN)
+//         return;
+
+//     m_sfx_commands.lock();
+
+//     for (int i = 0; i < sfx.length; ++i) {
+//         SFXCommand *sfx_command = new SFXCommand(command, sfx[i]);
+//         queueOtherCommand(sfx_command);
+//     }
+
+//     m_sfx_commands.unlock();
+// #endif
+// }   // queue
+
 //----------------------------------------------------------------------------
 /** Adds a sound effect command with a single floating point parameter to the
  *  queue of the sfx manager. Openal commands can sometimes cause a 5ms delay,
@@ -314,6 +338,43 @@ void SFXManager::queueCommand(SFXCommand *command)
     m_sfx_commands.unlock();
 #endif
 }   // queueCommand
+
+// //----------------------------------------------------------------------------
+// /** Enqueues a command to the sfx queue threadsafe. Then signal the
+//  *  sfx manager to wake up.
+//  *  \param command Pointer to the command to queue up.
+//  */
+// void SFXManager::queueOtherCommand(SFXCommand *command)
+// {
+// #ifdef ENABLE_SOUND
+//     if (!UserConfigParams::m_enable_sound || STKProcess::getType() != PT_MAIN)
+//         return;
+        
+//     //m_sfx_commands.lock();
+//     if (StateManager::get()->getGameState() != GUIEngine::MENU &&
+//         m_sfx_commands.getData().size() > 20*RaceManager::get()->getNumberOfKarts()+20 &&
+//         RaceManager::get()->getMinorMode() != RaceManager::MINOR_MODE_CUTSCENE)
+//     {
+//         if(command->m_command==SFX_POSITION || command->m_command==SFX_LOOP ||
+//            command->m_command==SFX_SPEED    || 
+//            command->m_command==SFX_SPEED_POSITION                               )
+//         {
+//             delete command;
+//             static int count_messages = 0;
+//             if(count_messages < 5)
+//             {
+//                 Log::warn("SFXManager", "Throttling sfx - queue size %d",
+//                          m_sfx_commands.getData().size());
+//                 count_messages++;
+//             }
+//             //m_sfx_commands.unlock();
+//             return;
+//         }   // if throttling
+//     }
+//     m_sfx_commands.getData().push_back(command);
+//    // m_sfx_commands.unlock();
+// #endif
+// }   // queueCommand
 
 //----------------------------------------------------------------------------
 /** Puts a NULL request into the queue, which will trigger the thread to

@@ -34,6 +34,7 @@
 #include "utils/no_copy.hpp"
 #include "modes/linear_world.hpp"
 #include "atc/turn_info.hpp"
+//#include "audio/sfx_openal.hpp"
 
 #include <SColor.h>
 
@@ -286,10 +287,16 @@ protected:
     static const int TURN_SOUNDS_COUNT = 6;
     SFXBase *m_turn_sounds[TURN_SOUNDS_COUNT];
 
-    static const int TURN_DIRECTION_COUNT = 2;
+    static const int TURN_DIRECTION_COUNT = 3; // 0: left, 1: right, 2: straight line
     SFXBase *m_turn_dir_sounds[TURN_DIRECTION_COUNT];
 
     SFXBase *out_sound;
+    SFXBase *left_wall_sound;
+    SFXBase *right_wall_sound;
+    SFXBase *wrong_way_sound;
+
+    static const int NUMBER_SOUND_COUNT = 26;
+    SFXBase *m_number_sounds[NUMBER_SOUND_COUNT];
     //////////
 
     SFXBuffer    *m_goo_sound;
@@ -303,6 +310,8 @@ protected:
     ///////////////
     int calculateIntensity(float value);
     char calculateDirection(float value);
+
+    void setSpeech(std::string s);
 
     void updatePositionAdIfDifferent(int ticks);
     void announceRank(bool gainedRank);

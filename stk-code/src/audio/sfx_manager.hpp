@@ -240,12 +240,14 @@ private:
     static void mainLoop(void *obj);
     void deleteSFX(SFXBase *sfx);
     void queueCommand(SFXCommand *command);
+    // void queueOtherCommand(SFXCommand *command);
     void reallyPositionListenerNow();
 
 public:
     static void create();
     static void destroy();
     void queue(SFXCommands command, SFXBase *sfx=NULL);
+    // void queueTable(SFXCommands command, SFXBase* sfx[]);
     void queue(SFXCommands command, SFXBase *sfx, float f);
     void queue(SFXCommands command, SFXBase *sfx, const Vec3 &p);
     void queue(SFXCommands command, SFXBase *sfx, float f, const Vec3 &p);
