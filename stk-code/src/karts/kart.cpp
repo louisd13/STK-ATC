@@ -1846,13 +1846,7 @@ void Kart::update(int ticks)
                         //out_sound->play();
 
                         // CODE PROBLEMATIQUE
-
-                        // #pragma omp parallel {
                         //std::thread{&Kart::setSpeech, std::ref("hey buddy")}.detach();
-                            
-                        // }
-                        
-                        //delete m_voice;
 
 
                         tick_counter_for_out -= ticks_to_wait_for_out;
