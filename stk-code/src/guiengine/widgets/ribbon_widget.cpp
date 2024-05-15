@@ -639,6 +639,10 @@ EventPropagation RibbonWidget::upPressed(const int playerID)
 EventPropagation RibbonWidget::moveToNextItem(const bool horizontally, const bool reverse, const int playerID)
 {
     EventPropagation result = propagationType(horizontally);
+        string<wchar_t> text1 = RibbonWidget::getSelectionText(0);
+        std::wstring wide = text1.c_str();
+        std::string ntext1(wide.begin(),wide.end());
+        speak(ntext1);
 
     // Do nothing and do not block navigating out of the widget
     if (result == EVENT_BLOCK) return result;
@@ -684,11 +688,24 @@ EventPropagation RibbonWidget::propagationType(const bool horizontally)
         result = m_ribbon_type == RIBBON_VERTICAL_TABS ? EVENT_BLOCK :
                  m_ribbon_type != RIBBON_TOOLBAR       ? EVENT_LET   :
                                                          EVENT_BLOCK_BUT_HANDLED;
+        // En retard mais pas mal du tout sauf pour le text de pause
+        // string<wchar_t> text1 = RibbonWidget::getSelectionText(0);
+        // std::wstring wide = text1.c_str();
+        // std::string ntext1(wide.begin(),wide.end());
+        // if (ntext1 == "text") then dont say et la on fait avec iconwidget ? 
+        // speak(ntext1);
+
     }
     else
     {
         result = m_ribbon_type != RIBBON_VERTICAL_TABS ? EVENT_BLOCK :
                                                          EVENT_LET;
+
+        // En retard mais pas mal du tout sauf pour le text de pause
+        // string<wchar_t> text2 = RibbonWidget::getSelectionText(0);
+        // std::wstring wide2 = text2.c_str();
+        // std::string ntext2(wide2.begin(),wide2.end());
+        // speak(ntext2);
     }
     if (m_deactivated) result = EVENT_BLOCK;
     // empty ribbon, or only one item (can't move)
@@ -732,6 +749,12 @@ void RibbonWidget::selectNextActiveWidget(const bool horizontally, const bool re
 
             m_selection[playerID] = select_zero ? 0 : m_active_children.size()-1;
         }
+        // Works pretty well
+        // string<wchar_t> text = RibbonWidget::getSelectionText(0);
+        // std::wstring wide = text.c_str();
+        // std::string ntext(wide.begin(),wide.end());
+        // speak(ntext);
+
 
         loop_counter++;
         if (loop_counter > (int)m_active_children.size())
@@ -776,7 +799,7 @@ EventPropagation RibbonWidget::focused(const int playerID)
     }
 
     if (m_listener != NULL) m_listener->onRibbonWidgetFocus( this, playerID );
-    std::cout << "rw" << std::endl;
+    //std::cout << "rw" << std::endl;
 
     return EVENT_LET;
 }   // focused
@@ -879,6 +902,21 @@ void RibbonWidget::updateSelection()
     }
 
     if (m_listener) m_listener->onSelectionChange();
+
+
+    string<wchar_t> text = RibbonWidget::getSelectionText(0);
+
+    std::wstring wide = text.c_str();
+
+    std::string ntext(wide.begin(),wide.end());
+
+    //speak(ntext);
+    //TTS tts;
+    //TTS::speak(ntext);
+
+
+    //tts.speak(ntext);
+    //std::cout << "update selec"<<ntext << std::endl;
 }   // updateSelection
 
 // ----------------------------------------------------------------------------
