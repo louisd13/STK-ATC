@@ -38,6 +38,7 @@
 #include <iostream>
 #include <thread>
 #include <string>
+#include <vector>
 
 
 #include <SColor.h>
@@ -79,7 +80,7 @@ private:
     int m_network_finish_check_ticks;
     int m_network_confirmed_finish_ticks;
     void runEspeak(const std::string& text) {
-        std::string command = "espeak \"" + text + "\"";
+        std::string command = "espeak -vfr \"" + text + "\"";
         system(command.c_str());
     }
 protected:
@@ -294,17 +295,26 @@ protected:
     //////////
     static const int TURN_SOUNDS_COUNT = 6;
     SFXBase *m_turn_sounds[TURN_SOUNDS_COUNT];
+    std::vector<std::string> m_turn_intensity_string;
 
     static const int TURN_DIRECTION_COUNT = 3; // 0: left, 1: right, 2: straight line
-    SFXBase *m_turn_dir_sounds[TURN_DIRECTION_COUNT];
+    std::vector<std::string> m_turn_dir_string;
 
-    SFXBase *out_sound;
-    SFXBase *left_wall_sound;
-    SFXBase *right_wall_sound;
-    SFXBase *wrong_way_sound;
+    std::string OUT_STRING;
+    std::string LEFT_WALL_STRING;
+    std::string RIGHT_WALL_STRING;
+    std::string WRONG_WAY_STRING;
+    std::string SEP;
+    std::string LONG_STRING;
+    std::string SAUVETAGE;
+
+    // SFXBase *out_sound;
+    // SFXBase *left_wall_sound;
+    // SFXBase *right_wall_sound;
+    // SFXBase *wrong_way_sound;
 
     static const int NUMBER_SOUND_COUNT = 26;
-    SFXBase *m_number_sounds[NUMBER_SOUND_COUNT];
+    std::vector<std::string> m_number_string;
     //////////
 
     SFXBuffer    *m_goo_sound;
@@ -319,7 +329,7 @@ protected:
     int calculateIntensity(float value);
     char calculateDirection(float value);
 
-    void setSpeech(std::string s);
+    std::string getTurnLength(int start_sector, int end_sector);
 
     void updatePositionAdIfDifferent(int ticks);
     void announceRank(bool gainedRank);
@@ -327,6 +337,7 @@ protected:
     void updateKartInfo(LinearWorld* world);
 
     void scanTrackForRallye();
+     
     //int getTurnIntensity(float max_angle);
     int getTurnIntensity(int* intensities);
 
@@ -335,12 +346,23 @@ protected:
     void setTurnCharacteristics(TurnBasics turn, float angle);
 
     int categorizeAngle(float a);
-    void categorizeTurns(int* angle_category, float *angle, int max_nodes);
-    bool currentAngleIsBiggerThanOther(float current_angle, float other_angle);
+    void categorizeTurns(int* angle_category, float *angle);
+    void categorizeStraightLines();
+
+    void storeTurn(TurnDirection d, int intensity, int start_sector, int end_sector);
+    void storeStraightLine(int start_sector, int end_sector);
 
 
     float *angles;
     int *angle_category;
+
+    bool m_just_rescued;
+    bool m_currently_rescued;
+    bool m_previously_rescued;
+
+
+
+    // number of sectors in the track
     unsigned int max_nodes;
     ///////////////////////////
 

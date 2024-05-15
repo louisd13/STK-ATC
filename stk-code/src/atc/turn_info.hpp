@@ -1,5 +1,5 @@
 enum TurnDirection {
-    LEFT, RIGHT, NONE
+    LEFT, RIGHT, STRAIGHT, NONE
 };
 
 
