@@ -213,6 +213,9 @@ Kart::Kart (const std::string& ident, unsigned int world_kart_id,
     m_turn_sounds[4] = SFXManager::get()->createSoundSource("turn5");
     m_turn_sounds[5] = SFXManager::get()->createSoundSource("turn6");
 
+    m_happy_horn = SFXManager::get()->createSoundSource("happy-double-horn");
+    m_sad_horn = SFXManager::get()->createSoundSource("sad-single-horn");
+
     // use as m_turn_intensity_string[turn_intensity % TURN_SOUNDS_COUNT]
     m_turn_intensity_string.push_back("6");
     m_turn_intensity_string.push_back("1");
@@ -235,27 +238,13 @@ Kart::Kart (const std::string& ident, unsigned int world_kart_id,
     m_turn_dir_string.push_back("droite");
     m_turn_dir_string.push_back("tout droit");
 
-    // m_turn_dir_sounds[0] = SFXManager::get()->createSoundSource("gauche");
-    // m_turn_dir_sounds[1] = SFXManager::get()->createSoundSource("droite");
-    // m_turn_dir_sounds[2] = SFXManager::get()->createSoundSource("tout-droit"); /////
-
-    // out_sound = SFXManager::get()->createSoundSource("hors-piste");
-    // left_wall_sound = SFXManager::get()->createSoundSource("face_mur_gauche"); /////
-    // right_wall_sound = SFXManager::get()->createSoundSource("face_mur_droit"); ////
-    // wrong_way_sound = SFXManager::get()->createSoundSource("mauvaise-direction"); ///////
-
     for (int i = 0; i < NUMBER_SOUND_COUNT; ++i) {
-        m_number_string.push_back(std::to_string(i+1));
-        // m_number_sounds[i] = SFXManager::get()->createSoundSource(std::to_string(i+1)); ///////// 
+        m_number_string.push_back(std::to_string(i+1)); 
     }
 
     // init the number of nodes in the track
     max_nodes = DriveGraph::get()->getNumNodes();
     printf("MAX NODES: %d\n", max_nodes);
-
-    //m_voice = new Tts;
-    //////////////////
-    //out_sound->getBuffer().getDuration() 
 
 
     m_last_printed_sector = -1;
@@ -1455,13 +1444,10 @@ void Kart::updatePositionAdIfDifferent(int ticks) {
 
 
 void Kart::announceInfos() {
-    //std::cout << "current rank: " << m_race_position << std::endl;
-
-    for (int i = 0; i < 6; ++i) {
-        m_turn_sounds[i]->play();
-    }
-    //m_turn_sounds[5]->play();
-    // add info about lap
+    // announce
+    // rank
+    // position with respect to other player
+    // repeat current turn info 
 }
 
 
@@ -1469,6 +1455,12 @@ void Kart::announceRank(bool gainedRank) {
     //std::cout << "current rank: " << m_race_position << std::endl;
 
     std::string display = gainedRank ? ":D" : ":(";
+
+    if (gainedRank) {
+        m_happy_horn->play();
+    } else {
+        m_sad_horn->play();
+    }
 
     std::cout << display << std::endl;
     beep();     
@@ -1962,7 +1954,7 @@ void Kart::update(int ticks)
 
             
 
-            printf("TICKS FOR OUT: %d\n", tick_counter_for_out);
+            //printf("TICKS FOR OUT: %d\n", tick_counter_for_out);
 
             if (tick_counter >= ticks_to_wait){
                 DriveGraph::get()->getSuccessors(id_Node, successors);
@@ -1986,7 +1978,7 @@ void Kart::update(int ticks)
                         tick_counter_for_out = 0;
                     }
 
-                    printf("TICKS FOR OUT: %d\n", tick_counter_for_out);
+                    //("TICKS FOR OUT: %d\n", tick_counter_for_out);
 
                     if ((intensity == 2) && (abs(m_speed) < 0.01)) {
                         tick_counter_for_wall += ticks;
@@ -1994,7 +1986,7 @@ void Kart::update(int ticks)
                         tick_counter_for_wall = 0;
                     }
 
-                    printf("TICKS FOR wall: %d\n", tick_counter_for_wall);
+                    //printf("TICKS FOR wall: %d\n", tick_counter_for_wall);
                     
                     // update rescued attributes, used to detect whether has just been rescued
                     m_previously_rescued = m_currently_rescued;

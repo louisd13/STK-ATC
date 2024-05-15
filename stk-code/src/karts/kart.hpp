@@ -315,6 +315,9 @@ protected:
 
     static const int NUMBER_SOUND_COUNT = 26;
     std::vector<std::string> m_number_string;
+
+    SFXBase *m_happy_horn;
+    SFXBase *m_sad_horn;
     //////////
 
     SFXBuffer    *m_goo_sound;
