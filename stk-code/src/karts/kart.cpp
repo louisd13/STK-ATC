@@ -1955,8 +1955,14 @@ void Kart::update(int ticks)
             tick_counter += ticks;
 
             static int tick_counter_for_out = 0;
-            constexpr int ticks_to_wait_for_out = 1000;
-            tick_counter_for_out += ticks;
+            constexpr int ticks_to_wait_for_out = 20;
+
+            static int tick_counter_for_wall = 0;
+            constexpr int ticks_to_wait_for_wall = 20;
+
+            
+
+            printf("TICKS FOR OUT: %d\n", tick_counter_for_out);
 
             if (tick_counter >= ticks_to_wait){
                 DriveGraph::get()->getSuccessors(id_Node, successors);
@@ -1971,7 +1977,24 @@ void Kart::update(int ticks)
                 TurnInfo turn = turn_characteristics[id_Node];
 
 
-                if ((m_controller->isLocalPlayerController()) & (tick_counter_for_out >= ticks_to_wait_for_out)) {
+                if ((m_controller->isLocalPlayerController())) {
+
+                    // increase ticks if out of track
+                    if (!onroad) {
+                        tick_counter_for_out += ticks;
+                    } else {
+                        tick_counter_for_out = 0;
+                    }
+
+                    printf("TICKS FOR OUT: %d\n", tick_counter_for_out);
+
+                    if ((intensity == 2) && (abs(m_speed) < 0.01)) {
+                        tick_counter_for_wall += ticks;
+                    } else {
+                        tick_counter_for_wall = 0;
+                    }
+
+                    printf("TICKS FOR wall: %d\n", tick_counter_for_wall);
                     
                     // update rescued attributes, used to detect whether has just been rescued
                     m_previously_rescued = m_currently_rescued;
@@ -1979,8 +2002,6 @@ void Kart::update(int ticks)
                     m_currently_rescued = (dynamic_cast<RescueAnimation*>(getKartAnimation()) != 0);
                     // to return from rescue, current rescue must false, and previous rescue must be true
                     m_just_rescued = !m_currently_rescued && m_previously_rescued;
-                    
-                    printf("just rescued: %d\n", m_just_rescued); 
 
 
                     // son pour annoncer sauvetage
@@ -1988,33 +2009,49 @@ void Kart::update(int ticks)
                         speak(SAUVETAGE);
                     }
 
+                    // out of track, for too long
+                    if (tick_counter_for_out >= ticks_to_wait_for_out) {
+                        speak(OUT_STRING);
+                        tick_counter_for_out = 0;
+                    }
+
+                    // in a wall for too long
+                    if (tick_counter_for_wall >= ticks_to_wait_for_wall) {
+                        if (direction == 'l') {
+                            speak(LEFT_WALL_STRING);
+                        } else if (direction == 'r') {
+                            speak(RIGHT_WALL_STRING);
+                        }
+                    }
+
+
                     // when against wall (i.e. no speed and too far on left or right of the driveline or even out of road)
-                    if ((!onroad) || ((m_speed < 0.1) & (intensity == 2))) {
+                    // if (((!onroad) || (intensity == 2)) && (m_speed < 0.01)) {
 
-                        // #if _WIN32 || _WIN64
-                        // out_sound->play();
-                        // Sleep(1000);
-                        // m_turn_dir_sounds[0]->play();
-                        // #else
-                        // #define PRIuZ "zu"
-                        // out_sound->play();
-                        // #endif
-                        // SFXManager::get()->queue(SFXManager::SFX_PLAY, out_sound);
-                        //SFXManager::get()->queue(SFXManager::SFX_PLAY, m_turn_dir_sounds);
-                        //out_sound->play();
+                    //     // #if _WIN32 || _WIN64
+                    //     // out_sound->play();
+                    //     // Sleep(1000);
+                    //     // m_turn_dir_sounds[0]->play();
+                    //     // #else
+                    //     // #define PRIuZ "zu"
+                    //     // out_sound->play();
+                    //     // #endif
+                    //     // SFXManager::get()->queue(SFXManager::SFX_PLAY, out_sound);
+                    //     //SFXManager::get()->queue(SFXManager::SFX_PLAY, m_turn_dir_sounds);
+                    //     //out_sound->play();
 
-                        // CODE PROBLEMATIQUE
-                        //std::thread{&Kart::setSpeech, std::ref("hey buddy")}.detach();
+                    //     // CODE PROBLEMATIQUE
+                    //     //std::thread{&Kart::setSpeech, std::ref("hey buddy")}.detach();
 
-                        std::string text = "wesh anouk";
-                        //std::thread t(runEspeak, text);
-                        speak(text);
+                    //     std::string text = "wesh anouk";
+                    //     //std::thread t(runEspeak, text);
+                    //     speak(text);
                         
 
 
 
-                        tick_counter_for_out -= ticks_to_wait_for_out;
-                    }
+                        
+                    // }
                 }
 
 
