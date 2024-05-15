@@ -213,25 +213,45 @@ Kart::Kart (const std::string& ident, unsigned int world_kart_id,
     m_turn_sounds[4] = SFXManager::get()->createSoundSource("turn5");
     m_turn_sounds[5] = SFXManager::get()->createSoundSource("turn6");
 
-    m_turn_dir_sounds[0] = SFXManager::get()->createSoundSource("gauche");
-    m_turn_dir_sounds[1] = SFXManager::get()->createSoundSource("droite");
-    m_turn_dir_sounds[2] = SFXManager::get()->createSoundSource("tout-droit"); /////
+    m_happy_horn = SFXManager::get()->createSoundSource("happy-double-horn");
+    m_sad_horn = SFXManager::get()->createSoundSource("sad-single-horn");
 
-    out_sound = SFXManager::get()->createSoundSource("hors-piste");
-    left_wall_sound = SFXManager::get()->createSoundSource("face_mur_gauche"); /////
-    right_wall_sound = SFXManager::get()->createSoundSource("face_mur_droit"); ////
-    wrong_way_sound = SFXManager::get()->createSoundSource("mauvaise-direction"); ///////
+    // use as m_turn_intensity_string[turn_intensity % TURN_SOUNDS_COUNT]
+    m_turn_intensity_string.push_back("6");
+    m_turn_intensity_string.push_back("1");
+    m_turn_intensity_string.push_back("2");
+    m_turn_intensity_string.push_back("3");
+    m_turn_intensity_string.push_back("4");
+    m_turn_intensity_string.push_back("5");
+
+
+    OUT_STRING = "Hors piste";
+    LEFT_WALL_STRING = "Mur gauche";
+    RIGHT_WALL_STRING = "Mur droit";
+    WRONG_WAY_STRING = "Mauvais sens";
+    SAUVETAGE = "Sauvetage en cours";
+    SEP = ". ";
+    LONG_STRING = "secteur";
+    
+
+    m_turn_dir_string.push_back("gauche");
+    m_turn_dir_string.push_back("droite");
+    m_turn_dir_string.push_back("tout droit");
 
     for (int i = 0; i < NUMBER_SOUND_COUNT; ++i) {
-        m_number_sounds[i] = SFXManager::get()->createSoundSource(std::to_string(i+1)); ///////// 
+        m_number_string.push_back(std::to_string(i+1)); 
     }
 
-    //m_voice = new Tts;
-    //////////////////
-    //out_sound->getBuffer().getDuration() 
+    // init the number of nodes in the track
+    max_nodes = DriveGraph::get()->getNumNodes();
+    printf("MAX NODES: %d\n", max_nodes);
 
 
-    m_last_printed_sector = 0;
+    m_last_printed_sector = -1;
+
+    m_just_rescued = false;
+    m_currently_rescued = 0;
+    m_previously_rescued = 0;
 
 }   // Kart
 
@@ -1424,13 +1444,10 @@ void Kart::updatePositionAdIfDifferent(int ticks) {
 
 
 void Kart::announceInfos() {
-    //std::cout << "current rank: " << m_race_position << std::endl;
-
-    for (int i = 0; i < 6; ++i) {
-        m_turn_sounds[i]->play();
-    }
-    //m_turn_sounds[5]->play();
-    // add info about lap
+    // announce
+    // rank
+    // position with respect to other player
+    // repeat current turn info 
 }
 
 
@@ -1438,6 +1455,12 @@ void Kart::announceRank(bool gainedRank) {
     //std::cout << "current rank: " << m_race_position << std::endl;
 
     std::string display = gainedRank ? ":D" : ":(";
+
+    if (gainedRank) {
+        m_happy_horn->play();
+    } else {
+        m_sad_horn->play();
+    }
 
     std::cout << display << std::endl;
     beep();     
@@ -1500,11 +1523,34 @@ int Kart::categorizeAngle(float a) {
     }
 }
 
-bool Kart::currentAngleIsBiggerThanOther(float current_angle, float other_angle) {
-    return (current_angle > other_angle);
+// Store turn data in every sector composing the given turn
+void Kart::storeTurn(TurnDirection direction, int intensity, int start_sector, int end_sector) {
+    int tweaked_end = (end_sector < start_sector) ? (end_sector + max_nodes) : end_sector;
+
+    printf("STORE TURN OF INTENSITY %d (start: %d, end: %d) IN ", intensity, start_sector, end_sector);
+
+    int i = start_sector;
+    while (i < tweaked_end) {
+        // store info for each node on the turn
+        int index = i%max_nodes;
+        printf("%d ", index);
+        turn_characteristics[index].dir = direction;
+        turn_characteristics[index].intensity = intensity;
+        turn_characteristics[index].start_sector = start_sector;
+        turn_characteristics[index].end_sector = end_sector;
+
+        ++i;
+    }
+
+    printf("\nSTOP STORING AFTER %d\n", i);
 }
 
-void Kart::categorizeTurns(int* angle_category, float *angle, int max_nodes) {
+// store straight line info in every sector composing the line
+void Kart::storeStraightLine(int start_sector, int end_sector) {
+    storeTurn(STRAIGHT, 0, start_sector, end_sector);
+}
+
+void Kart::categorizeTurns(int* angle_category, float *angle) {
     TurnState current_state = NO_TURN;
     int current_angle_cat;
     int next_angle_cat;
@@ -1607,6 +1653,16 @@ void Kart::categorizeTurns(int* angle_category, float *angle, int max_nodes) {
     }
 }
 
+
+std::string Kart::getTurnLength(int start_sector, int end_sector) {
+    if (end_sector > start_sector) {
+        return std::to_string(end_sector - start_sector);
+    } else {
+        return std::to_string(max_nodes  - start_sector + end_sector);
+    }
+}
+
+
 // TODO go through categorized angles to classify the turns according to the number of angles  in each category
 
 // TODO find our to play something only once per sector
@@ -1614,7 +1670,6 @@ void Kart::categorizeTurns(int* angle_category, float *angle, int max_nodes) {
 // TODO play a different kind of beep according to angle w.r.t. next sector: the tighter the angle, the higher in pitch the beep
 // use wanted_angle value to determine the kind of beep to play in real time
 void Kart::scanTrackForRallye() {
-    max_nodes = DriveGraph::get()->getNumNodes();
     turn_characteristics = new TurnInfo[max_nodes];
     // base angles in degrees
     float *base_angles = new float[max_nodes];
@@ -1658,7 +1713,78 @@ void Kart::scanTrackForRallye() {
         printf("(i, relative angle to next sector, category): (%d, %f, %d)\n", i, angles[i], angle_category[i]);
     }
 
-    categorizeTurns(angle_category, angles, max_nodes);
+    categorizeTurns(angle_category, angles);
+
+    categorizeStraightLines();
+
+    printf("turn characteristics");
+    for (int i = 0; i < max_nodes; ++i) {
+        TurnInfo turn = turn_characteristics[i];
+        if (turn.dir != NONE) {
+            std::string d;
+            if (turn.dir == LEFT) {
+                d = "left";
+            } else if (turn.dir == RIGHT) {
+                d = "right";
+            } else {
+                d = "straight line";
+            }
+            printf("\n(dir, start, end): (%s, %d, %d)\n", d, turn.start_sector, turn.end_sector);
+        } else {
+            printf("NONE");
+        }
+        
+    }
+}
+
+
+void Kart::categorizeStraightLines() {
+    int first_turn_start = -1;
+
+    // contains the sector right after the last sector of the previous turn
+    int last_turn_end = -1;
+    const int MIN_STRAIGHT_SECTORS_TO_REPORT = 3;
+
+   // int nxt_turn_start = -1;
+    // go through turn_category 
+    // keep in memory start of first turn for maybe last 
+    for (int i = 0; i < max_nodes; ++i) {
+        TurnInfo turn = turn_characteristics[i];
+
+        if (turn.dir != NONE) {
+            // first turn of the track
+            if (first_turn_start == -1) {
+                first_turn_start = turn.start_sector;
+            }
+
+            // if there was another turn before that one, compare to see if straight line between turns is long enough to report
+            if ((last_turn_end != -1) && ((turn.start_sector - last_turn_end) > MIN_STRAIGHT_SECTORS_TO_REPORT)) {
+                printf("LAST TURN END: %d\nNXT_START_SECTOR: %d\nMAX NODES: %d\n", last_turn_end, turn.start_sector, max_nodes);
+                // store straight line
+                storeStraightLine(last_turn_end, turn.start_sector);
+                // turn_characteristics[last_turn_end].dir = STRAIGHT;
+                // turn_characteristics[last_turn_end].start_sector = last_turn_end;
+                // turn_characteristics[last_turn_end].end_sector = turn.start_sector;
+            }
+
+            // store the new last position
+            last_turn_end = (turn.end_sector + 1) % max_nodes;
+        }
+    }
+
+    // assuming that at least one turn was encountered during the race
+    if ((first_turn_start + max_nodes - last_turn_end) > MIN_STRAIGHT_SECTORS_TO_REPORT) { 
+
+        printf("WHOOP\n");
+        printf("LAST TURN END: %d\nFIRST_TURN_START: %d\nMAX NODES: %d\n", last_turn_end, first_turn_start, max_nodes);
+        // store straight line at last turn end
+        storeStraightLine(last_turn_end, first_turn_start);
+        // turn_characteristics[last_turn_end].dir = STRAIGHT;
+        // turn_characteristics[last_turn_end].start_sector = last_turn_end;
+        // turn_characteristics[last_turn_end].end_sector = first_turn_start;
+    }
+
+
 }
 
 void Kart::setTurnCharacteristics(TurnBasics turn, float angle) {
@@ -1667,10 +1793,12 @@ void Kart::setTurnCharacteristics(TurnBasics turn, float angle) {
     for (int i = 0; i < TurnBasics::TURN_INTENSITIES; ++i) {
         printf("intensity: %d, n: %d\n", i, turn.intensities[i]);
     }
-    turn_characteristics[index].dir = getAngleDirection(angle);
-    turn_characteristics[index].intensity = getTurnIntensity(turn.intensities);
-    turn_characteristics[index].start_sector = index;
-    turn_characteristics[index].end_sector = turn.sector_end;
+
+    storeTurn(getAngleDirection(angle), getTurnIntensity(turn.intensities), index, turn.sector_end);
+    // turn_characteristics[index].dir = getAngleDirection(angle);
+    // turn_characteristics[index].intensity = getTurnIntensity(turn.intensities);
+    // turn_characteristics[index].start_sector = index;
+    // turn_characteristics[index].end_sector = turn.sector_end;
 }
 
 
@@ -1819,8 +1947,14 @@ void Kart::update(int ticks)
             tick_counter += ticks;
 
             static int tick_counter_for_out = 0;
-            constexpr int ticks_to_wait_for_out = 1000;
-            tick_counter_for_out += ticks;
+            constexpr int ticks_to_wait_for_out = 20;
+
+            static int tick_counter_for_wall = 0;
+            constexpr int ticks_to_wait_for_wall = 20;
+
+            
+
+            //printf("TICKS FOR OUT: %d\n", tick_counter_for_out);
 
             if (tick_counter >= ticks_to_wait){
                 DriveGraph::get()->getSuccessors(id_Node, successors);
@@ -1835,54 +1969,121 @@ void Kart::update(int ticks)
                 TurnInfo turn = turn_characteristics[id_Node];
 
 
-                if ((m_controller->isLocalPlayerController()) & (tick_counter_for_out >= ticks_to_wait_for_out)) {
+                if ((m_controller->isLocalPlayerController())) {
+
+                    // increase ticks if out of track
+                    if (!onroad) {
+                        tick_counter_for_out += ticks;
+                    } else {
+                        tick_counter_for_out = 0;
+                    }
+
+                    //("TICKS FOR OUT: %d\n", tick_counter_for_out);
+
+                    if ((intensity == 2) && (abs(m_speed) < 0.01)) {
+                        tick_counter_for_wall += ticks;
+                    } else {
+                        tick_counter_for_wall = 0;
+                    }
+
+                    //printf("TICKS FOR wall: %d\n", tick_counter_for_wall);
+                    
+                    // update rescued attributes, used to detect whether has just been rescued
+                    m_previously_rescued = m_currently_rescued;
+                    // kart is being rescued when animation is not 0
+                    m_currently_rescued = (dynamic_cast<RescueAnimation*>(getKartAnimation()) != 0);
+                    // to return from rescue, current rescue must false, and previous rescue must be true
+                    m_just_rescued = !m_currently_rescued && m_previously_rescued;
+
+
+                    // son pour annoncer sauvetage
+                    if (!m_previously_rescued && m_currently_rescued) {
+                        speak(SAUVETAGE);
+                    }
+
+                    // out of track, for too long
+                    if (tick_counter_for_out >= ticks_to_wait_for_out) {
+                        speak(OUT_STRING);
+                        tick_counter_for_out = 0;
+                    }
+
+                    // in a wall for too long
+                    if (tick_counter_for_wall >= ticks_to_wait_for_wall) {
+                        if (direction == 'l') {
+                            speak(LEFT_WALL_STRING);
+                        } else if (direction == 'r') {
+                            speak(RIGHT_WALL_STRING);
+                        }
+                    }
+
+
                     // when against wall (i.e. no speed and too far on left or right of the driveline or even out of road)
-                    if ((!onroad) || ((m_speed < 0.1) & (intensity == 2))) {
+                    // if (((!onroad) || (intensity == 2)) && (m_speed < 0.01)) {
 
-                        // #if _WIN32 || _WIN64
-                        // out_sound->play();
-                        // Sleep(1000);
-                        // m_turn_dir_sounds[0]->play();
-                        // #else
-                        // #define PRIuZ "zu"
-                        // out_sound->play();
-                        // #endif
-                        // SFXManager::get()->queue(SFXManager::SFX_PLAY, out_sound);
-                        //SFXManager::get()->queue(SFXManager::SFX_PLAY, m_turn_dir_sounds);
-                        //out_sound->play();
+                    //     // #if _WIN32 || _WIN64
+                    //     // out_sound->play();
+                    //     // Sleep(1000);
+                    //     // m_turn_dir_sounds[0]->play();
+                    //     // #else
+                    //     // #define PRIuZ "zu"
+                    //     // out_sound->play();
+                    //     // #endif
+                    //     // SFXManager::get()->queue(SFXManager::SFX_PLAY, out_sound);
+                    //     //SFXManager::get()->queue(SFXManager::SFX_PLAY, m_turn_dir_sounds);
+                    //     //out_sound->play();
 
-                        // CODE PROBLEMATIQUE
-                        //std::thread{&Kart::setSpeech, std::ref("hey buddy")}.detach();
+                    //     // CODE PROBLEMATIQUE
+                    //     //std::thread{&Kart::setSpeech, std::ref("hey buddy")}.detach();
 
-                        std::string text = "wesh anouk";
-                        //std::thread t(runEspeak, text);
-                        speak(text);
+                    //     std::string text = "wesh anouk";
+                    //     //std::thread t(runEspeak, text);
+                    //     speak(text);
                         
 
 
 
-                        tick_counter_for_out -= ticks_to_wait_for_out;
-                    }
+                        
+                    // }
                 }
 
 
 /////////// PRINT TURN INFO /////////////////
 // only for local player, if there is a turn, and if this turn was not already printed
-                if ((m_controller->isLocalPlayerController()) & (m_last_printed_sector != id_Node)) {
+
+                if ((m_controller->isLocalPlayerController()) & ((m_last_printed_sector != id_Node) || m_just_rescued)) {
                     int nxt_node = (id_Node+1) % max_nodes;
                     int nxt_angle_cat = angle_category[nxt_node];
 
                     if (nxt_angle_cat > 0) {
-                        //std::cout << "node: "<< nxt_node << ", category: " << nxt_angle_cat << "\n" << std::endl;
                         m_turn_sounds[nxt_angle_cat-1]->play();
+                        //speak(m_turn_string[nxt_angle_cat-1]);
                     }
 
-                    // print turn if any to announce
-                    if (turn.dir != NONE) {
-                        std::string d = (turn.dir == LEFT) ? "LEFT" : "RIGHT";
-                        //std::cout << "direction: " << d << std::endl;
-                        printf("intensity: %d\nstart sector: %d\nend sector: %d\n\n", turn.intensity, id_Node, turn.end_sector);
-                        m_turn_dir_sounds[int(turn.dir)]->play();
+                    // print turn only if first sector of the turn, or the  race has just begun,
+                    // OR ADD kart has just been rescued
+                    if ((turn.dir != NONE) && ((turn.start_sector == id_Node) || ((m_lap == 0) && id_Node == (max_nodes-1)) || m_just_rescued)) {
+                        std::string d;
+                        if (turn.dir == LEFT) {
+                            d = "LEFT";
+                        } else if (turn.dir == RIGHT) {
+                            d = "RIGHT";
+                        } else {
+                            d = "STRAIGHT LINE";
+                        }
+
+                        std::cout << "direction: " << d << std::endl;
+
+                        // do not announce intensity when straight line
+                        if (turn.dir == STRAIGHT) {
+                            printf("start sector: %d\nend sector: %d\n\n", id_Node, turn.end_sector);
+                            speak(m_turn_dir_string[int(turn.dir)] + SEP + getTurnLength(id_Node, turn.end_sector) + LONG_STRING);
+                        } else {
+                            printf("intensity: %d\nstart sector: %d\nend sector: %d\n\n", turn.intensity, id_Node, turn.end_sector);
+                            speak(m_turn_dir_string[int(turn.dir)] + m_turn_intensity_string[turn.intensity%TURN_SOUNDS_COUNT] + SEP + getTurnLength(id_Node, turn.end_sector) + LONG_STRING);
+                        }
+                        
+                        //m_turn_dir_sounds[int(turn.dir)]->play();
+                        m_just_rescued = false;
                     }
 
                     m_last_printed_sector = id_Node;

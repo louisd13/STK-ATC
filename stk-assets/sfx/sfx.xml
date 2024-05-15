@@ -48,41 +48,8 @@
    <sfx filename="turn5.ogg"          volume="0.5" positional="false" />
    <sfx filename="turn6.ogg"          volume="0.5" positional="false" />
 
-   <sfx filename="gauche.ogg"          volume="1.0" positional="false" />
-   <sfx filename="droite.ogg"          volume="1.0" positional="false" />
-   <sfx filename="tout-droit.ogg"          volume="1.0" positional="false" />
-   
-   <sfx filename="face_mur_droit.ogg"          volume="1.0" positional="false" />
-   <sfx filename="face_mur_gauche.ogg"          volume="1.0" positional="false" />
-   <sfx filename="hors-piste.ogg"          volume="1.0" positional="false" />
-   <sfx filename="mauvaise-direction.ogg"          volume="1.0" positional="false" />
-
-   <sfx filename="1.ogg"          volume="1.0" positional="false" />
-   <sfx filename="2.ogg"          volume="1.0" positional="false" />
-   <sfx filename="3.ogg"          volume="1.0" positional="false" />
-   <sfx filename="4.ogg"          volume="1.0" positional="false" />
-   <sfx filename="5.ogg"          volume="1.0" positional="false" />
-   <sfx filename="6.ogg"          volume="1.0" positional="false" />
-   <sfx filename="7.ogg"          volume="1.0" positional="false" />
-   <sfx filename="8.ogg"          volume="1.0" positional="false" />
-   <sfx filename="9.ogg"          volume="1.0" positional="false" />
-   <sfx filename="10.ogg"          volume="1.0" positional="false" />
-   <sfx filename="11.ogg"          volume="1.0" positional="false" />
-   <sfx filename="12.ogg"          volume="1.0" positional="false" />
-   <sfx filename="13.ogg"          volume="1.0" positional="false" />
-   <sfx filename="14.ogg"          volume="1.0" positional="false" />
-   <sfx filename="15.ogg"          volume="1.0" positional="false" />
-   <sfx filename="16.ogg"          volume="1.0" positional="false" />
-   <sfx filename="17.ogg"          volume="1.0" positional="false" />
-   <sfx filename="18.ogg"          volume="1.0" positional="false" />
-   <sfx filename="19.ogg"          volume="1.0" positional="false" />
-   <sfx filename="20.ogg"          volume="1.0" positional="false" />
-   <sfx filename="21.ogg"          volume="1.0" positional="false" />
-   <sfx filename="22.ogg"          volume="1.0" positional="false" />
-   <sfx filename="23.ogg"          volume="1.0" positional="false" />
-   <sfx filename="24.ogg"          volume="1.0" positional="false" />
-   <sfx filename="25.ogg"          volume="1.0" positional="false" />
-   <sfx filename="26.ogg"          volume="1.0" positional="false" />
+   <sfx filename="sad-single-horn.ogg"          volume="0.2" positional="false" />
+   <sfx filename="happy-double-horn.ogg"          volume="0.2" positional="false" />
    
    <!-- TODO (sam) to be replaced by a real song -->
    <sfx filename="jump.ogg"      volume="0.1" positional="true" />
