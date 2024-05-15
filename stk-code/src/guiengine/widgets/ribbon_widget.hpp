@@ -27,7 +27,6 @@
 #include "utils/cpp2011.hpp"
 #include "utils/leak_check.hpp"
 #include "utils/ptr_vector.hpp"
-#include "audio/tts/tts.hpp"
 
 #include <IGUIStaticText.h>
 

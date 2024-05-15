@@ -17,6 +17,7 @@
 
 #include "guiengine/widgets/ribbon_widget.hpp"
 
+#include <iostream>
 #include <cmath>
 
 #include "graphics/irr_driver.hpp"
@@ -31,7 +32,6 @@
 #include "utils/string_utils.hpp"
 #include "utils/vs.hpp"
 
-#include <iostream>
 #include <IGUIElement.h>
 #include <IGUIEnvironment.h>
 #include <IGUIButton.h>
