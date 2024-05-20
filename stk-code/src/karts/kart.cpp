@@ -2033,7 +2033,6 @@ void Kart::update(int ticks)
                     }
 
                     // in a wall for too long
-<<<<<<< HEAD
                     // if (tick_counter_for_wall >= ticks_to_wait_for_wall) {
                     //     if (abs(m_speed) < 0.01) {
                     //         if (direction == 'l') {
@@ -2045,16 +2044,6 @@ void Kart::update(int ticks)
 
                     //     tick_counter_for_wall = 0;
                     // }
-=======
-                    /*if (tick_counter_for_wall >= ticks_to_wait_for_wall) {
-                        if (direction == 'l') {
-                            speak(LEFT_WALL_STRING);
-                        } else if (direction == 'r') {
-                            speak(RIGHT_WALL_STRING);
-                        }
-                    }
-                    */
->>>>>>> 241e5cf5b35344f54c6fc30df32ba9d9ba0b9c9e
 
 
                     // when against wall (i.e. no speed and too far on left or right of the driveline or even out of road)
