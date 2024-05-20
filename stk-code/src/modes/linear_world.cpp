@@ -68,6 +68,7 @@ LinearWorld::LinearWorld() : WorldWithRank()
     m_live_time_difference = 0.0f;
     m_fastest_lap_kart_name = "";
     m_check_structure_compatible = false;
+    voice = new Tts;
 }   // LinearWorld
 
 // ----------------------------------------------------------------------------
@@ -1052,6 +1053,8 @@ void LinearWorld::checkForWrongDirection(unsigned int i, float dt)
         return;
 
     KartInfo &ki = m_kart_info[i];
+
+    printf("%f\n", ki.m_wrong_way_timer);
     
     const AbstractKart *kart=m_karts[i].get();
     // If the kart can go in more than one directions from the current track
@@ -1080,20 +1083,25 @@ void LinearWorld::checkForWrongDirection(unsigned int i, float dt)
         !kart->hasFinishedRace())
     {
         ki.m_wrong_way_timer += dt;
+        //ki.m_wrong_way_audio_timer += dt;
         
         if (ki.m_wrong_way_timer> 2.0f)
             ki.m_wrong_way_timer= 2.0f;
+            //ki.m_wrong_way_audio_timer= 2.0f;
     }
     else
     {
         ki.m_wrong_way_timer -= dt;
+       // ki.m_wrong_way_audio_timer -= dt;
 
         if (ki.m_wrong_way_timer < 0)
             ki.m_wrong_way_timer = 0;
+            //ki.m_wrong_way_audio_timer = 0;
     }
     
     if (kart->getKartAnimation())
         ki.m_wrong_way_timer = 0;
+        //ki.m_wrong_way_audio_timer = 0;
     
     if (ki.m_wrong_way_timer > 1.0f && m_race_gui)
     {
@@ -1102,6 +1110,12 @@ void LinearWorld::checkForWrongDirection(unsigned int i, float dt)
                                video::SColor(255,255,255,255),
                                /*important*/ true,
                                /*big font*/  true);
+
+        if (ki.m_wrong_way_timer > 2.0f) {
+            voice->speak("Mauvaise direction");
+
+            ki.m_wrong_way_timer = 1.2f;
+        }
     }
     
 }   // checkForWrongDirection
@@ -1146,6 +1160,7 @@ void LinearWorld::KartInfo::saveCompleteState(BareNetworkString* bns)
     bns->addFloat(m_estimated_finish);
     bns->addFloat(m_overall_distance);
     bns->addFloat(m_wrong_way_timer);
+    //bns->addFloat(m_wrong_way_audio_timer);
 }   // saveCompleteState
 
 // ----------------------------------------------------------------------------
@@ -1157,6 +1172,7 @@ void LinearWorld::KartInfo::restoreCompleteState(const BareNetworkString& b)
     m_estimated_finish = b.getFloat();
     m_overall_distance = b.getFloat();
     m_wrong_way_timer = b.getFloat();
+    //m_wrong_way_audio_timer = b.getFloat();
 }   // restoreCompleteState
 
 // ----------------------------------------------------------------------------
