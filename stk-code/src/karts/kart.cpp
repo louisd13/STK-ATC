@@ -1929,13 +1929,23 @@ void Kart::update(int ticks)
     
     if (world_player) {
         TrackSector* sector_player = world_player->getTrackSector(getWorldKartId());
+        //TrackSector* sector_player_copy = world_player->getTrackSector(getWorldKartId());
+
+
+        // Marche pas je crois ca fait crash
+        //TrackSector* newSector = new TrackSector(*sector_player);
+        //int newNode = sector_player->getCurrentGraphNode() + 2; // Adding 2 to the current graph node
+        //newSector->setCurrentGraphNode(newNode); // Assuming setCurrentGraphNode() is a setter method
 
         if (sector_player) {
             float relativeDistance = sector_player->getRelativeDistanceToCenter();
+            //float relativeDistance2 = newSector->getRelativeDistanceToCenter();
             int id_Node = sector_player->getCurrentGraphNode();
             float distfromstart_player = sector_player->getDistanceFromStart(false);
             bool onroad = sector_player->isOnRoad();
             Track* currentTrack = Track::getCurrentTrack();
+
+            //std::cout << "sp" << relativeDistance << "ns" << relativeDistance2 << std::endl;
 
 
             float angle = 0;
@@ -1965,8 +1975,8 @@ void Kart::update(int ticks)
 
                 unsigned int numNodes = DriveGraph::get()->getNumNodes();
 
-
-                TurnInfo turn = turn_characteristics[id_Node];
+                // fetch turn info for 3 sectors in advance
+                TurnInfo turn = turn_characteristics[(id_Node+3)%max_nodes];
 
 
                 if ((m_controller->isLocalPlayerController())) {
@@ -2008,13 +2018,14 @@ void Kart::update(int ticks)
                     }
 
                     // in a wall for too long
-                    if (tick_counter_for_wall >= ticks_to_wait_for_wall) {
+                    /*if (tick_counter_for_wall >= ticks_to_wait_for_wall) {
                         if (direction == 'l') {
                             speak(LEFT_WALL_STRING);
                         } else if (direction == 'r') {
                             speak(RIGHT_WALL_STRING);
                         }
                     }
+                    */
 
 
                     // when against wall (i.e. no speed and too far on left or right of the driveline or even out of road)
@@ -2061,7 +2072,7 @@ void Kart::update(int ticks)
 
                     // print turn only if first sector of the turn, or the  race has just begun,
                     // OR ADD kart has just been rescued
-                    if ((turn.dir != NONE) && ((turn.start_sector == id_Node) || ((m_lap == 0) && id_Node == (max_nodes-1)) || m_just_rescued)) {
+                    if ((turn.dir != NONE) && ((((turn.start_sector-3)%max_nodes) == id_Node) || ((m_lap == 0) && id_Node == (max_nodes-1)) || m_just_rescued)) {
                         std::string d;
                         if (turn.dir == LEFT) {
                             d = "LEFT";
@@ -2502,9 +2513,9 @@ char Kart::calculateDirection(float value) {
 int Kart::calculateIntensity(float value) {
     float absValue = std::abs(value);
 
-    if (absValue >= 0.66) {
+    if (absValue >= 0.9) {
         return 2;
-    } else if (absValue >= 0.23) {
+    } else if (absValue >= 0.6) {
         return 1;
     } else {
         return 0;
