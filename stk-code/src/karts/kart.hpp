@@ -308,6 +308,7 @@ protected:
     std::string SEP;
     std::string LONG_STRING;
     std::string SAUVETAGE;
+    std::string NEW_LAP_STRING;
 
     // SFXBase *out_sound;
     // SFXBase *left_wall_sound;

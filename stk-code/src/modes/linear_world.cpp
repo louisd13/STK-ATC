@@ -1053,8 +1053,6 @@ void LinearWorld::checkForWrongDirection(unsigned int i, float dt)
         return;
 
     KartInfo &ki = m_kart_info[i];
-
-    printf("%f\n", ki.m_wrong_way_timer);
     
     const AbstractKart *kart=m_karts[i].get();
     // If the kart can go in more than one directions from the current track

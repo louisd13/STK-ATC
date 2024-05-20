@@ -233,6 +233,7 @@ Kart::Kart (const std::string& ident, unsigned int world_kart_id,
     SAUVETAGE = "Sauvetage en cours";
     SEP = ". ";
     LONG_STRING = "secteur";
+    NEW_LAP_STRING = "Début du tour ";
     
 
     m_turn_dir_string.push_back("gauche");
@@ -1475,10 +1476,11 @@ void Kart::updateKartInfo(LinearWorld* world) {
     if (track->getDefaultNumberOfLaps() > 0) {
         m_lap = world->getLapForKart(getWorldKartId()) + 1;
 
-        if (m_lap == m_prev_lap) return;
+        if ((m_lap == m_prev_lap) || (m_lap == 0)) return;
 
         m_prev_lap = m_lap;
         std::cout << "started lap: " << m_lap << std::endl;
+        voice->speak(NEW_LAP_STRING + m_number_string[m_lap-1]);
     }
 }
 
