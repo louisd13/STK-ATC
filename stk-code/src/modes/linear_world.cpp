@@ -1083,27 +1083,22 @@ void LinearWorld::checkForWrongDirection(unsigned int i, float dt)
         !kart->hasFinishedRace())
     {
         ki.m_wrong_way_timer += dt;
-        //ki.m_wrong_way_audio_timer += dt;
         
-        if (ki.m_wrong_way_timer> 2.0f)
-            ki.m_wrong_way_timer= 2.0f;
-            //ki.m_wrong_way_audio_timer= 2.0f;
+        if (ki.m_wrong_way_timer> 2.5f)
+            ki.m_wrong_way_timer= 2.5f;
     }
     else
     {
         ki.m_wrong_way_timer -= dt;
-       // ki.m_wrong_way_audio_timer -= dt;
 
         if (ki.m_wrong_way_timer < 0)
             ki.m_wrong_way_timer = 0;
-            //ki.m_wrong_way_audio_timer = 0;
     }
     
     if (kart->getKartAnimation())
         ki.m_wrong_way_timer = 0;
-        //ki.m_wrong_way_audio_timer = 0;
     
-    if (ki.m_wrong_way_timer > 1.0f && m_race_gui)
+    if (ki.m_wrong_way_timer >= 0.8f && m_race_gui)
     {
         m_race_gui->addMessage(_("WRONG WAY!"), kart,
                                /* time */ -1.0f,
@@ -1111,10 +1106,11 @@ void LinearWorld::checkForWrongDirection(unsigned int i, float dt)
                                /*important*/ true,
                                /*big font*/  true);
 
-        if (ki.m_wrong_way_timer > 2.0f) {
+        if (ki.m_wrong_way_timer >= 1.0f) {
+            printf("bloop\n");
             voice->speak("Mauvaise direction");
 
-            ki.m_wrong_way_timer = 1.2f;
+            ki.m_wrong_way_timer = 0.0f;
         }
     }
     
@@ -1160,7 +1156,6 @@ void LinearWorld::KartInfo::saveCompleteState(BareNetworkString* bns)
     bns->addFloat(m_estimated_finish);
     bns->addFloat(m_overall_distance);
     bns->addFloat(m_wrong_way_timer);
-    //bns->addFloat(m_wrong_way_audio_timer);
 }   // saveCompleteState
 
 // ----------------------------------------------------------------------------
@@ -1172,7 +1167,6 @@ void LinearWorld::KartInfo::restoreCompleteState(const BareNetworkString& b)
     m_estimated_finish = b.getFloat();
     m_overall_distance = b.getFloat();
     m_wrong_way_timer = b.getFloat();
-    //m_wrong_way_audio_timer = b.getFloat();
 }   // restoreCompleteState
 
 // ----------------------------------------------------------------------------

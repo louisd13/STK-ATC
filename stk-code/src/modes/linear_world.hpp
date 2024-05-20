@@ -107,10 +107,6 @@ private:
          *  direction so that a message can be displayed. */
         float       m_wrong_way_timer;
 
-        /** Accumulates the time a kart has been driving in the wrong
-         *  direction so that an audio message can be periodically sent. */
-        float       m_wrong_way_audio_timer;
-
         /** Initialises all fields. */
         KartInfo()  { reset(); }
         // --------------------------------------------------------------------
@@ -123,7 +119,6 @@ private:
             m_estimated_finish  = -1.0f;
             m_overall_distance  = 0.0f;
             m_wrong_way_timer   = 0.0f;
-            m_wrong_way_audio_timer   = 0.0f;
         }   // reset
         // --------------------------------------------------------------------
         void saveCompleteState(BareNetworkString* bns);
