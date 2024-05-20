@@ -88,6 +88,8 @@ public:
     void setPaused(bool val)                           { m_paused.store(val); }
     // ------------------------------------------------------------------------
     bool isPaused() const                           { return m_paused.load(); }
+
+    //inline static bool already_speaking = false;
 };   // MainLoop
 
 extern MainLoop* main_loop;
