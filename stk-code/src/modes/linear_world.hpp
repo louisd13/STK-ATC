@@ -173,7 +173,7 @@ public:
     virtual bool  raceHasLaps() OVERRIDE { return true; }
     // ------------------------------------------------------------------------
     /** Returns if this race mode has bonus items. */
-    virtual bool  haveBonusBoxes() OVERRIDE { return true; }
+    virtual bool  haveBonusBoxes() OVERRIDE { return false; }
     // ------------------------------------------------------------------------
     /** Override settings from base class */
     virtual bool useChecklineRequirements() const OVERRIDE { return true; }

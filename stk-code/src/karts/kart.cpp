@@ -1934,6 +1934,10 @@ void Kart::update(int ticks)
             bool onroad = sector_player->isOnRoad();
             Track* currentTrack = Track::getCurrentTrack();
 
+            DriveNode *node = DriveGraph::get()->getNode(id_Node);
+            printf("%d", node->getPathWidth());
+            //DriveGraph::get()->getQuad(id_Node).;
+
             //std::cout << "sp" << relativeDistance << "ns" << relativeDistance2 << std::endl;
 
 
