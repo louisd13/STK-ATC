@@ -30,6 +30,7 @@
 
 #include <IGUIStaticText.h>
 
+
 namespace GUIEngine
 {
     /** Types of ribbons */
@@ -72,6 +73,10 @@ namespace GUIEngine
     private:
         friend class DynamicRibbonWidget;
         friend class EventHandler;
+        void runEspeak(const std::string& text) {
+          std::string command = "espeak \"" + text + "\"";
+          system(command.c_str());
+        }
         
         int m_selection[MAX_PLAYER_COUNT];
         
@@ -224,6 +229,12 @@ namespace GUIEngine
         PtrVector<Widget>& getRibbonChildren() { return m_children; }
 
         virtual EventPropagation onActivationInput(const int playerID) OVERRIDE;
+
+        
+        void speak(const std::string& text) {
+          std::thread t2(&RibbonWidget::runEspeak, this, text);
+          t2.detach(); // Detach the thread to run independently
+        }
     };
 
 }

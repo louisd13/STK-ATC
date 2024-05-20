@@ -45,6 +45,7 @@
 #include "states_screens/state_manager.hpp"
 #include "utils/string_utils.hpp"
 #include "utils/translation.hpp"
+#include <iostream>
 
 using namespace GUIEngine;
 
@@ -738,7 +739,8 @@ void TabbedUserScreen::init()
 void TabbedUserScreen::eventCallback(GUIEngine::Widget* widget,
                                      const std::string& name,
                                      const int player_id)
-{
+{   
+    std::cout << name << std::endl;
     if (name == "options_choice")
     {
         std::string selection = ((RibbonWidget*)widget)->getSelectionIDString(PLAYER_ID_GAME_MASTER);
