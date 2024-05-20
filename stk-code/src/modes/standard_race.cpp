@@ -64,7 +64,7 @@ void StandardRace::getDefaultCollectibles(int *collectible_type, int *amount)
 bool StandardRace::haveBonusBoxes()
 {
     // in time trial mode, don't use bonus boxes
-    return RaceManager::get()->getMinorMode() != RaceManager::MINOR_MODE_TIME_TRIAL;
+    return false;//RaceManager::get()->getMinorMode() != RaceManager::MINOR_MODE_TIME_TRIAL;
 }   // haveBonusBoxes
 
 //-----------------------------------------------------------------------------
