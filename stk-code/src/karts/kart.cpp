@@ -1767,9 +1767,6 @@ void Kart::categorizeStraightLines() {
                 printf("LAST TURN END: %d\nNXT_START_SECTOR: %d\nMAX NODES: %d\n", last_turn_end, turn.start_sector, max_nodes);
                 // store straight line
                 storeStraightLine(last_turn_end, turn.start_sector);
-                // turn_characteristics[last_turn_end].dir = STRAIGHT;
-                // turn_characteristics[last_turn_end].start_sector = last_turn_end;
-                // turn_characteristics[last_turn_end].end_sector = turn.start_sector;
             }
 
             // store the new last position
@@ -1784,9 +1781,6 @@ void Kart::categorizeStraightLines() {
         printf("LAST TURN END: %d\nFIRST_TURN_START: %d\nMAX NODES: %d\n", last_turn_end, first_turn_start, max_nodes);
         // store straight line at last turn end
         storeStraightLine(last_turn_end, first_turn_start);
-        // turn_characteristics[last_turn_end].dir = STRAIGHT;
-        // turn_characteristics[last_turn_end].start_sector = last_turn_end;
-        // turn_characteristics[last_turn_end].end_sector = first_turn_start;
     }
 
 
@@ -1800,10 +1794,6 @@ void Kart::setTurnCharacteristics(TurnBasics turn, float angle) {
     }
 
     storeTurn(getAngleDirection(angle), getTurnIntensity(turn.intensities), index, turn.sector_end);
-    // turn_characteristics[index].dir = getAngleDirection(angle);
-    // turn_characteristics[index].intensity = getTurnIntensity(turn.intensities);
-    // turn_characteristics[index].start_sector = index;
-    // turn_characteristics[index].end_sector = turn.sector_end;
 }
 
 
@@ -1833,12 +1823,6 @@ TurnDirection Kart::getAngleDirection(float angle) {
         return NONE;
     }
 }
-
-// used to make a different thread
-// void Kart::setSpeech(std::string s) {
-//     Tts *m_voice;
-//     m_voice->setSpeech(s);
-// }
 
 
 
@@ -1992,16 +1976,6 @@ void Kart::update(int ticks)
                     } else {
                         tick_counter_for_out = 0;
                     }
-
-                    //("TICKS FOR OUT: %d\n", tick_counter_for_out);
-
-                    // if () {
-                    //     tick_counter_for_wall += ticks;
-                    // } else {
-                    //     tick_counter_for_wall = 0;
-                    // }
-
-                    //printf("TICKS FOR wall: %d\n", tick_counter_for_wall);
                     
                     // update rescued attributes, used to detect whether has just been rescued
                     m_previously_rescued = m_currently_rescued;
@@ -2033,48 +2007,6 @@ void Kart::update(int ticks)
                             tick_counter_for_out = -50;
                         }
                     }
-
-                    // in a wall for too long
-                    // if (tick_counter_for_wall >= ticks_to_wait_for_wall) {
-                    //     if (abs(m_speed) < 0.01) {
-                    //         if (direction == 'l') {
-                    //             speak(LEFT_WALL_STRING);
-                    //         } else if (direction == 'r') {
-                    //             speak(RIGHT_WALL_STRING);
-                    //         }
-                    //     }
-
-                    //     tick_counter_for_wall = 0;
-                    // }
-
-
-                    // when against wall (i.e. no speed and too far on left or right of the driveline or even out of road)
-                    // if (((!onroad) || (intensity == 2)) && (m_speed < 0.01)) {
-
-                    //     // #if _WIN32 || _WIN64
-                    //     // out_sound->play();
-                    //     // Sleep(1000);
-                    //     // m_turn_dir_sounds[0]->play();
-                    //     // #else
-                    //     // #define PRIuZ "zu"
-                    //     // out_sound->play();
-                    //     // #endif
-                    //     // SFXManager::get()->queue(SFXManager::SFX_PLAY, out_sound);
-                    //     //SFXManager::get()->queue(SFXManager::SFX_PLAY, m_turn_dir_sounds);
-                    //     //out_sound->play();
-
-                    //     // CODE PROBLEMATIQUE
-                    //     //std::thread{&Kart::setSpeech, std::ref("hey buddy")}.detach();
-
-                    //     std::string text = "wesh anouk";
-                    //     //std::thread t(runEspeak, text);
-                    //     speak(text);
-                        
-
-
-
-                        
-                    // }
                 }
 
 
