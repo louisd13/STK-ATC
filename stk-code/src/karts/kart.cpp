@@ -19,6 +19,7 @@
 
 #include "karts/kart.hpp"
 
+
 #include "audio/sfx_manager.hpp"
 #include "audio/sfx_base.hpp"
 #include "challenges/challenge_status.hpp"
@@ -226,8 +227,8 @@ Kart::Kart (const std::string& ident, unsigned int world_kart_id,
 
 
     OUT_STRING = "Hors piste";
-    LEFT_WALL_STRING = "Mur gauche";
-    RIGHT_WALL_STRING = "Mur droit";
+    LEFT_WALL_STRING = "Mur, tourner à droite";
+    RIGHT_WALL_STRING = "Mur, tourner à gauche";
     WRONG_WAY_STRING = "Mauvais sens";
     SAUVETAGE = "Sauvetage en cours";
     SEP = ". ";
@@ -245,6 +246,8 @@ Kart::Kart (const std::string& ident, unsigned int world_kart_id,
     // init the number of nodes in the track
     max_nodes = DriveGraph::get()->getNumNodes();
     printf("MAX NODES: %d\n", max_nodes);
+
+    voice = new Tts;
 
 
     m_last_printed_sector = -1;
@@ -1972,7 +1975,7 @@ void Kart::update(int ticks)
                 if ((m_controller->isLocalPlayerController())) {
 
                     // increase ticks if out of track
-                    if (!onroad) {
+                    if ((!onroad) || ((intensity == 2) && (abs(m_speed) < 0.01))) {
                         tick_counter_for_out += ticks;
                     } else {
                         tick_counter_for_out = 0;
@@ -1980,11 +1983,11 @@ void Kart::update(int ticks)
 
                     //("TICKS FOR OUT: %d\n", tick_counter_for_out);
 
-                    if ((intensity == 2) && (abs(m_speed) < 0.01)) {
-                        tick_counter_for_wall += ticks;
-                    } else {
-                        tick_counter_for_wall = 0;
-                    }
+                    // if () {
+                    //     tick_counter_for_wall += ticks;
+                    // } else {
+                    //     tick_counter_for_wall = 0;
+                    // }
 
                     //printf("TICKS FOR wall: %d\n", tick_counter_for_wall);
                     
@@ -1998,23 +2001,39 @@ void Kart::update(int ticks)
 
                     // son pour annoncer sauvetage
                     if (!m_previously_rescued && m_currently_rescued) {
-                        speak(SAUVETAGE);
+                        voice->speak(SAUVETAGE);
                     }
 
                     // out of track, for too long
                     if (tick_counter_for_out >= ticks_to_wait_for_out) {
-                        speak(OUT_STRING);
-                        tick_counter_for_out = 0;
+                        // if speed is high, announce out of track, else announce that in wall
+                        if (abs(m_speed) >= 0.01) {
+                            voice->speak(OUT_STRING);
+
+                            tick_counter_for_out = 0;
+                        } else {
+                            if (direction == 'l') {
+                                voice->speak(LEFT_WALL_STRING);
+                            } else if (direction == 'r') {
+                                voice->speak(RIGHT_WALL_STRING);
+                            }
+
+                            tick_counter_for_out = -50;
+                        }
                     }
 
                     // in a wall for too long
-                    if (tick_counter_for_wall >= ticks_to_wait_for_wall) {
-                        if (direction == 'l') {
-                            speak(LEFT_WALL_STRING);
-                        } else if (direction == 'r') {
-                            speak(RIGHT_WALL_STRING);
-                        }
-                    }
+                    // if (tick_counter_for_wall >= ticks_to_wait_for_wall) {
+                    //     if (abs(m_speed) < 0.01) {
+                    //         if (direction == 'l') {
+                    //             speak(LEFT_WALL_STRING);
+                    //         } else if (direction == 'r') {
+                    //             speak(RIGHT_WALL_STRING);
+                    //         }
+                    //     }
+
+                    //     tick_counter_for_wall = 0;
+                    // }
 
 
                     // when against wall (i.e. no speed and too far on left or right of the driveline or even out of road)
@@ -2076,10 +2095,10 @@ void Kart::update(int ticks)
                         // do not announce intensity when straight line
                         if (turn.dir == STRAIGHT) {
                             printf("start sector: %d\nend sector: %d\n\n", id_Node, turn.end_sector);
-                            speak(m_turn_dir_string[int(turn.dir)] + SEP + getTurnLength(id_Node, turn.end_sector) + LONG_STRING);
+                            voice->speak(m_turn_dir_string[int(turn.dir)] + SEP + getTurnLength(id_Node, turn.end_sector) + LONG_STRING);
                         } else {
                             printf("intensity: %d\nstart sector: %d\nend sector: %d\n\n", turn.intensity, id_Node, turn.end_sector);
-                            speak(m_turn_dir_string[int(turn.dir)] + m_turn_intensity_string[turn.intensity%TURN_SOUNDS_COUNT] + SEP + getTurnLength(id_Node, turn.end_sector) + LONG_STRING);
+                            voice->speak(m_turn_dir_string[int(turn.dir)] + m_turn_intensity_string[turn.intensity%TURN_SOUNDS_COUNT] + SEP + getTurnLength(id_Node, turn.end_sector) + LONG_STRING);
                         }
                         
                         //m_turn_dir_sounds[int(turn.dir)]->play();

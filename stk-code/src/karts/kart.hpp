@@ -28,6 +28,7 @@
 
 #include "LinearMath/btTransform.h"
 
+#include "audio/tts/tts.hpp"
 #include "items/powerup_manager.hpp"    // For PowerupType
 #include "karts/abstract_kart.hpp"
 #include "utils/cpp2011.hpp"
@@ -79,10 +80,10 @@ class Kart : public AbstractKart
 private:
     int m_network_finish_check_ticks;
     int m_network_confirmed_finish_ticks;
-    void runEspeak(const std::string& text) {
-        std::string command = "espeak -vfr \"" + text + "\"";
-        system(command.c_str());
-    }
+    // void runEspeak(const std::string& text) {
+    //     std::string command = "espeak -vfr \"" + text + "\"";
+    //     system(command.c_str());
+    // }
 protected:
     /** Offset of the graphical kart chassis from the physical chassis. */
     float m_graphical_y_offset;
@@ -362,6 +363,8 @@ protected:
     bool m_just_rescued;
     bool m_currently_rescued;
     bool m_previously_rescued;
+
+    Tts *voice;
 
 
 
@@ -690,10 +693,10 @@ public:
     int getNetworkConfirmedFinishTicks() const OVERRIDE
                                    { return m_network_confirmed_finish_ticks; }
 
-    void speak(const std::string& text) {
-        std::thread t(&Kart::runEspeak, this, text);
-        t.detach(); // Detach the thread to run independently
-    }
+    // void speak(const std::string& text) {
+    //     std::thread t(&Kart::runEspeak, this, text);
+    //     t.detach(); // Detach the thread to run independently
+    // }
 
 };   // Kart
 
