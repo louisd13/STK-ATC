@@ -99,7 +99,7 @@ public:
         irr::core::stringw selectionText = m_ribbon_widget->getSelectionText(0);
         std::wstring ws(selectionText.c_str());
         std::string str(ws.begin(), ws.end());
-        std::cout << "RaceSetup: " << str << std::endl;
+        //std::cout << "RaceSetup: " << str << std::endl;
     }
 }; 
 
@@ -133,7 +133,7 @@ public:
         // Convert the selection text to a string for logging
         std::wstring ws(selectionText.c_str());
         std::string str(ws.begin(), ws.end());
-        std::cout << "RaceSetupD: " << str << std::endl;
+        //std::cout << "RaceSetupD: " << str << std::endl;
     }
 }; 
 

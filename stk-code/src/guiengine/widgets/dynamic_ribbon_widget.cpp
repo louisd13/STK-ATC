@@ -22,6 +22,7 @@
 #include "guiengine/engine.hpp"
 #include "guiengine/scalable_font.hpp"
 #include "guiengine/widgets/dynamic_ribbon_widget.hpp"
+#include "guiengine/widgets/ribbon_widget.hpp"
 #include "io/file_manager.hpp"
 #include "states_screens/state_manager.hpp"
 #include "utils/vs.hpp"
@@ -885,7 +886,7 @@ void DynamicRibbonWidget::propagateSelection()
             if (ribbon && ribbon != selected_ribbon)
             {
                 ribbon->m_selection[p] = (int)roundf(where*(ribbon->m_children.size()-1));
-                ribbon->updateSelection();
+                ribbon->updateSelection(true);
             }
         }
 

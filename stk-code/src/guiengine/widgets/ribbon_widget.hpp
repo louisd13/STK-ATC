@@ -89,7 +89,7 @@ namespace GUIEngine
         /** Each item within the ribbon holds a flag saying whether it is
          *  selected or not. This method updates the flag in all of this
          *  ribbon's children. Called everytime selection changes.*/
-        void updateSelection();
+        void updateSelection(bool to_print = true);
 
         /** Callbacks */
         virtual EventPropagation rightPressed(const int playerID=0) OVERRIDE;
@@ -169,7 +169,7 @@ namespace GUIEngine
 
         /** Sets the ID of the selected item within the ribbon */
         void setSelection(const int i, const int playerID)
-                             { m_selection[playerID] = i; updateSelection(); }
+                             { m_selection[playerID] = i; updateSelection(true); }
         
         /** Select an item in the ribbon by its internal name */
         void select(std::string item, const int playerID);

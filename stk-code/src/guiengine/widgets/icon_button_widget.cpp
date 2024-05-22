@@ -25,6 +25,7 @@
 #include "io/file_manager.hpp"
 #include "utils/log.hpp"
 #include "utils/string_utils.hpp"
+#include "guiengine/modaldialog.hpp"
 
 #include <iostream>
 #include <IGUIElement.h>
@@ -338,6 +339,14 @@ EventPropagation IconButtonWidget::focused(const int playerID, bool printout, bo
     // std::ostringstream oss;
     // oss << "playerID: " << playerID << ", printout: " << printout << ", changed_ribbon: " << changed_ribbon;
     // logFunctionCall("IconButtonWidget::focused", oss.str());
+
+    if(ModalDialog::getCurrent() != NULL){
+        // false
+        printout=true;
+        changed_ribbon=true;
+        the_voice->speak("Paused", false, true);
+        //std::cout << "Dialog" << std::endl;
+    }
 
     if (getCurrentScreen() != NULL){
         std::string screenName = getCurrentScreen()->getName();

@@ -120,6 +120,7 @@ void AbstractStateManager::pushMenu(Screen* screen)
     }
 
     std::cout << "Ecran : " << screenName << std::endl;
+    the_voice->speak(screenName, false, true);
 
     // if (screenName == "main_menu"){
     //     std::cout << "Ecran principal" << std::endl;

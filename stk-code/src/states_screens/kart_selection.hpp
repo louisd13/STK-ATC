@@ -23,6 +23,7 @@
 #include "guiengine/widgets/dynamic_ribbon_widget.hpp"
 #include "guiengine/widgets/player_kart_widget.hpp"
 #include "states_screens/state_manager.hpp"
+#include "audio/tts/tts.hpp"
 
 namespace GUIEngine
 {

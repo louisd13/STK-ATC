@@ -355,6 +355,7 @@ void TrackInfoScreen::init()
     } //has_highscores
 
     RibbonWidget* bt_start = getWidget<GUIEngine::RibbonWidget>("buttons");
+
     bt_start->setFocusForPlayer(PLAYER_ID_GAME_MASTER);
 }   // init
 

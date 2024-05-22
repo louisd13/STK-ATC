@@ -34,6 +34,7 @@ namespace irr
 #include "guiengine/skin.hpp"
 #include "utils/constants.hpp"
 #include "utils/ptr_vector.hpp"
+#include "audio/tts/tts.hpp"
 
 namespace GUIEngine
 {
@@ -240,6 +241,7 @@ namespace GUIEngine
             // If it's not DynamicRibbonWidget, proceed with the normal behavior
             std::string text = getTextAsString();
             std::cout << "OUTPUT : "<< text <<std::endl;
+            the_voice->speak(text,true,false);
             setWithinATextBox(false);
             return EVENT_LET; 
           }
