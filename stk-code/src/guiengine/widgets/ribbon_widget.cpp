@@ -62,8 +62,8 @@ RibbonWidget::RibbonWidget(const RibbonType type) : Widget(WTYPE_RIBBON)
 
     m_check_inside_me = true;
     m_supports_multiplayer = (type == RIBBON_TOOLBAR);
-
-    updateSelection();
+    std::cout << "selec1 ?" << std::endl;
+    updateSelection(true);
 }   // RibbonWidget
 
 // ----------------------------------------------------------------------------
@@ -524,7 +524,8 @@ void RibbonWidget::add()
     id = m_element->getID();
     m_element->setTabOrder(id);
     m_element->setTabGroup(false);
-    updateSelection();
+    std::cout << "selec2 ?" << std::endl;
+    updateSelection(false);
 
     if (!m_is_visible)
         setVisible(false);
@@ -604,7 +605,8 @@ void RibbonWidget::select(std::string item, const int mousePlayerID)
         if (m_active_children[i].m_properties[PROP_ID] == item)
         {
             m_selection[mousePlayerID] = i;
-            updateSelection();
+            std::cout << "selec3 ?" << std::endl;
+            updateSelection(true);
             return;
         }
     }
@@ -648,8 +650,8 @@ EventPropagation RibbonWidget::moveToNextItem(const bool horizontally, const boo
 
     if (m_selection[playerID] == old_selection && !horizontally)
         return EVENT_BLOCK;
-
-    updateSelection();
+    std::cout << "selec4 ?" << std::endl;
+    updateSelection(true);
 
     if (m_ribbon_type == RIBBON_COMBO || m_ribbon_type == RIBBON_TABS ||
         m_ribbon_type == RIBBON_VERTICAL_TABS)
@@ -761,7 +763,8 @@ EventPropagation RibbonWidget::focused(const int playerID,  bool printout, bool 
         }
     }
 
-    Widget::focused(playerID,false, changed_ribbon);
+    // rajouter des conditions ici ? 
+    Widget::focused(playerID, false, changed_ribbon);
 
     if (m_active_children.size() < 1) return EVENT_LET; // empty ribbon
 
@@ -785,7 +788,9 @@ EventPropagation RibbonWidget::focused(const int playerID,  bool printout, bool 
         {
             int selection = m_selection[playerID];
             if (selection < (int)m_active_children.size())
-                m_active_children.get(selection)->focused(playerID,false);
+                // Semble utile quand on change de ribbon
+                std::cout << "active chil" << std::endl;
+                m_active_children.get(selection)->focused(playerID);
         }
     }
 
@@ -840,8 +845,8 @@ EventPropagation RibbonWidget::mouseHovered(Widget* child,
             }
         }
     }
-
-    updateSelection();
+    std::cout << "selec5 ?" << std::endl;
+    updateSelection(true);
     return EVENT_BLOCK;
 }   // mouseHovered
 
@@ -870,13 +875,15 @@ const std::string& RibbonWidget::getSelectionIDString(const int playerID)
 }   // getSelectionIDString
 
 // ----------------------------------------------------------------------------
-void RibbonWidget::updateSelection()
+void RibbonWidget::updateSelection(bool to_print)
 {
+    // logFunctionCall("RibbonWidget::updateSelection");
     const int subbuttons_amount = m_active_children.size();
 
     // FIXME: m_selection, m_selected, m_mouse_focus... what a mess...
 
     // Update selection flags for mouse player
+    // bloquer dans cette boucle tant que je change pas de bandeau
     for (unsigned int p=0; p<MAX_PLAYER_COUNT; p++)
     {
         for (int i=0; i<subbuttons_amount; i++)
@@ -887,7 +894,9 @@ void RibbonWidget::updateSelection()
                 m_active_children[i].unfocused(PLAYER_ID_GAME_MASTER, NULL);
             }
             m_active_children[i].m_selected[p] = new_val;
-            if (new_val) m_active_children[i].focused(PLAYER_ID_GAME_MASTER);
+            if (new_val) {
+                m_active_children[i].focused(PLAYER_ID_GAME_MASTER, to_print);
+            }
         }
     }
 
@@ -933,8 +942,8 @@ EventPropagation RibbonWidget::transmitEvent(Widget* w,
                 break;
             }
         }
-
-        updateSelection();
+        std::cout << "selec6 ?" << std::endl;
+        updateSelection(false);
     }
 
     // bring focus back to enclosing ribbon widget

@@ -31,6 +31,7 @@ namespace irr
     namespace video { class ITexture;       }
 }
 
+#include "audio/tts/tts.hpp"
 #include "guiengine/widget.hpp"
 #include "utils/leak_check.hpp"
 #include "utils/cpp2011.hpp"

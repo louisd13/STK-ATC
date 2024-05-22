@@ -25,6 +25,7 @@
 #include "io/file_manager.hpp"
 #include "utils/log.hpp"
 #include "utils/string_utils.hpp"
+#include "guiengine/modaldialog.hpp"
 
 #include <iostream>
 #include <IGUIElement.h>
@@ -335,20 +336,24 @@ void IconButtonWidget::setLabelFont(irr::gui::ScalableFont* font)
 
 EventPropagation IconButtonWidget::focused(const int playerID, bool printout, bool changed_ribbon)
 {
+    // std::ostringstream oss;
+    // oss << "playerID: " << playerID << ", printout: " << printout << ", changed_ribbon: " << changed_ribbon;
+    // logFunctionCall("IconButtonWidget::focused", oss.str());
+
+    if(ModalDialog::getCurrent() != NULL){
+        // false
+        printout=true;
+        changed_ribbon=true;
+        the_voice->speak("Paused", false, true);
+        //std::cout << "Dialog" << std::endl;
+    }
 
     if (getCurrentScreen() != NULL){
         std::string screenName = getCurrentScreen()->getName();
-        //std::cout << "iconscreen:" << screenName << std::endl;
         if((screenName == "karts.stkgui") || (screenName == "tracks_and_gp.stkgui") ){
-            //std::cout << "on kart screen" << std::endl;
             printout = false;
             // useless no ? 
             changed_ribbon = false;
-        }
-        else{
-            printout = true;
-            // useless ? 
-            changed_ribbon = true;
         }
     }
 

@@ -192,6 +192,7 @@ void KartHoverListener::onSelectionChanged(DynamicRibbonWidget* theWidget,
     std::wstring ws(selectionText.c_str());
     std::string str(ws.begin(), ws.end());
     std::cout << "Kart: " << str << std::endl;
+    the_voice->speak(str, true, false);
     // Check if this player has a kart
     if (m_parent->m_kart_widgets.size() <= unsigned(player_id))
     {

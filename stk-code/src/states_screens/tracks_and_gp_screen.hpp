@@ -18,6 +18,7 @@
 #ifndef HEADER_TRACKS_AND_GP_SCREEN_HPP
 #define HEADER_TRACKS_AND_GP_SCREEN_HPP
 
+#include "audio/tts/tts.hpp"
 #include "guiengine/screen.hpp"
 #include "guiengine/widgets/text_box_widget.hpp"
 #include "guiengine/widgets/dynamic_ribbon_widget.hpp"
@@ -109,6 +110,7 @@ public:
         std::wstring ws(selectionText.c_str());
         std::string str(ws.begin(), ws.end());
         std::cout << "Tracks & GP: " << str << std::endl;
+        the_voice->speak(str, false, true);
     }
 }; 
 

@@ -120,6 +120,13 @@ void AbstractStateManager::pushMenu(Screen* screen)
     }
 
     std::cout << "Ecran : " << screenName << std::endl;
+    the_voice->speak(screenName, false, true);
+
+    // if (screenName == "main_menu"){
+    //     std::cout << "Ecran principal" << std::endl;
+    // }
+
+
     // Send tear-down event to previous menu
     if (m_menu_stack.size() > 0 && m_game_mode.load() != GAME)
         getCurrentScreen()->tearDown();
