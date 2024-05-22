@@ -27,10 +27,10 @@ bool MutexBool::tryLock() {
     bool result;
 
     if (m_bool == true) {
-        printf("voice is locked, no lock possible\n");
+        //printf("voice is locked, no lock possible\n");
         result = false;
     } else {
-        printf("voice is free, acquire lock\n");
+        //printf("voice is free, acquire lock\n");
         m_bool = true;
         result = true;
     }
@@ -41,5 +41,5 @@ bool MutexBool::tryLock() {
 
 void MutexBool::unlock() {
     resetValue();
-    printf("voice lock released\n");
+    //printf("voice lock released\n");
 }

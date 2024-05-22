@@ -18,7 +18,7 @@ void Tts::speak(const std::string& text, bool add_to_queue, bool empty_queue) {
     }
 
     if (m_in_use->tryLock()) {
-        printf("VOICE LOCKED\n");
+        //printf("VOICE LOCKED\n");
 
         std::thread t(&Tts::runEspeak, this, text);
         t.detach(); // Detach the thread to run independently
@@ -26,7 +26,7 @@ void Tts::speak(const std::string& text, bool add_to_queue, bool empty_queue) {
     } 
     
     if (add_to_queue) {
-        printf("add to queue: %s\n", text);
+        //printf("add to queue: %s\n", text);
         // acquire lock on queue and add
         to_speak_q->addValue(text);
     }
@@ -43,5 +43,5 @@ void Tts::runEspeak(const std::string& text) {
     }
 
     m_in_use->unlock();
-    printf("VOICE UNLOCKED\n");
+    //printf("VOICE UNLOCKED\n");
 }
