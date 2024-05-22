@@ -72,8 +72,6 @@ private:
     /* if set then the game will auto end after this time for networking */
     float       m_finish_timeout;
 
-    Tts *voice;
-
     /** This calculate the time difference between the second kart in the race
      *  (there must be at least two) and the first kart in the race
      *  (who must be a ghost).

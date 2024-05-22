@@ -197,6 +197,8 @@ extern "C" {
 
 #include <IEventReceiver.h>
 
+#include "audio/tts/tts.hpp"
+
 #include "main_loop.hpp"
 #include "achievements/achievements_manager.hpp"
 #include "addons/addons_manager.hpp"
@@ -1834,6 +1836,7 @@ void clearGlobalVariables()
     ProjectileManager::clear();
     RaceEventManager::clear();
     music_manager = NULL;
+   // the_voice = NULL;
     irr_driver = NULL;
 #ifdef ENABLE_WIIUSE
     wiimote_manager = NULL;
@@ -1929,6 +1932,7 @@ void initRest()
 #endif
 
     music_manager = new MusicManager();
+    the_voice = new Tts;
     SFXManager::create();
     // The order here can be important, e.g. KartPropertiesManager needs
     // defaultKartProperties, which are defined in stk_config.
@@ -2707,6 +2711,8 @@ static void cleanSuperTuxKart()
     // (since SFX commands can contain music information, which are
     // deleted by the music manager).
     delete music_manager;
+
+    //if (the_voice) delete the_voice;
 
     // Race manager needs to be deleted after sfx manager as it checks for
     // the kart size structure from race manager

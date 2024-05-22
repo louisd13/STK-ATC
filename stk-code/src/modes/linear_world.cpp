@@ -68,7 +68,6 @@ LinearWorld::LinearWorld() : WorldWithRank()
     m_live_time_difference = 0.0f;
     m_fastest_lap_kart_name = "";
     m_check_structure_compatible = false;
-    voice = new Tts;
 }   // LinearWorld
 
 // ----------------------------------------------------------------------------
@@ -1106,7 +1105,7 @@ void LinearWorld::checkForWrongDirection(unsigned int i, float dt)
 
         if (ki.m_wrong_way_timer >= 1.0f) {
             printf("bloop\n");
-            voice->speak("Mauvaise direction");
+            the_voice->speak("Mauvaise direction", true, true);
 
             ki.m_wrong_way_timer = 0.0f;
         }
