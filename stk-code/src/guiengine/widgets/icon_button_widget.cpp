@@ -335,20 +335,16 @@ void IconButtonWidget::setLabelFont(irr::gui::ScalableFont* font)
 
 EventPropagation IconButtonWidget::focused(const int playerID, bool printout, bool changed_ribbon)
 {
+    // std::ostringstream oss;
+    // oss << "playerID: " << playerID << ", printout: " << printout << ", changed_ribbon: " << changed_ribbon;
+    // logFunctionCall("IconButtonWidget::focused", oss.str());
 
     if (getCurrentScreen() != NULL){
         std::string screenName = getCurrentScreen()->getName();
-        //std::cout << "iconscreen:" << screenName << std::endl;
         if((screenName == "karts.stkgui") || (screenName == "tracks_and_gp.stkgui") ){
-            //std::cout << "on kart screen" << std::endl;
             printout = false;
             // useless no ? 
             changed_ribbon = false;
-        }
-        else{
-            printout = true;
-            // useless ? 
-            changed_ribbon = true;
         }
     }
 

@@ -28,6 +28,7 @@ namespace irr
 #include <bitset>
 #include <map>
 #include <iostream> 
+//#include <sstream>
 
 #include "guiengine/event_handler.hpp"
 #include "guiengine/skin.hpp"
@@ -225,7 +226,10 @@ namespace GUIEngine
 
         /** override in children if you need to know when the widget is focused.
           * \return whether to block event */
-        virtual EventPropagation focused(const int playerID, bool printout = true, bool changed_ribbon = true) { 
+        virtual EventPropagation  focused(const int playerID, bool printout = true, bool changed_ribbon = true) { 
+          // std::ostringstream oss;
+          // oss << "playerID: " << playerID << ", printout: " << printout << ", changed_ribbon: " << changed_ribbon;
+          // logFunctionCall("Widget::focused", oss.str());
           // pas mal du tout sauf pour les doubles listes (karts et maps)
           // Check if 'this' is an instance of DynamicRibbonWidget
           if ((m_type == WTYPE_RIBBON) && (changed_ribbon)) {
@@ -235,7 +239,7 @@ namespace GUIEngine
           if(printout){
             // If it's not DynamicRibbonWidget, proceed with the normal behavior
             std::string text = getTextAsString();
-            std::cout << text << std::endl;
+            std::cout << "OUTPUT : "<< text <<std::endl;
             setWithinATextBox(false);
             return EVENT_LET; 
           }
@@ -319,6 +323,17 @@ namespace GUIEngine
          * one irrlicht widgets (e.g. Spinner, Ribbon)
          */
         Widget* m_event_handler;
+
+        // Function to log function calls with detailed information
+        // void logFunctionCall(const std::string& funcName, const std::string& additionalInfo = "") {
+        //   std::ostringstream oss;
+        //   oss << funcName;
+        //   if (!additionalInfo.empty()) {
+        //       oss << " - " << additionalInfo;
+        //   }
+        //   std::cout << oss.str() << std::endl;
+        // }
+
 
         /**
           * Whether this widget supports multiplayer interaction (i.e. whether this widget can be

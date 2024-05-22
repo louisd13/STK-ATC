@@ -105,14 +105,6 @@
 #include <cmath>
 #include <cstdlib>
 
-/* // Function to be run in a separate thread
-void runEspeak(const std::string& text) {
-    std::string command = "espeak \"" + text + "\"";
-    
-    // Use system() to run the constructed command
-    system(command.c_str());
-}
- */
 ArduinoCom arduino("COM3");
 
 #if defined(WIN32) && !defined(__CYGWIN__)  && !defined(__MINGW32__)
@@ -1935,7 +1927,7 @@ void Kart::update(int ticks)
             Track* currentTrack = Track::getCurrentTrack();
 
             DriveNode *node = DriveGraph::get()->getNode(id_Node);
-            printf("%d", node->getPathWidth());
+            //printf("%d", node->getPathWidth());
             //DriveGraph::get()->getQuad(id_Node).;
 
             //std::cout << "sp" << relativeDistance << "ns" << relativeDistance2 << std::endl;

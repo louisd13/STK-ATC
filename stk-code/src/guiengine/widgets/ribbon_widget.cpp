@@ -872,11 +872,13 @@ const std::string& RibbonWidget::getSelectionIDString(const int playerID)
 // ----------------------------------------------------------------------------
 void RibbonWidget::updateSelection()
 {
+    // logFunctionCall("RibbonWidget::updateSelection");
     const int subbuttons_amount = m_active_children.size();
 
     // FIXME: m_selection, m_selected, m_mouse_focus... what a mess...
 
     // Update selection flags for mouse player
+    // bloquer dans cette boucle tant que je change pas de bandeau
     for (unsigned int p=0; p<MAX_PLAYER_COUNT; p++)
     {
         for (int i=0; i<subbuttons_amount; i++)
