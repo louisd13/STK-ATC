@@ -20,6 +20,7 @@
 
 #include "modes/world_with_rank.hpp"
 #include "utils/aligned_array.hpp"
+#include "audio/tts/tts.hpp"
 
 #include <climits>
 #include <vector>
@@ -70,6 +71,8 @@ private:
 
     /* if set then the game will auto end after this time for networking */
     float       m_finish_timeout;
+
+    Tts *voice;
 
     /** This calculate the time difference between the second kart in the race
      *  (there must be at least two) and the first kart in the race
@@ -170,7 +173,7 @@ public:
     virtual bool  raceHasLaps() OVERRIDE { return true; }
     // ------------------------------------------------------------------------
     /** Returns if this race mode has bonus items. */
-    virtual bool  haveBonusBoxes() OVERRIDE { return true; }
+    virtual bool  haveBonusBoxes() OVERRIDE { return false; }
     // ------------------------------------------------------------------------
     /** Override settings from base class */
     virtual bool useChecklineRequirements() const OVERRIDE { return true; }

@@ -68,6 +68,7 @@ LinearWorld::LinearWorld() : WorldWithRank()
     m_live_time_difference = 0.0f;
     m_fastest_lap_kart_name = "";
     m_check_structure_compatible = false;
+    voice = new Tts;
 }   // LinearWorld
 
 // ----------------------------------------------------------------------------
@@ -1081,8 +1082,8 @@ void LinearWorld::checkForWrongDirection(unsigned int i, float dt)
     {
         ki.m_wrong_way_timer += dt;
         
-        if (ki.m_wrong_way_timer> 2.0f)
-            ki.m_wrong_way_timer= 2.0f;
+        if (ki.m_wrong_way_timer> 2.5f)
+            ki.m_wrong_way_timer= 2.5f;
     }
     else
     {
@@ -1095,13 +1096,20 @@ void LinearWorld::checkForWrongDirection(unsigned int i, float dt)
     if (kart->getKartAnimation())
         ki.m_wrong_way_timer = 0;
     
-    if (ki.m_wrong_way_timer > 1.0f && m_race_gui)
+    if (ki.m_wrong_way_timer >= 0.8f && m_race_gui)
     {
         m_race_gui->addMessage(_("WRONG WAY!"), kart,
                                /* time */ -1.0f,
                                video::SColor(255,255,255,255),
                                /*important*/ true,
                                /*big font*/  true);
+
+        if (ki.m_wrong_way_timer >= 1.0f) {
+            printf("bloop\n");
+            voice->speak("Mauvaise direction");
+
+            ki.m_wrong_way_timer = 0.0f;
+        }
     }
     
 }   // checkForWrongDirection

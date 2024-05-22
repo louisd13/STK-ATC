@@ -296,7 +296,7 @@ public:
     virtual bool hasRaceEndedEarly() const { return m_ended_early; }
     // ------------------------------------------------------------------------
     /** Called to determine whether this race mode uses bonus boxes. */
-    virtual bool haveBonusBoxes() { return true; }
+    virtual bool haveBonusBoxes() { return false; }
     // ------------------------------------------------------------------------
     /** Returns if this mode should use fast music (if available). */
     virtual bool useFastMusicNearEnd() const { return true; }

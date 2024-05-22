@@ -52,9 +52,9 @@ void TrackObjectManager::add(const XMLNode &xml_node, scene::ISceneNode* parent,
     try
     {
         TrackObject *obj = new TrackObject(xml_node, parent, model_def_loader, parent_library);
-        m_all_objects.push_back(obj);
-        if(obj->isDriveable())
-            m_driveable_objects.push_back(obj);
+        // m_all_objects.push_back(obj);
+        // if(obj->isDriveable())
+        //     m_driveable_objects.push_back(obj);
     }
     catch (std::exception& e)
     {
@@ -270,14 +270,14 @@ bool TrackObjectManager::castRay(const btVector3 &from,
 // ----------------------------------------------------------------------------
 void TrackObjectManager::insertObject(TrackObject* object)
 {
-    m_all_objects.push_back(object);
+    //m_all_objects.push_back(object);
 }
 
 // ----------------------------------------------------------------------------
 void TrackObjectManager::insertDriveableObject(TrackObject* object)
 {
-    if (object && object->isDriveable())
-        m_driveable_objects.push_back(object);
+    // if (object && object->isDriveable())
+    //     m_driveable_objects.push_back(object);
 }
 
 // ----------------------------------------------------------------------------
@@ -287,6 +287,6 @@ void TrackObjectManager::insertDriveableObject(TrackObject* object)
  */
 void TrackObjectManager::removeObject(TrackObject* obj)
 {
-    m_all_objects.remove(obj);
-    delete obj;
+    // m_all_objects.remove(obj);
+    // delete obj;
 }   // removeObject
