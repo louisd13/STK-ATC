@@ -77,7 +77,7 @@ namespace GUIEngine
           std::string command = "espeak \"" + text + "\"";
           system(command.c_str());
         }
-        
+       
         int m_selection[MAX_PLAYER_COUNT];
         
         /** The type of this ribbon (toolbar, combo, tabs, vertical tabs) */
@@ -105,7 +105,7 @@ namespace GUIEngine
         virtual EventPropagation transmitEvent(Widget* w,
                                                const std::string& originator,
                                                const int playerID=0) OVERRIDE;
-        virtual EventPropagation focused(const int playerID) OVERRIDE;
+        virtual EventPropagation focused(const int playerID, bool printout, bool changed_ribbon) OVERRIDE;
         virtual void unfocused(const int playerID, Widget* new_focus) OVERRIDE;
         
         virtual EventPropagation onClick() OVERRIDE;
@@ -114,11 +114,9 @@ namespace GUIEngine
         
         IRibbonListener* m_listener;
         PtrVector<Widget> m_active_children;
-        
     public:
         
         LEAK_CHECK()
-        
         /** Internal identifier of filler items that are added in a ribbon
          *  widget to filllines when the number of items cannot be divided
          *  by the number of rows in the grid (mostly used by dynamic ribbon

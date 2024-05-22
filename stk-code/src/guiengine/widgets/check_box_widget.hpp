@@ -52,6 +52,10 @@ namespace GUIEngine
         
         /** Set whether the checkbox is checked */
         void setState(const bool checked)  { m_state = checked; }
+
+
+        EventPropagation focused(const int playerID,  bool printout, bool changed_ribbon) override;
+        void unfocused(const int playerID, Widget* new_focus) override;
         
         
         /** When inferring widget size from its label length, this method will be called to

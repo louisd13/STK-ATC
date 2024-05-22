@@ -78,6 +78,10 @@ public:
         else
             return m_current_track_coords.getZ();
     }
+    // test 
+    void setCurrentGraphNode(int graphNode) {
+        m_current_graph_node = graphNode;
+    }
     // ------------------------------------------------------------------------
     /** Returns the distance to the centre driveline. */
     float getDistanceToCenter() const { return m_current_track_coords.getX(); }

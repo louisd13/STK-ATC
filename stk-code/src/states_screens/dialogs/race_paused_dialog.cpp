@@ -497,6 +497,10 @@ void RacePausedDialog::init()
     m_touch_controls = UserConfigParams::m_multitouch_controls;
     updateTouchDeviceIcon();
     
+    GUIEngine::RibbonWidget* prw = getWidget<RibbonWidget>("choiceribbon");
+    RacePausedHoverListener* prwRacePausedHoverListener = new RacePausedHoverListener(this, prw);
+    prw->setListener(prwRacePausedHoverListener);
+
 }   // init
 
 // ----------------------------------------------------------------------------

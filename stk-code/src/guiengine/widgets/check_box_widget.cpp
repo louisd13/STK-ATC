@@ -20,6 +20,7 @@
 #include <IGUIElement.h>
 #include <IGUIEnvironment.h>
 #include <IGUIButton.h>
+#include <IrrlichtDevice.h>
 using namespace GUIEngine;
 using namespace irr::core;
 using namespace irr;
@@ -55,13 +56,36 @@ EventPropagation CheckBoxWidget::transmitEvent(Widget* w,
 {
     assert(m_magic_number == 0xCAFEC001);
 
-
     /* toggle */
     m_state = !m_state;
 
     /* notify main event handler */
     return EVENT_LET;
 }
+// -----------------------------------------------------------------------------
+
+
+EventPropagation CheckBoxWidget::focused(const int playerID, bool printout, bool changed_ribbon)
+{
+    assert(playerID == 0); // Assuming single player support for now
+    stringw text = this->Widget::getText();
+    std::wstring ws(text.c_str());
+    std::string str(ws.begin(), ws.end());
+    std::cout << "cbw:" << str<<std::endl;
+    // Special case: to work, the checkbox must receive "irrLicht focus", STK focus is not enough
+    GUIEngine::getGUIEnv()->setFocus(m_element);
+    return EVENT_LET;
+}
+
+// -----------------------------------------------------------------------------
+
+void CheckBoxWidget::unfocused(const int playerID, Widget* new_focus)
+{
+    assert(playerID == 0); // Assuming single player support for now
+
+    GUIEngine::getGUIEnv()->removeFocus(m_element);
+}
+
 // -----------------------------------------------------------------------------
 
 

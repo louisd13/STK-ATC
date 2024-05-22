@@ -30,6 +30,7 @@
 #include "guiengine/widgets/label_widget.hpp"
 #include "guiengine/widgets/list_widget.hpp"
 #include "guiengine/widgets/ribbon_widget.hpp"
+#include "guiengine/widgets/dynamic_ribbon_widget.hpp"
 #include "input/device_manager.hpp"
 #include "input/input_manager.hpp"
 #include "input/keyboard_device.hpp"
@@ -164,15 +165,14 @@ void MainMenuScreen::init()
     w->setText(m_news_text, true);
     w->update(0.01f);
 #endif
-
-    RibbonWidget* r = getWidget<RibbonWidget>("menu_bottomrow");
+    RibbonWidget* br = getWidget<RibbonWidget>("menu_bottomrow");
     // FIXME: why do I need to do this manually
-    ((IconButtonWidget*)r->getChildren().get(0))->unfocused(PLAYER_ID_GAME_MASTER, NULL);
-    ((IconButtonWidget*)r->getChildren().get(1))->unfocused(PLAYER_ID_GAME_MASTER, NULL);
-    ((IconButtonWidget*)r->getChildren().get(2))->unfocused(PLAYER_ID_GAME_MASTER, NULL);
+    ((IconButtonWidget*)br->getChildren().get(0))->unfocused(PLAYER_ID_GAME_MASTER, NULL);
+    ((IconButtonWidget*)br->getChildren().get(1))->unfocused(PLAYER_ID_GAME_MASTER, NULL);
+    ((IconButtonWidget*)br->getChildren().get(2))->unfocused(PLAYER_ID_GAME_MASTER, NULL);
 
-    r = getWidget<RibbonWidget>("menu_toprow");
-    r->setFocusForPlayer(PLAYER_ID_GAME_MASTER);
+    RibbonWidget* tr = getWidget<RibbonWidget>("menu_toprow");
+    tr->setFocusForPlayer(PLAYER_ID_GAME_MASTER);
     DemoWorld::resetIdleTime();
 
 #ifdef IOS_STK
@@ -181,6 +181,19 @@ void MainMenuScreen::init()
     if (quit)
         quit->setVisible(false);
 #endif
+
+
+    //tr->setLinkedRibbon(br);
+    //br->setLinkedRibbon(tr);
+
+    MainMenuHoverListener* topmainmenuHoverListener = new MainMenuHoverListener(this, tr);
+    MainMenuHoverListener* botmainmenuHoverListener = new MainMenuHoverListener(this, br);
+
+    tr->setListener(topmainmenuHoverListener);
+    br->setListener(botmainmenuHoverListener);
+
+    //tr->setFocusForPlayer(PLAYER_ID_GAME_MASTER);
+
 }   // init
 
 // ----------------------------------------------------------------------------
@@ -327,6 +340,13 @@ void MainMenuScreen::eventCallback(Widget* widget, const std::string& name,
     // ---- A ribbon icon was clicked
     std::string selection =
         ribbon->getSelectionIDString(PLAYER_ID_GAME_MASTER);
+
+
+    // Works but when we click
+    irr::core::stringw selectionText = ribbon->getSelectionText(PLAYER_ID_GAME_MASTER);
+    std::wstring ws(selectionText.c_str());
+    std::string str(ws.begin(), ws.end());
+    //std::cout << "S Text : " << str << std::endl;
 
     /*
     if (selection == "story")

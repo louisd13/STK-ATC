@@ -110,6 +110,16 @@ void AbstractStateManager::pushMenu(Screen* screen)
             screen->getName().c_str());
     }
 
+    std::string screenName = screen->getName();
+    std::string suffix = ".stkgui";
+
+    // Remove the suffix if present
+    if (screenName.size() >= suffix.size() &&
+        screenName.substr(screenName.size() - suffix.size()) == suffix) {
+        screenName = screenName.substr(0, screenName.size() - suffix.size());
+    }
+
+    std::cout << "Ecran : " << screenName << std::endl;
     // Send tear-down event to previous menu
     if (m_menu_stack.size() > 0 && m_game_mode.load() != GAME)
         getCurrentScreen()->tearDown();

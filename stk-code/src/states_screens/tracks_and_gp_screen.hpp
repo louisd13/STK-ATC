@@ -20,9 +20,13 @@
 
 #include "guiengine/screen.hpp"
 #include "guiengine/widgets/text_box_widget.hpp"
+#include "guiengine/widgets/dynamic_ribbon_widget.hpp"
 #include <deque>
+#include <iostream>
 
 namespace GUIEngine { class Widget; }
+
+class TracksHoverListener;
 
 /**
   * \brief screen where the user can select a track or grand prix
@@ -33,6 +37,7 @@ class TracksAndGPScreen : public GUIEngine::Screen,
                           public GUIEngine::ITextBoxWidgetListener
 {
     friend class GUIEngine::ScreenSingleton<TracksAndGPScreen>;
+    friend class TracksHoverListener;
 
 private:
     GUIEngine::TextBoxWidget* m_search_box;
@@ -65,12 +70,46 @@ public:
     {
         buildTrackList();
         // After buildTrackList the m_search_box may be unfocused
-        m_search_box->focused(0);
+        m_search_box->focused(0, true, true);
     }
 
     void setFocusOnTrack(const std::string& trackName);
     void setFocusOnGP(const std::string& gpName);
 
 };
+
+class TracksHoverListener : public GUIEngine::DynamicRibbonHoverListener
+{
+    TracksAndGPScreen* m_parent;
+public:
+    unsigned int m_magic_number;
+
+    TracksHoverListener(TracksAndGPScreen* parent)
+    {
+        m_magic_number = 0xCAFEC001;
+        m_parent = parent;
+    }
+
+    // ------------------------------------------------------------------------
+    virtual ~TracksHoverListener()
+    {
+        assert(m_magic_number == 0xCAFEC001);
+        m_magic_number = 0xDEADBEEF;
+    }
+
+    // ------------------------------------------------------------------------
+    void onSelectionChanged(GUIEngine::DynamicRibbonWidget* theWidget,
+                            const std::string& selectionID,
+                            const irr::core::stringw& selectionText,
+                            const int playerID)
+    {
+        assert(m_magic_number == 0xCAFEC001);
+
+        // Convert the selection text to a string for logging
+        std::wstring ws(selectionText.c_str());
+        std::string str(ws.begin(), ws.end());
+        std::cout << "Tracks & GP: " << str << std::endl;
+    }
+}; 
 
 #endif

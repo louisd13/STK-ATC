@@ -156,7 +156,7 @@ namespace GUIEngine
 
         // --------------------------------------------------------------------
         /** \brief override from base class */
-        virtual EventPropagation focused(const int playerID) OVERRIDE;
+        virtual EventPropagation focused(const int playerID, bool printout, bool changed_ribbon) OVERRIDE;
 
         // --------------------------------------------------------------------
         /** \brief override from base class */

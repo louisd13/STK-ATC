@@ -188,6 +188,10 @@ void KartHoverListener::onSelectionChanged(DynamicRibbonWidget* theWidget,
 {
     assert(m_magic_number == 0xCAFEC001);
 
+    // Works perfect 
+    std::wstring ws(selectionText.c_str());
+    std::string str(ws.begin(), ws.end());
+    std::cout << "Kart: " << str << std::endl;
     // Check if this player has a kart
     if (m_parent->m_kart_widgets.size() <= unsigned(player_id))
     {

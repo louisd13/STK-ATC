@@ -237,6 +237,9 @@ void TracksAndGPScreen::init()
 
     buildTrackList();
 
+        // Add hover listener to tracks widget
+    TracksHoverListener* tracksHoverListener = new TracksHoverListener(this);
+    tracks_widget->registerHoverListener(tracksHoverListener);
     // select old track for the game master (if found)
     STKTexManager::getInstance()->setTextureErrorMessage(
               "While loading screenshot in track screen for last track '%s':",

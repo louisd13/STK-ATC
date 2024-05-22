@@ -72,7 +72,7 @@ namespace GUIEngine
         void add();
         void addItem(const char* item);
         
-        virtual EventPropagation focused(const int playerID);
+        virtual EventPropagation focused(const int playerID, bool printout, bool changed_ribbon) override;
         virtual void unfocused(const int playerID, Widget* new_focus);
 
         void addListener(ITextBoxWidgetListener* listener);

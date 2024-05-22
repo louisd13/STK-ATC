@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
+#include <iostream>
 #include "tracks/track_sector.hpp"
 
 #include "modes/linear_world.hpp"
@@ -166,9 +166,11 @@ void TrackSector::rescue()
 float TrackSector::getRelativeDistanceToCenter() const
 {
     unsigned int numNodes = DriveGraph::get()->getNumNodes();
-    float w = DriveGraph::get()->getNode((m_current_graph_node+4) % numNodes)->getPathWidth();
+    float w = DriveGraph::get()->getNode((m_current_graph_node))->getPathWidth();
+    //float w = DriveGraph::get()->getNode((m_current_graph_node+4) % numNodes)->getPathWidth();
     // w * 0.5 is the distance from center of the quad to the left or right
     // This way we get a value between -1 and 1.
+    //std::cout << "track coords" << m_current_track_coords.getX() << std::endl;
     float ratio = getDistanceToCenter()/(w*0.5f);
     if(ratio>1.0f)
         ratio=1.0f;

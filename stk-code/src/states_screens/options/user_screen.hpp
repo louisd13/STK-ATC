@@ -24,6 +24,11 @@
 #include "guiengine/screen.hpp"
 #include "guiengine/widgets/spinner_widget.hpp"
 #include "input/input.hpp"
+
+#include "guiengine/widgets/ribbon_widget.hpp"
+#include "guiengine/widgets/dynamic_ribbon_widget.hpp"
+//#include "guiengine/widgets/text_box_widget.hpp"
+
 namespace GUIEngine
 {
     class CheckBoxWidget;
@@ -34,6 +39,8 @@ namespace GUIEngine
 }
 
 class PlayerProfile;
+class DynamicUserScreenHoverListener;
+class RWUserScreenHoverListener;
 
 
 /**
@@ -47,6 +54,8 @@ class PlayerProfile;
   */
 class BaseUserScreen : public GUIEngine::Screen
 {
+    friend class DynamicUserScreenHoverListener;
+    friend class RWUserScreenHoverListener;
 protected:
     BaseUserScreen(const std::string &name);
 
@@ -162,5 +171,87 @@ public:
     virtual void eventCallback(GUIEngine::Widget* widget,
                                const std::string& name, const int playerID) OVERRIDE;
 };   // class TabbedUserScreen
+class RWUserScreenHoverListener : public GUIEngine::RibbonWidget::IRibbonListener
+{
+    BaseUserScreen* m_parent;
+    GUIEngine::RibbonWidget* m_ribbon_widget;
+public:
+    unsigned int m_magic_number;
+
+/*     RibbonWidgetUserScreenHoverListener(RibbonWidgetUserScreenScreen* parent)
+    {
+        m_magic_number = 0xCAFEC001;
+        m_parent = parent;
+    } */
+
+    RWUserScreenHoverListener(BaseUserScreen* parent, GUIEngine::RibbonWidget* ribbon_widget)
+        : m_parent(parent), m_ribbon_widget(ribbon_widget)
+    {
+        m_magic_number = 0xCAFEC001;
+    }
+
+    // ------------------------------------------------------------------------
+    virtual ~RWUserScreenHoverListener()
+    {
+        assert(m_magic_number == 0xCAFEC001);
+        m_magic_number = 0xDEADBEEF;
+    }
+
+    void onRibbonWidgetScroll(const int delta_x) override
+    {
+        // Implement this method if needed
+    }
+
+    void onRibbonWidgetFocus(GUIEngine::RibbonWidget* emitter, const int playerID) override
+    {
+        // Implement this method if needed
+    }
+
+    // ------------------------------------------------------------------------
+    void onSelectionChange() override
+    {
+        assert(m_magic_number == 0xCAFEC001);
+        irr::core::stringw selectionText = m_ribbon_widget->getSelectionText(0);
+        std::wstring ws(selectionText.c_str());
+        std::string str(ws.begin(), ws.end());
+        //std::cout << "RW Hover: " << str << std::endl;
+    }
+}; 
+
+class DynamicUserScreenHoverListener : public GUIEngine::DynamicRibbonHoverListener
+{
+    BaseUserScreen* m_parent;
+public:
+    unsigned int m_magic_number;
+
+    DynamicUserScreenHoverListener(BaseUserScreen* parent)
+    {
+        m_magic_number = 0xCAFEC001;
+        m_parent = parent;
+    }
+
+    // ------------------------------------------------------------------------
+    virtual ~DynamicUserScreenHoverListener()
+    {
+        assert(m_magic_number == 0xCAFEC001);
+        m_magic_number = 0xDEADBEEF;
+    }
+
+    // ------------------------------------------------------------------------
+    void onSelectionChanged(GUIEngine::DynamicRibbonWidget* theWidget,
+                            const std::string& selectionID,
+                            const irr::core::stringw& selectionText,
+                            const int playerID)
+    {
+        assert(m_magic_number == 0xCAFEC001);
+
+        // Convert the selection text to a string for logging
+        std::wstring ws(selectionText.c_str());
+        std::string str(ws.begin(), ws.end());
+        //std::cout << "DRW Hover:" << str << std::endl;
+    }
+}; 
+
+
 
 #endif
