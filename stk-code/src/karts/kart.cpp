@@ -240,9 +240,6 @@ Kart::Kart (const std::string& ident, unsigned int world_kart_id,
     max_nodes = DriveGraph::get()->getNumNodes();
     printf("MAX NODES: %d\n", max_nodes);
 
-    voice = new Tts;
-
-
     m_last_printed_sector = -1;
 
     m_just_rescued = false;
@@ -366,8 +363,6 @@ Kart::~Kart()
     delete m_max_speed;
     delete m_terrain_info;
     delete m_powerup;
-
-    //delete m_voice;
 
     if(m_controller)
         delete m_controller;
@@ -1472,7 +1467,7 @@ void Kart::updateKartInfo(LinearWorld* world) {
 
         m_prev_lap = m_lap;
         std::cout << "started lap: " << m_lap << std::endl;
-        voice->speak(NEW_LAP_STRING + m_number_string[m_lap-1]);
+        the_voice->speak(NEW_LAP_STRING + m_number_string[m_lap-1], true, false);
     }
 }
 
@@ -1927,7 +1922,6 @@ void Kart::update(int ticks)
             Track* currentTrack = Track::getCurrentTrack();
 
             DriveNode *node = DriveGraph::get()->getNode(id_Node);
-            //printf("%d", node->getPathWidth());
             //DriveGraph::get()->getQuad(id_Node).;
 
             //std::cout << "sp" << relativeDistance << "ns" << relativeDistance2 << std::endl;
@@ -1983,21 +1977,21 @@ void Kart::update(int ticks)
 
                     // son pour annoncer sauvetage
                     if (!m_previously_rescued && m_currently_rescued) {
-                        voice->speak(SAUVETAGE);
+                        the_voice->speak(SAUVETAGE, true, true);
                     }
 
                     // out of track, for too long
                     if (tick_counter_for_out >= ticks_to_wait_for_out) {
                         // if speed is high, announce out of track, else announce that in wall
                         if (abs(m_speed) >= 0.01) {
-                            voice->speak(OUT_STRING);
+                            the_voice->speak(OUT_STRING, false, false);
 
                             tick_counter_for_out = 0;
                         } else {
                             if (direction == 'l') {
-                                voice->speak(LEFT_WALL_STRING);
+                                the_voice->speak(LEFT_WALL_STRING, false, false);
                             } else if (direction == 'r') {
-                                voice->speak(RIGHT_WALL_STRING);
+                                the_voice->speak(RIGHT_WALL_STRING, false, false);
                             }
 
                             tick_counter_for_out = -50;
@@ -2035,10 +2029,10 @@ void Kart::update(int ticks)
                         // do not announce intensity when straight line
                         if (turn.dir == STRAIGHT) {
                             printf("start sector: %d\nend sector: %d\n\n", id_Node, turn.end_sector);
-                            voice->speak(m_turn_dir_string[int(turn.dir)] + SEP + getTurnLength(id_Node, turn.end_sector) + LONG_STRING);
+                            the_voice->speak(m_turn_dir_string[int(turn.dir)] + SEP + getTurnLength(id_Node, turn.end_sector) + LONG_STRING, true, false);
                         } else {
                             printf("intensity: %d\nstart sector: %d\nend sector: %d\n\n", turn.intensity, id_Node, turn.end_sector);
-                            voice->speak(m_turn_dir_string[int(turn.dir)] + m_turn_intensity_string[turn.intensity%TURN_SOUNDS_COUNT] + SEP + getTurnLength(id_Node, turn.end_sector) + LONG_STRING);
+                            the_voice->speak(m_turn_dir_string[int(turn.dir)] + m_turn_intensity_string[turn.intensity%TURN_SOUNDS_COUNT] + SEP + getTurnLength(id_Node, turn.end_sector) + LONG_STRING, true, false);
                         }
                         
                         //m_turn_dir_sounds[int(turn.dir)]->play();

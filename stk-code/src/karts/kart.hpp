@@ -365,8 +365,6 @@ protected:
     bool m_currently_rescued;
     bool m_previously_rescued;
 
-    Tts *voice;
-
 
 
     // number of sectors in the track

@@ -1,24 +1,28 @@
-#pragma once
+#ifndef HEADER_TTS_HPP
+#define HEADER_TTS_HPP
+
 #include <string>
-#include <thread>
-#include "main_loop.hpp"
+#include <mutex>
+#include "audio/tts/mutex_queue.hpp"
+#include "audio/tts/mutex_bool.hpp"
 
 class Tts {
     public:
-    void speak(const std::string& text) {
-        // if (MainLoop::already_speaking) {
-        //     return;
-        // }
+    void speak(const std::string& text, bool add_to_queue, bool empty_queue);
 
-        //MainLoop::already_speaking = true;
-        std::thread t(&Tts::runEspeak, this, text);
-        t.detach(); // Detach the thread to run independently
-        //MainLoop::already_speaking = false;
-    }
+    Tts();
 
     protected:
-    void runEspeak(const std::string& text) {
-        std::string command = "espeak -vfr \"" + text + "\"";
-        system(command.c_str());
-    }
+    MutexBool *m_in_use;
+    // bool m_in_use; // assuming false by default
+    // std::mutex m_in_use_mutex;   //CHECK WHETHER MUTEX IS NEEDED SINCE TTS IS THE ONLY CLASS TO LAUNCH THREADS AND THERE IS ONLY ONE INSTANCE OF IT
+    
+    MutexQueue *to_speak_q;
+
+    void runEspeak(const std::string& text);
 };
+
+
+extern Tts *the_voice;
+
+#endif
