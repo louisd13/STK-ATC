@@ -19,9 +19,14 @@
 #define HEADER_MAIN_MENU_SCREEN_HPP
 
 #include "guiengine/screen.hpp"
+#include "guiengine/widgets/ribbon_widget.hpp"
+
+#include <iostream>
 
 namespace GUIEngine { class Widget;       class ListWidget; 
                       class ButtonWidget; class IconButtonWidget; }
+
+class MainMenuHoverListener;
 
 /**
   * \brief Handles the main menu
@@ -31,6 +36,7 @@ class MainMenuScreen : public GUIEngine::Screen, public GUIEngine::ScreenSinglet
 {
 private:
     friend class GUIEngine::ScreenSingleton<MainMenuScreen>;
+    friend class MainMenuHoverListener;
 
     /** Keep the widget to to the user name. */
     GUIEngine::ButtonWidget *m_user_id;
@@ -66,5 +72,54 @@ public:
      *  class GUIEngine::Screen */
     virtual bool onEscapePressed() OVERRIDE;
 };
+
+class MainMenuHoverListener : public GUIEngine::RibbonWidget::IRibbonListener
+{
+    MainMenuScreen* m_parent;
+    GUIEngine::RibbonWidget* m_ribbon_widget;
+public:
+    unsigned int m_magic_number;
+
+/*     MainMenuHoverListener(MainMenuScreen* parent)
+    {
+        m_magic_number = 0xCAFEC001;
+        m_parent = parent;
+    } */
+
+    MainMenuHoverListener(MainMenuScreen* parent, GUIEngine::RibbonWidget* ribbon_widget)
+        : m_parent(parent), m_ribbon_widget(ribbon_widget)
+    {
+        m_magic_number = 0xCAFEC001;
+    }
+
+    // ------------------------------------------------------------------------
+    virtual ~MainMenuHoverListener()
+    {
+        assert(m_magic_number == 0xCAFEC001);
+        m_magic_number = 0xDEADBEEF;
+    }
+
+    void onRibbonWidgetScroll(const int delta_x) override
+    {
+        // Implement this method if needed
+    }
+
+    void onRibbonWidgetFocus(GUIEngine::RibbonWidget* emitter, const int playerID) override
+    {
+        // Implement this method if needed
+    }
+
+
+    // ------------------------------------------------------------------------
+    void onSelectionChange() override
+    {
+        assert(m_magic_number == 0xCAFEC001);
+        irr::core::stringw selectionText = m_ribbon_widget->getSelectionText(0);
+        std::wstring ws(selectionText.c_str());
+        std::string str(ws.begin(), ws.end());
+        //std::cout << "Hovered Text: " << str << std::endl;
+    }
+}; 
+
 
 #endif

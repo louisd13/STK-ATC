@@ -27,6 +27,7 @@ namespace irr
 }
 #include <bitset>
 #include <map>
+#include <iostream> 
 
 #include "guiengine/event_handler.hpp"
 #include "guiengine/skin.hpp"
@@ -224,7 +225,25 @@ namespace GUIEngine
 
         /** override in children if you need to know when the widget is focused.
           * \return whether to block event */
-        virtual EventPropagation focused(const int playerID) { setWithinATextBox(false); return EVENT_LET; }
+        virtual EventPropagation focused(const int playerID, bool printout = true, bool changed_ribbon = true) { 
+          // pas mal du tout sauf pour les doubles listes (karts et maps)
+          // Check if 'this' is an instance of DynamicRibbonWidget
+          if ((m_type == WTYPE_RIBBON) && (changed_ribbon)) {
+            std::cout << "Changer de bandeau" << std::endl;
+          }
+
+          if(printout){
+            // If it's not DynamicRibbonWidget, proceed with the normal behavior
+            std::string text = getTextAsString();
+            std::cout << text << std::endl;
+            setWithinATextBox(false);
+            return EVENT_LET; 
+          }
+          else{
+            setWithinATextBox(false);
+            return EVENT_LET; 
+          }
+        }
 
         /** override in children if you need to know when the widget is unfocused. */
         virtual void unfocused(const int playerID, Widget* new_focus) { }
@@ -292,7 +311,6 @@ namespace GUIEngine
         bool m_is_collapsed;
 
     public:
-
         /**
          * This is set to NULL by default; set to something else in a widget to mean
          * that events happening on this widget should also be passed to m_event_handler->transmitEvent,
@@ -498,6 +516,8 @@ namespace GUIEngine
 
         /** Returns the text of a widget. */
         const irr::core::stringw &getText() const {return m_text; }
+      
+        std::string getTextAsString() const;
 
         /** \return Type of this widget */
         WidgetType getType() const { return m_type; }

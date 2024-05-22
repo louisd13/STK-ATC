@@ -165,6 +165,28 @@ void Widget::elementRemoved()
 
 // -----------------------------------------------------------------------------
 
+// Function to convert irr::core::stringw to std::string
+std::string Widget::getTextAsString() const {
+    // Call getText() to get the text
+    const irr::core::stringw &text = getText();
+
+    // Convert irr::core::stringw to std::wstring
+    std::wstring wstr(text.c_str());
+
+    // Setup conversion state
+    std::mbstate_t state = std::mbstate_t();
+    const wchar_t* wstrData = wstr.data();
+    size_t len = 1 + std::wcsrtombs(nullptr, &wstrData, 0, &state);
+
+    // Allocate space for the resulting string
+    std::vector<char> buffer(len);
+    std::wcsrtombs(buffer.data(), &wstrData, len, &state);
+
+    return std::string(buffer.data());
+}
+
+// -----------------------------------------------------------------------------
+
 void Widget::setActive(bool active)
 {
     // even if this one is already active, do it anyway on purpose, maybe the
@@ -268,8 +290,8 @@ void Widget::setFocusForPlayer(const int playerID)
     GUIEngine::Private::g_focus_for_player[playerID] = this;
 
     // Callback
-    this->focused(playerID);
-
+    this->focused(playerID, false, false);
+    // Speak when changing screen ? on selection maybe ? 
     Screen* screen = GUIEngine::getCurrentScreen();
     if(screen)
         screen->onFocusChanged(previous_focus, this, playerID);

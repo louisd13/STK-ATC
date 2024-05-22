@@ -49,6 +49,11 @@ void OnlineLanScreen::init()
     assert(ribbon != NULL);
     ribbon->select("find_lan_server", PLAYER_ID_GAME_MASTER);
     ribbon->setFocusForPlayer(PLAYER_ID_GAME_MASTER);
+
+
+    OnlineLanScreenHoverListener* rOnlineLanScreenHoverListener = new OnlineLanScreenHoverListener(this, ribbon);
+    ribbon->setListener(rOnlineLanScreenHoverListener);
+
 }   // init
 
 // -----------------------------------------------------------------------------

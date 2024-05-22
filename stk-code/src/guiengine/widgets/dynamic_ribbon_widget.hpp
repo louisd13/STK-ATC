@@ -161,7 +161,7 @@ namespace GUIEngine
         void propagateSelection();
 
         /** Callback called widget is focused */
-        EventPropagation focused(const int playerID);
+        EventPropagation focused(const int playerID, bool printout, bool changed_ribbon);
 
         /** Removes all previously added contents icons, and re-adds them (calculating the new amount) */
         void buildInternalStructure();

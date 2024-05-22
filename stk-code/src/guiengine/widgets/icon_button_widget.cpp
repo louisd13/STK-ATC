@@ -21,6 +21,7 @@
 #include "graphics/stk_tex_manager.hpp"
 #include "guiengine/engine.hpp"
 #include "guiengine/scalable_font.hpp"
+#include "guiengine/screen.hpp"
 #include "io/file_manager.hpp"
 #include "utils/log.hpp"
 #include "utils/string_utils.hpp"
@@ -331,9 +332,28 @@ void IconButtonWidget::setLabelFont(irr::gui::ScalableFont* font)
     m_font = font;
 }
 // -----------------------------------------------------------------------------
-EventPropagation IconButtonWidget::focused(const int playerID)
+
+EventPropagation IconButtonWidget::focused(const int playerID, bool printout, bool changed_ribbon)
 {
-    Widget::focused(playerID);
+
+    if (getCurrentScreen() != NULL){
+        std::string screenName = getCurrentScreen()->getName();
+        //std::cout << "iconscreen:" << screenName << std::endl;
+        if((screenName == "karts.stkgui") || (screenName == "tracks_and_gp.stkgui") ){
+            //std::cout << "on kart screen" << std::endl;
+            printout = false;
+            // useless no ? 
+            changed_ribbon = false;
+        }
+        else{
+            printout = true;
+            // useless ? 
+            changed_ribbon = true;
+        }
+    }
+
+    Widget::focused(playerID, printout, changed_ribbon);
+
 
     if (m_label != NULL && m_properties[PROP_LABELS_LOCATION] == "hover")
     {

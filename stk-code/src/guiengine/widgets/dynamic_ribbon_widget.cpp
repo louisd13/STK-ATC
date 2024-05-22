@@ -742,9 +742,9 @@ EventPropagation DynamicRibbonWidget::mouseHovered(Widget* child, const int play
     return EVENT_BLOCK;
 }
 // -----------------------------------------------------------------------------
-EventPropagation DynamicRibbonWidget::focused(const int playerID)
+EventPropagation DynamicRibbonWidget::focused(const int playerID, bool printout, bool changed_ribbon)
 {
-    Widget::focused(playerID);
+    Widget::focused(playerID,false,false);
     updateLabel();
 
     if (getSelectedRibbon(playerID)->getSelectionIDString(playerID) == "")

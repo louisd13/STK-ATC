@@ -25,6 +25,7 @@
 #include "guiengine/layout_manager.hpp"
 #include "guiengine/scalable_font.hpp"
 #include "guiengine/skin.hpp"
+#include "guiengine/screen.hpp"
 #include "guiengine/widgets/button_widget.hpp"
 #include "input/input_manager.hpp"
 #include "io/file_manager.hpp"
@@ -598,7 +599,6 @@ void RibbonWidget::removeChildNamed(const char* name)
 void RibbonWidget::select(std::string item, const int mousePlayerID)
 {
     const int subbuttons_amount = m_active_children.size();
-
     for (int i=0; i<subbuttons_amount; i++)
     {
         if (m_active_children[i].m_properties[PROP_ID] == item)
@@ -639,10 +639,6 @@ EventPropagation RibbonWidget::upPressed(const int playerID)
 EventPropagation RibbonWidget::moveToNextItem(const bool horizontally, const bool reverse, const int playerID)
 {
     EventPropagation result = propagationType(horizontally);
-        string<wchar_t> text1 = RibbonWidget::getSelectionText(0);
-        std::wstring wide = text1.c_str();
-        std::string ntext1(wide.begin(),wide.end());
-        speak(ntext1);
 
     // Do nothing and do not block navigating out of the widget
     if (result == EVENT_BLOCK) return result;
@@ -688,24 +684,11 @@ EventPropagation RibbonWidget::propagationType(const bool horizontally)
         result = m_ribbon_type == RIBBON_VERTICAL_TABS ? EVENT_BLOCK :
                  m_ribbon_type != RIBBON_TOOLBAR       ? EVENT_LET   :
                                                          EVENT_BLOCK_BUT_HANDLED;
-        // En retard mais pas mal du tout sauf pour le text de pause
-        // string<wchar_t> text1 = RibbonWidget::getSelectionText(0);
-        // std::wstring wide = text1.c_str();
-        // std::string ntext1(wide.begin(),wide.end());
-        // if (ntext1 == "text") then dont say et la on fait avec iconwidget ? 
-        // speak(ntext1);
-
     }
     else
     {
         result = m_ribbon_type != RIBBON_VERTICAL_TABS ? EVENT_BLOCK :
-                                                         EVENT_LET;
-
-        // En retard mais pas mal du tout sauf pour le text de pause
-        // string<wchar_t> text2 = RibbonWidget::getSelectionText(0);
-        // std::wstring wide2 = text2.c_str();
-        // std::string ntext2(wide2.begin(),wide2.end());
-        // speak(ntext2);
+                                                         EVENT_LET;                                               
     }
     if (m_deactivated) result = EVENT_BLOCK;
     // empty ribbon, or only one item (can't move)
@@ -749,11 +732,6 @@ void RibbonWidget::selectNextActiveWidget(const bool horizontally, const bool re
 
             m_selection[playerID] = select_zero ? 0 : m_active_children.size()-1;
         }
-        // Works pretty well
-        // string<wchar_t> text = RibbonWidget::getSelectionText(0);
-        // std::wstring wide = text.c_str();
-        // std::string ntext(wide.begin(),wide.end());
-        // speak(ntext);
 
 
         loop_counter++;
@@ -768,9 +746,22 @@ void RibbonWidget::selectNextActiveWidget(const bool horizontally, const bool re
 
 // ----------------------------------------------------------------------------
 
-EventPropagation RibbonWidget::focused(const int playerID)
+EventPropagation RibbonWidget::focused(const int playerID,  bool printout, bool changed_ribbon)
 {
-    Widget::focused(playerID);
+
+
+    if (getCurrentScreen() != NULL){
+        std::string screenName = getCurrentScreen()->getName();
+        //std::cout << "iconscreen:" << screenName << std::endl;
+        if((screenName == "karts.stkgui") || (screenName == "tracks_and_gp.stkgui") ){
+            changed_ribbon = false;
+        }
+        else{
+            changed_ribbon = true;
+        }
+    }
+
+    Widget::focused(playerID,false, changed_ribbon);
 
     if (m_active_children.size() < 1) return EVENT_LET; // empty ribbon
 
@@ -784,7 +775,7 @@ EventPropagation RibbonWidget::focused(const int playerID)
             if (m_selection[playerID] < int(m_active_children.size()))
             {
                 m_mouse_focus = m_active_children.get(m_selection[playerID]);
-                m_mouse_focus->focused(playerID);
+                m_mouse_focus->focused(playerID,false,false);
             }
         }
     }
@@ -794,12 +785,11 @@ EventPropagation RibbonWidget::focused(const int playerID)
         {
             int selection = m_selection[playerID];
             if (selection < (int)m_active_children.size())
-                m_active_children.get(selection)->focused(playerID);
+                m_active_children.get(selection)->focused(playerID,false);
         }
     }
 
     if (m_listener != NULL) m_listener->onRibbonWidgetFocus( this, playerID );
-    //std::cout << "rw" << std::endl;
 
     return EVENT_LET;
 }   // focused
@@ -903,20 +893,6 @@ void RibbonWidget::updateSelection()
 
     if (m_listener) m_listener->onSelectionChange();
 
-
-    string<wchar_t> text = RibbonWidget::getSelectionText(0);
-
-    std::wstring wide = text.c_str();
-
-    std::string ntext(wide.begin(),wide.end());
-
-    //speak(ntext);
-    //TTS tts;
-    //TTS::speak(ntext);
-
-
-    //tts.speak(ntext);
-    //std::cout << "update selec"<<ntext << std::endl;
 }   // updateSelection
 
 // ----------------------------------------------------------------------------
@@ -945,8 +921,6 @@ EventPropagation RibbonWidget::transmitEvent(Widget* w,
                                              const int playerID)
 {
     assert(m_magic_number == 0xCAFEC001);
-
-
     if (!m_deactivated)
     {
         const int subbuttons_amount = m_active_children.size();

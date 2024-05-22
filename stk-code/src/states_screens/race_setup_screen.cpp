@@ -194,6 +194,12 @@ void RaceSetupScreen::init()
             hardestWidget->setActive(true);
         }
     }
+    RaceSetupHoverListener* raceSetupHoverListener = new RaceSetupHoverListener(this, w);
+    w->setListener(raceSetupHoverListener);
+
+    // Dynamic RW
+    DynamicRaceSetupHoverListener* dynamicRaceSetupHoverListener = new DynamicRaceSetupHoverListener(this);
+    w2->registerHoverListener(dynamicRaceSetupHoverListener);
 }   // init
 
 // -----------------------------------------------------------------------------

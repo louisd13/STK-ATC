@@ -24,17 +24,19 @@
 
 #include "guiengine/screen.hpp"
 #include "guiengine/widgets.hpp"
+#include "guiengine/widgets/ribbon_widget.hpp"
 #include "states_screens/online/online_profile_base.hpp"
 
 namespace GUIEngine { class Widget; }
 
-
+class OnlineLanScreenHoverListener;
 /**
   * \brief Online profiel overview screen
   * \ingroup states_screens
   */
 class OnlineLanScreen : public GUIEngine::Screen, public GUIEngine::ScreenSingleton<OnlineLanScreen>
 {
+  friend class OnlineLanScreenHoverListener;
 protected:
     OnlineLanScreen();
 
@@ -53,5 +55,54 @@ public:
     virtual bool onEscapePressed() OVERRIDE;
 
 };   // class OnlineProfileServers
+
+
+class OnlineLanScreenHoverListener : public GUIEngine::RibbonWidget::IRibbonListener
+{
+    OnlineLanScreen* m_parent;
+    GUIEngine::RibbonWidget* m_ribbon_widget;
+public:
+    unsigned int m_magic_number;
+
+/*     RibbonWidgetUserScreenHoverListener(RibbonWidgetUserScreenScreen* parent)
+    {
+        m_magic_number = 0xCAFEC001;
+        m_parent = parent;
+    } */
+
+    OnlineLanScreenHoverListener(OnlineLanScreen* parent, GUIEngine::RibbonWidget* ribbon_widget)
+        : m_parent(parent), m_ribbon_widget(ribbon_widget)
+    {
+        m_magic_number = 0xCAFEC001;
+    }
+
+    // ------------------------------------------------------------------------
+    virtual ~OnlineLanScreenHoverListener()
+    {
+        assert(m_magic_number == 0xCAFEC001);
+        m_magic_number = 0xDEADBEEF;
+    }
+
+    void onRibbonWidgetScroll(const int delta_x) override
+    {
+        // Implement this method if needed
+    }
+
+    void onRibbonWidgetFocus(GUIEngine::RibbonWidget* emitter, const int playerID) override
+    {
+        // Implement this method if needed
+    }
+
+    // ------------------------------------------------------------------------
+    void onSelectionChange() override
+    {
+        assert(m_magic_number == 0xCAFEC001);
+        irr::core::stringw selectionText = m_ribbon_widget->getSelectionText(0);
+        std::wstring ws(selectionText.c_str());
+        std::string str(ws.begin(), ws.end());
+        std::cout << "Lan: " << str << std::endl;
+    }
+}; 
+
 
 #endif
