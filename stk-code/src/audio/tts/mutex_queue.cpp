@@ -14,6 +14,7 @@
 std::string MutexQueue::getFirstValue() {
     //printf("QUEUE LOCKED\n");
     // acquire lock 
+
     m_queue_mutex.lock(); 
 
     // wait until queue is not empty 
@@ -21,6 +22,7 @@ std::string MutexQueue::getFirstValue() {
         //printf("no other value in queue\n");
         m_queue_mutex.unlock();
         //printf("QUEUE UNLOCKED\n");
+        printf("what");
         return "";
     }
 
@@ -39,8 +41,16 @@ std::string MutexQueue::getFirstValue() {
 void MutexQueue::addValue(std::string text) {
    // printf("QUEUE LOCKED\n");
 
-    // Acquire lock 
+    // Acquire lock
+    //count.store(count.load() + 1);
     m_queue_mutex.lock();
+
+    if (count.load() > 0) {
+        // remove self
+        //count.store(count.load() - 1);
+        // do not store self
+        m_queue_mutex.unlock();
+    }
 
     // Add item 
     m_to_speak_queue.push(text); 

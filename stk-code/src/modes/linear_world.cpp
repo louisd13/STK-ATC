@@ -1095,7 +1095,7 @@ void LinearWorld::checkForWrongDirection(unsigned int i, float dt)
     if (kart->getKartAnimation())
         ki.m_wrong_way_timer = 0;
     
-    if (ki.m_wrong_way_timer >= 0.8f && m_race_gui)
+    if (ki.m_wrong_way_timer >= 2.0f && m_race_gui)
     {
         m_race_gui->addMessage(_("WRONG WAY!"), kart,
                                /* time */ -1.0f,

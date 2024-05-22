@@ -249,6 +249,7 @@ Kart::Kart (const std::string& ident, unsigned int world_kart_id,
     printf("MAX NODES: %d\n", max_nodes);
 
     m_last_printed_sector = -1;
+    m_last_printed_lap = -1;
 
     m_just_rescued = false;
     m_currently_rescued = 0;
@@ -1471,9 +1472,9 @@ void Kart::updateKartInfo(LinearWorld* world) {
     if (track->getDefaultNumberOfLaps() > 0) {
         m_lap = world->getLapForKart(getWorldKartId()) + 1;
 
-        if ((m_lap == m_prev_lap) || (m_lap == 0)) return;
+        if ((m_last_printed_lap == m_lap) || (m_lap == 0)) return;
 
-        m_prev_lap = m_lap;
+        m_last_printed_lap = m_lap;
         std::cout << "started lap: " << m_lap << std::endl;
         the_voice->speak(NEW_LAP_STRING + m_number_string[m_lap-1], true, false);
     }
@@ -1944,7 +1945,7 @@ void Kart::update(int ticks)
             tick_counter += ticks;
 
             static int tick_counter_for_out = 0;
-            constexpr int ticks_to_wait_for_out = 20;
+            constexpr int ticks_to_wait_for_out = 10;
 
             static int tick_counter_for_wall = 0;
             constexpr int ticks_to_wait_for_wall = 20;
@@ -2009,9 +2010,10 @@ void Kart::update(int ticks)
 
 
 /////////// PRINT TURN INFO /////////////////
-// only for local player, if there is a turn, and if this turn was not already printed
+// only for local player, if there is a turn, and if this turn was not already printed, or if was previously in wrong direction
+                if ((m_controller->isLocalPlayerController()) & ((m_last_printed_sector != id_Node) || m_just_rescued || ((m_prev_speed < 0) && (m_speed > 0)))) {
+                    the_voice->updateQueue();
 
-                if ((m_controller->isLocalPlayerController()) & ((m_last_printed_sector != id_Node) || m_just_rescued)) {
                     int nxt_node = (id_Node+1) % max_nodes;
                     int nxt_angle_cat = angle_category[nxt_node];
 
@@ -2022,7 +2024,9 @@ void Kart::update(int ticks)
 
                     // print turn only if first sector of the turn, or the  race has just begun,
                     // OR ADD kart has just been rescued
-                    if ((turn.dir != NONE) && ((((turn.start_sector-3)%max_nodes) == id_Node) || ((m_lap == 0) && id_Node == (max_nodes-1)) || m_just_rescued)) {
+                    // or last sector is below current, or above but behind in track temporality
+                    if ((turn.dir != NONE) 
+                    && ((((turn.start_sector-3)%max_nodes) == id_Node) || ((m_lap == 0) && id_Node == (max_nodes-1)) || m_just_rescued)) {
                         std::string d;
                         if (turn.dir == LEFT) {
                             d = "LEFT";
@@ -2479,6 +2483,7 @@ int Kart::calculateIntensity(float value) {
  */
 void Kart::updateSpeed()
 {
+    m_prev_speed = m_speed;
     // Compute the speed of the kart. Smooth it with previous speed to make
     // the camera smoother (because of capping the speed in m_max_speed
     // the speed value jitters when approaching maximum speed. This results

@@ -9,17 +9,24 @@
 class Tts {
     public:
     void speak(const std::string& text, bool add_to_queue, bool empty_queue);
-
+    void updateQueue();
+    
     Tts();
 
     protected:
+    // struct toSpeak {
+    //     std::string text;
+    //     bool prioritize;
+    // };
+
     MutexBool *m_in_use;
     // bool m_in_use; // assuming false by default
     // std::mutex m_in_use_mutex;   //CHECK WHETHER MUTEX IS NEEDED SINCE TTS IS THE ONLY CLASS TO LAUNCH THREADS AND THERE IS ONLY ONE INSTANCE OF IT
     
-    MutexQueue *to_speak_q;
+    std::vector<std::string> to_speak_q;
 
-    void runEspeak(const std::string& text);
+    void runEspeak(const std::string& text, const std::vector<std::string>& queue);
+    
 };
 
 

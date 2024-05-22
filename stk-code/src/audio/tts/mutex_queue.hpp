@@ -8,6 +8,7 @@ class MutexQueue {
     protected:
     std::queue<std::string> m_to_speak_queue;
     std::mutex m_queue_mutex;
+    std::atomic<bool> count;
 
     public:
     //bool isEmpty();

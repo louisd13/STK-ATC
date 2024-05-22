@@ -208,6 +208,7 @@ protected:
     TurnInfo* turn_characteristics;
 
     int m_last_printed_sector;
+    int m_last_printed_lap;
 
     
 
@@ -263,6 +264,9 @@ protected:
 
     /** The current speed (i.e. length of velocity vector) of this kart. */
     float         m_speed;
+
+    /** The previous speed (i.e. length of velocity vector) of this kart. */
+    float         m_prev_speed;
 
     /** For smoothing engine sound**/
     float         m_last_factor_engine_sound;
