@@ -22,7 +22,7 @@ std::string MutexQueue::getFirstValue() {
         //printf("no other value in queue\n");
         m_queue_mutex.unlock();
         //printf("QUEUE UNLOCKED\n");
-        printf("what");
+        //printf("what");
         return "";
     }
 
@@ -62,7 +62,7 @@ void MutexQueue::addValue(std::string text) {
 }
 
 void MutexQueue::emptyQueue() {
-    printf("QUEUE LOCKED\n");
+    //printf("QUEUE LOCKED\n");
     // Acquire lock 
     m_queue_mutex.lock();
 
@@ -72,5 +72,5 @@ void MutexQueue::emptyQueue() {
 
     // Release lock
     m_queue_mutex.unlock(); 
-    printf("QUEUE UNLOCKED\n");
+    //printf("QUEUE UNLOCKED\n");
 }

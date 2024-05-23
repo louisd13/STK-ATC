@@ -789,7 +789,7 @@ EventPropagation RibbonWidget::focused(const int playerID,  bool printout, bool 
             int selection = m_selection[playerID];
             if (selection < (int)m_active_children.size())
                 // Semble utile quand on change de ribbon
-                std::cout << "active chil" << std::endl;
+                std::cout << "i am active child" << std::endl;
                 m_active_children.get(selection)->focused(playerID);
         }
     }

@@ -241,7 +241,11 @@ namespace GUIEngine
             // If it's not DynamicRibbonWidget, proceed with the normal behavior
             std::string text = getTextAsString();
             std::cout << "OUTPUT : "<< text <<std::endl;
-            the_voice->speak(text,true,false);
+            // True True pas si mal
+            if (text != "Standard") {
+              the_voice->speak(text,true,false);
+            }
+            
             setWithinATextBox(false);
             return EVENT_LET; 
           }

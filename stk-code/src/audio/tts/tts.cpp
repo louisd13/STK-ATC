@@ -21,7 +21,7 @@ void Tts::speak(const std::string& text, bool add_to_queue, bool empty_queue) {
     if (m_in_use->tryLock()) {
         //printf("VOICE LOCKED\n");              TODO CHECK IF OKKKK
         std::vector<std::string> copied = to_speak_q;
-        printf("to_speak size: %d\ncopied size: %d\n\n", to_speak_q.size(), copied.size());
+        //printf("to_speak size: %d\ncopied size: %d\n\n", to_speak_q.size(), copied.size());
         //std::copy(to_speak_q.begin(), to_speak_q.end(), copied);
 
         // send to voice
@@ -47,7 +47,7 @@ void Tts::updateQueue() {
     if (m_in_use->tryLock()) {
         //printf("VOICE LOCKED\n");              TODO CHECK IF OKKKK
         std::vector<std::string> copied = to_speak_q;
-        printf("to_speak size: %d\ncopied size: %d\n\n", to_speak_q.size(), copied.size());
+        //printf("to_speak size: %d\ncopied size: %d\n\n", to_speak_q.size(), copied.size());
         //std::copy(to_speak_q.begin(), to_speak_q.end(), copied);
 
         // send to voice
