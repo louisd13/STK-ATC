@@ -105,7 +105,7 @@
 #include <cmath>
 #include <cstdlib>
 
-ArduinoCom arduino("COM3");
+ArduinoCom arduino("\\\\.\\COM11");
 
 #if defined(WIN32) && !defined(__CYGWIN__)  && !defined(__MINGW32__)
    // Disable warning for using 'this' in base member initializer list
@@ -2461,7 +2461,7 @@ int Kart::calculateIntensity(float value) {
 
     if (absValue >= 0.9) {
         return 2;
-    } else if (absValue >= 0.6) {
+    } else if (absValue >= 0.55) {
         return 1;
     } else {
         return 0;
