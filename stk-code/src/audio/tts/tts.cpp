@@ -82,14 +82,14 @@ void Tts::runEspeak(const std::string& text, const std::vector<std::string>& que
         nextText = queue[i];
 
         if (nextText != "") {
-            std::string command = "espeak -vfr \"" + nextText + "\"";
+            std::string command = "espeak -ven+m1 -s160 \"" + nextText + "\"";
             system(command.c_str());
         }
     }
 
     //bool prioritizeText = false;
     if (text != "") {
-        std::string command = "espeak -vfr \"" + text + "\"";
+        std::string command = "espeak -ven+m1 -s160 \"" + text + "\"";
         system(command.c_str());
     }
 

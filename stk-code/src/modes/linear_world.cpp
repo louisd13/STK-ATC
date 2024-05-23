@@ -1105,7 +1105,7 @@ void LinearWorld::checkForWrongDirection(unsigned int i, float dt)
 
         if (ki.m_wrong_way_timer >= 1.0f) {
             printf("bloop\n");
-            the_voice->speak("Mauvaise direction", true, true);
+            the_voice->speak("Wrong way", true, true);
 
             ki.m_wrong_way_timer = 0.0f;
         }

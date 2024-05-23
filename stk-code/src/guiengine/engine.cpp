@@ -895,6 +895,8 @@ namespace GUIEngine
             if (frame == 2)
                 GUIEngine::EventHandler::get()->setAcceptEvents(true);
         }
+
+        the_voice->updateQueue();
     }
     // ------------------------------------------------------------------------
 

@@ -218,19 +218,19 @@ Kart::Kart (const std::string& ident, unsigned int world_kart_id,
     m_turn_intensity_string.push_back("5");
 
 
-    OUT_STRING = "Hors piste";
-    LEFT_WALL_STRING = "Mur, tourner à droite";
-    RIGHT_WALL_STRING = "Mur, tourner à gauche";
-    WRONG_WAY_STRING = "Mauvais sens";
-    SAUVETAGE = "Sauvetage en cours";
+    OUT_STRING = "Out";
+    LEFT_WALL_STRING = "Wall, go right";
+    RIGHT_WALL_STRING = "Wall, go left";
+    WRONG_WAY_STRING = "Wrong way";
+    SAUVETAGE = "Being saved";
     SEP = ". ";
-    LONG_STRING = "secteur";
-    NEW_LAP_STRING = "Début du tour ";
+    LONG_STRING = "sectors long";
+    NEW_LAP_STRING = "Starting lap ";
     
 
-    m_turn_dir_string.push_back("gauche");
-    m_turn_dir_string.push_back("droite");
-    m_turn_dir_string.push_back("tout droit");
+    m_turn_dir_string.push_back("left");
+    m_turn_dir_string.push_back("right");
+    m_turn_dir_string.push_back("straight ahead");
 
     for (int i = 0; i < NUMBER_SOUND_COUNT; ++i) {
         m_number_string.push_back(std::to_string(i+1)); 
@@ -1436,10 +1436,7 @@ void Kart::updatePositionAdIfDifferent(int ticks) {
 
 
 void Kart::announceInfos() {
-    // announce
-    // rank
-    // position with respect to other player
-    // repeat current turn info 
+    /// rhankkkking
 }
 
 
