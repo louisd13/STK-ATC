@@ -205,9 +205,13 @@ protected:
     /** Last announced race position (1-num_karts). */
     int m_last_race_position;
 
+    /** Table that stores info about all turns in the track. */
     TurnInfo* turn_characteristics;
 
+    /** Index of the last announced sector, to avoid repetition within a same sector. */
     int m_last_printed_sector;
+
+    /** Index of the last announced lap, to avoid repetition within a same lap. */
     int m_last_printed_lap;
 
     
@@ -298,13 +302,17 @@ protected:
     SFXBuffer    *m_crash_sounds[CRASH_SOUND_COUNT];
 
     //////////
+    /** Beeps played when in turn to announce intensity of angle between current and next sector. */
     static const int TURN_SOUNDS_COUNT = 6;
     SFXBase *m_turn_sounds[TURN_SOUNDS_COUNT];
+    /** String version of the intensities, used for vocal annoucements. */
     std::vector<std::string> m_turn_intensity_string;
 
+    /** String of possible directions for vocal annoucements. */
     static const int TURN_DIRECTION_COUNT = 3; // 0: left, 1: right, 2: straight line
     std::vector<std::string> m_turn_dir_string;
 
+    /** Different strings used for vocal annoucements. */
     std::string OUT_STRING;
     std::string LEFT_WALL_STRING;
     std::string RIGHT_WALL_STRING;
@@ -314,15 +322,13 @@ protected:
     std::string SAUVETAGE;
     std::string NEW_LAP_STRING;
 
-    // SFXBase *out_sound;
-    // SFXBase *left_wall_sound;
-    // SFXBase *right_wall_sound;
-    // SFXBase *wrong_way_sound;
-
+    /** Number strings used for vocal annoucements, specifically used for the length of a turn. */
     static const int NUMBER_SOUND_COUNT = 26;
     std::vector<std::string> m_number_string;
 
+    /** Sound used to denote when the current player goes up in rank. */
     SFXBase *m_happy_horn;
+    /** Sound used to denote when the current player goes down in rank. */
     SFXBase *m_sad_horn;
     //////////
 
@@ -347,7 +353,6 @@ protected:
 
     void scanTrackForRallye();
      
-    //int getTurnIntensity(float max_angle);
     int getTurnIntensity(int* intensities);
 
     TurnDirection getAngleDirection(float angle);
@@ -361,17 +366,20 @@ protected:
     void storeTurn(TurnDirection d, int intensity, int start_sector, int end_sector);
     void storeStraightLine(int start_sector, int end_sector);
 
-
+    /** A table for the following: angles[i] = angle between sector (i) and sector (i+1). */
     float *angles;
+    /** A table for the following: angle_category[i] = intensity of the angle between sector (i) and sector (i+1). */
     int *angle_category;
 
+    /** True when the kart has just been rescued, false otherwise. */
     bool m_just_rescued;
+    /** True when the kart is being rescued, false otherwise. */
     bool m_currently_rescued;
+    /** Previous value for m_currently_rescued. */
     bool m_previously_rescued;
 
 
-
-    // number of sectors in the track
+    /** Total number of sectors in the track */ 
     unsigned int max_nodes;
     ///////////////////////////
 

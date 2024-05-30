@@ -105,7 +105,7 @@
 #include <cmath>
 #include <cstdlib>
 
-ArduinoCom arduino("\\\\.\\COM11");
+ArduinoCom arduino("\\\\.\\COM5");
 
 #if defined(WIN32) && !defined(__CYGWIN__)  && !defined(__MINGW32__)
    // Disable warning for using 'this' in base member initializer list
@@ -225,7 +225,7 @@ Kart::Kart (const std::string& ident, unsigned int world_kart_id,
     SAUVETAGE = "Being saved";
     SEP = ". ";
     LONG_STRING = "sectors long";
-    NEW_LAP_STRING = "Starting lap ";
+    NEW_LAP_STRING = "Lap ";
     
 
     m_turn_dir_string.push_back("left");
@@ -1437,6 +1437,7 @@ void Kart::updatePositionAdIfDifferent(int ticks) {
 
 void Kart::announceInfos() {
     /// rhankkkking
+    //the_voice->speak("current rank is " + m_race_position, true, false);
 }
 
 
@@ -1491,8 +1492,9 @@ float Kart::computeRelativeAngle(float a, float b) {
 }
 
 
-// put an integer value on angle, used to categorize turns.
-// TurnBasics::TURN_INTENSITIES = 7
+/** Assigns an intensity between 0 and 6 to an angle. 
+ * \param a The angle.
+*/
 int Kart::categorizeAngle(float a) {
     float abs_ = abs(a);
 
@@ -1513,15 +1515,20 @@ int Kart::categorizeAngle(float a) {
     }
 }
 
-// Store turn data in every sector composing the given turn
+/** Store all necessary info about a turn for further use. 
+ * \param direction The direction of the direction in terms of LEFT, RIGHT, STRAIGHT, or NONE.
+ * \param intensity The intensity of the turn.
+ * \param start_sector The index of the first sector of the straight line.
+ * \param end_sector The index of the last sector of the straight line.
+*/
 void Kart::storeTurn(TurnDirection direction, int intensity, int start_sector, int end_sector) {
-    int tweaked_end = (end_sector < start_sector) ? (end_sector + max_nodes) : end_sector;
 
-    printf("STORE TURN OF INTENSITY %d (start: %d, end: %d) IN ", intensity, start_sector, end_sector);
+    // adapt the end_sector if the turn start before the finish line and ends after it
+    int tweaked_end = (end_sector < start_sector) ? (end_sector + max_nodes) : end_sector;
 
     int i = start_sector;
     while (i < tweaked_end) {
-        // store info for each node on the turn
+        // store info for each node of the turn
         int index = i%max_nodes;
         printf("%d ", index);
         turn_characteristics[index].dir = direction;
@@ -1531,31 +1538,43 @@ void Kart::storeTurn(TurnDirection direction, int intensity, int start_sector, i
 
         ++i;
     }
-
-    printf("\nSTOP STORING AFTER %d\n", i);
 }
 
-// store straight line info in every sector composing the line
+
+/** Store all necessary info about a straight line for further use. Store a straight line to enable its announcement. 
+ * \param start_sector The index of the first sector of the straight line.
+ * \param end_sector The index of the last sector of the straight line.
+*/
 void Kart::storeStraightLine(int start_sector, int end_sector) {
     storeTurn(STRAIGHT, 0, start_sector, end_sector);
 }
 
+
+/** State machine used to determine all the turns in a track.
+ * \param angle_category An array where entry i is the intensity of the angle i.
+ * \param angle An array where entry i is the angle between sectors i and i+1.
+*/
 void Kart::categorizeTurns(int* angle_category, float *angle) {
     TurnState current_state = NO_TURN;
+
+    // intensity of current angle
     int current_angle_cat;
+    // intensity of next angle
     int next_angle_cat;
+    // index of next sector
     int next_idx;
 
     float current_angle;
     float next_angle;
 
+    // used to end a turn, will trigger the end of the turn if > MAX_WAIT_END_TURN
     int count_wait_end_turn;
-
-    //int index_max_angle = 0;
+    const int MAX_WAIT_END_TURN = 3;
 
     TurnBasics turn;
 
     for (int i = 0; i < max_nodes; ++i) {
+        // update values
         current_angle_cat = angle_category[i];
         next_idx = (i+1) % max_nodes;
         next_angle_cat = angle_category[next_idx];
@@ -1577,13 +1596,10 @@ void Kart::categorizeTurns(int* angle_category, float *angle) {
             // the track is switching directions, end current turn and create new one no matter state
             turn.intensities[current_angle_cat] += 1;
 
-            // update max angle info
-
             // end current turn
             turn.sector_end = i;
             // store current turn
             setTurnCharacteristics(turn, angle[turn.sector_start]); // current angle give turn direction
-            //index_max_angle = 0;
 
             // reset turn and state
             turn = TurnBasics();
@@ -1601,8 +1617,6 @@ void Kart::categorizeTurns(int* angle_category, float *angle) {
             turn.intensities[current_angle_cat] += 1;
 
             if (current_angle_cat > next_angle_cat) {
-                //index_max_angle = i;
-
                 // be ready to end the turn when necessary
                 current_state = WAIT_END_TURN;
                 count_wait_end_turn = 0;
@@ -1617,14 +1631,14 @@ void Kart::categorizeTurns(int* angle_category, float *angle) {
                 ++count_wait_end_turn;
             }
 
+            // true if angles have a different signs and the next angle has steep enough angle
             bool new_turn_next = (((extract_sign(angle[turn.sector_start]) != extract_sign(next_angle))) & (next_angle_cat > 0));
 
-            if (new_turn_next | (count_wait_end_turn > 3)) {
+            if (new_turn_next | (count_wait_end_turn > MAX_WAIT_END_TURN)) {
                 // end current turn
                 turn.sector_end = i;
                 // store current turn
                 setTurnCharacteristics(turn, angle[turn.sector_start]);
-                //index_max_angle = 0;
 
                 // reset turn and state
                 turn = TurnBasics();
@@ -1644,29 +1658,34 @@ void Kart::categorizeTurns(int* angle_category, float *angle) {
 }
 
 
+/** Helper function that returns the turn length in number of sectors, as a string. It is used when needing to announce the turn, as 
+ * announcement can only take up string arguments.
+ * \param start_sector The index of the first sector of the turn.
+ * \param end_sector The index of the last sector of the turn.
+*/
 std::string Kart::getTurnLength(int start_sector, int end_sector) {
-    if (end_sector > start_sector) {
+    if (end_sector > start_sector) { 
+        // normal case
         return std::to_string(end_sector - start_sector);
-    } else {
+
+    } else { 
+        // turn starts before finish line and ends after it
         return std::to_string(max_nodes  - start_sector + end_sector);
     }
 }
 
 
-// TODO go through categorized angles to classify the turns according to the number of angles  in each category
-
-// TODO find our to play something only once per sector
-
-// TODO play a different kind of beep according to angle w.r.t. next sector: the tighter the angle, the higher in pitch the beep
-// use wanted_angle value to determine the kind of beep to play in real time
+/** Sequentially scans all the track's sectors to determine the angle between each sector and its successor and use that data to categorize
+ * all turns and straight lines in the track. All turn data is store in turn_characteristics which is then used when announcing that data.
+*/
 void Kart::scanTrackForRallye() {
     turn_characteristics = new TurnInfo[max_nodes];
     // base angles in degrees
     float *base_angles = new float[max_nodes];
     
-    // angles[i] is the relative angle between sector i and i+1 in degrees
+    // angles[i] is the relative angle between sectors i and i+1 in degrees
     angles = new float[max_nodes];
-
+    // angle_category[i] stores the intensity of angle[i] (i.e. the intensity of the angle between sectors i and i+1)
     angle_category = new int[max_nodes];
 
     // scan each sector of the track to get the angle with respect to the next one 
@@ -1674,20 +1693,22 @@ void Kart::scanTrackForRallye() {
         //float angle_next = currentTrack->getAngle((id_Node+4) % numNodes);
         Track* track = Track::getCurrentTrack();
 
-        base_angles[i] = track->getAngle(i) * 180 / M_PI; // store radian angle in degree
+        base_angles[i] = track->getAngle(i) * 180 / M_PI; // store angle in degree
 
         if (i < max_nodes-1) {
             angles[i] = computeRelativeAngle(base_angles[i], base_angles[i+1]);
             angle_category[i] = categorizeAngle(angles[i]);
-            //printf("%f\n", angle_category[i]);
-            //printf("(i, relative angle to next sector, category): (%d, %f, %d)\n", i, angles[i], angle_category[i]);
         }
     }
 
-    angles[max_nodes-1] = computeRelativeAngle(base_angles[max_nodes-1], base_angles[0]); // ???
+    // TODO CHECK WHETHER TRACK HAS LOOPS, IF NOT DO NOT COMPUTE THIS LAST SECTOR'S ANGLE
+    // compute angle between last and first sector of the track
+    angles[max_nodes-1] = computeRelativeAngle(base_angles[max_nodes-1], base_angles[0]);
     angle_category[max_nodes-1] = categorizeAngle(angles[max_nodes-1]);
 
-// remove outliers
+// Remove outliers
+// some angles appears to have a weird direction compared to the ones around them, probably due to errors in characterization in the first
+// place. For simplicity, we have decided to simply change the sign of the outlier to make it fit within its neighbors.
     for (int i = 0; i < max_nodes; ++i) {
         int previous_node = (i-1) % max_nodes;
         int next_node = (i+1) % max_nodes;
@@ -1698,44 +1719,43 @@ void Kart::scanTrackForRallye() {
         }
     }
 
-    // print
-    for (int i = 0; i < max_nodes; ++i) {
-        printf("(i, relative angle to next sector, category): (%d, %f, %d)\n", i, angles[i], angle_category[i]);
-    }
-
     categorizeTurns(angle_category, angles);
 
     categorizeStraightLines();
 
-    printf("turn characteristics");
-    for (int i = 0; i < max_nodes; ++i) {
-        TurnInfo turn = turn_characteristics[i];
-        if (turn.dir != NONE) {
-            std::string d;
-            if (turn.dir == LEFT) {
-                d = "left";
-            } else if (turn.dir == RIGHT) {
-                d = "right";
-            } else {
-                d = "straight line";
-            }
-            printf("\n(dir, start, end): (%s, %d, %d)\n", d, turn.start_sector, turn.end_sector);
-        } else {
-            printf("NONE");
-        }
+    // turn_characteristics is now filled with all the necessary info for announcements
+
+    // printf("turn characteristics");
+    // for (int i = 0; i < max_nodes; ++i) {
+    //     TurnInfo turn = turn_characteristics[i];
+    //     if (turn.dir != NONE) {
+    //         std::string d;
+    //         if (turn.dir == LEFT) {
+    //             d = "left";
+    //         } else if (turn.dir == RIGHT) {
+    //             d = "right";
+    //         } else {
+    //             d = "straight line";
+    //         }
+    //         printf("\n(dir, start, end): (%s, %d, %d)\n", d, turn.start_sector, turn.end_sector);
+    //     } else {
+    //         printf("NONE");
+    //     }
         
-    }
+    // }
 }
 
-
+/** Helper function that sequentially scans turn_characteristics to analyze which parts of the track are straight lines. It stores the
+ * result back in turn_characteristics for further use.
+*/
 void Kart::categorizeStraightLines() {
     int first_turn_start = -1;
 
     // contains the sector right after the last sector of the previous turn
     int last_turn_end = -1;
+
     const int MIN_STRAIGHT_SECTORS_TO_REPORT = 3;
 
-   // int nxt_turn_start = -1;
     // go through turn_category 
     // keep in memory start of first turn for maybe last 
     for (int i = 0; i < max_nodes; ++i) {
@@ -1760,17 +1780,17 @@ void Kart::categorizeStraightLines() {
     }
 
     // assuming that at least one turn was encountered during the race
+    // store info about a straight line that would start before the race starting line and end after it
     if ((first_turn_start + max_nodes - last_turn_end) > MIN_STRAIGHT_SECTORS_TO_REPORT) { 
-
-        printf("WHOOP\n");
         printf("LAST TURN END: %d\nFIRST_TURN_START: %d\nMAX NODES: %d\n", last_turn_end, first_turn_start, max_nodes);
-        // store straight line at last turn end
         storeStraightLine(last_turn_end, first_turn_start);
     }
-
-
 }
 
+/** Defines and stores specific characteristics for the turn, that will be used to announce it to the player. 
+ * \param turn The turn to store.
+ * \param angle The first angle of the turn, that will help determine the direction of the entire turn.
+*/
 void Kart::setTurnCharacteristics(TurnBasics turn, float angle) {
     int index = turn.sector_start;
     printf("new turn\n");
@@ -1782,21 +1802,23 @@ void Kart::setTurnCharacteristics(TurnBasics turn, float angle) {
 }
 
 
-// Returns the highest intensity within turn
+/** Returns the maximum intensity within turn.
+ * \param intensities An array containing the number of sector intensities in each category for this turn. Each array index corresponds to
+ * an intensity.
+*/
 int Kart::getTurnIntensity(int* intensities) {
-    //int max_intensity = 0;
-    //int n_angles_in_max = 0;
 
     for (int i = TurnBasics::TURN_INTENSITIES-1; i >=0; --i) {
         int value = intensities[i];
         if (value > 0) {
            return i;
-            //n_angles_in_max = value;
         }
     }
 }
 
-
+/** Returns the direction of an angle in term of LEFT, RIGHT, or NONE.
+ * \param angle The angle to analyze.
+ */
 TurnDirection Kart::getAngleDirection(float angle) {
     int sign = extract_sign(angle);
 
@@ -1881,14 +1903,14 @@ void Kart::update(int ticks)
 
     info_counter -= ticks;
 
+    // If button I is pressed, announce corresponding info
     if (m_controls.getInfo()) {
         if (info_counter <= 0) {
             announceInfos();
             info_counter = ticks_info;
         }
         
-        // get the position of the kart with respect to others in the race, get position with respect to closest other kart
-
+        // TODO get the position of the kart with respect to others in the race, get position with respect to closest other kart
     }
 
     LinearWorld* world_player = dynamic_cast<LinearWorld*>(World::getWorld());
@@ -1899,49 +1921,32 @@ void Kart::update(int ticks)
         updateKartInfo(world_player);
     }
 
-    // TODO fix pour le mode histoire (ne pas demander les tours etc. ? ou seulement en fonction de la map idk)
-    
+    // TODO fix for story mode
     if (world_player) {
         TrackSector* sector_player = world_player->getTrackSector(getWorldKartId());
-        //TrackSector* sector_player_copy = world_player->getTrackSector(getWorldKartId());
-
-
-        // Marche pas je crois ca fait crash
-        //TrackSector* newSector = new TrackSector(*sector_player);
-        //int newNode = sector_player->getCurrentGraphNode() + 2; // Adding 2 to the current graph node
-        //newSector->setCurrentGraphNode(newNode); // Assuming setCurrentGraphNode() is a setter method
 
         if (sector_player) {
             float relativeDistance = sector_player->getRelativeDistanceToCenter();
-            //float relativeDistance2 = newSector->getRelativeDistanceToCenter();
             int id_Node = sector_player->getCurrentGraphNode();
-            float distfromstart_player = sector_player->getDistanceFromStart(false);
             bool onroad = sector_player->isOnRoad();
             Track* currentTrack = Track::getCurrentTrack();
 
             DriveNode *node = DriveGraph::get()->getNode(id_Node);
             //DriveGraph::get()->getQuad(id_Node).;
 
-            //std::cout << "sp" << relativeDistance << "ns" << relativeDistance2 << std::endl;
-
 
             float angle = 0;
             
             std::vector<unsigned int> successors;
 
+            // Counter to avoid repeating the same information for a certain period
             static int tick_counter = 0;
             constexpr int ticks_to_wait = 20;
             tick_counter += ticks;
 
+            // Counter to even more delay information about being out of track
             static int tick_counter_for_out = 0;
             constexpr int ticks_to_wait_for_out = 10;
-
-            static int tick_counter_for_wall = 0;
-            constexpr int ticks_to_wait_for_wall = 20;
-
-            
-
-            //printf("TICKS FOR OUT: %d\n", tick_counter_for_out);
 
             if (tick_counter >= ticks_to_wait){
                 DriveGraph::get()->getSuccessors(id_Node, successors);
@@ -1999,24 +2004,27 @@ void Kart::update(int ticks)
 
 
 /////////// PRINT TURN INFO /////////////////
-// only for local player, if there is a turn, and if this turn was not already printed, or if was previously in wrong direction
+// only for local player, if there is a turn, and if this turn was not already printed
                 if ((m_controller->isLocalPlayerController()) & ((m_last_printed_sector != id_Node) || m_just_rescued || ((m_prev_speed < 0) && (m_speed > 0)))) {
                     the_voice->updateQueue();
 
                     int nxt_node = (id_Node+1) % max_nodes;
                     int nxt_angle_cat = angle_category[nxt_node];
 
+                    // If in an angle, play a sound corresponding to the intensity w.r.t next sector
                     if (nxt_angle_cat > 0) {
                         m_turn_sounds[nxt_angle_cat-1]->play();
-                        //speak(m_turn_string[nxt_angle_cat-1]);
                     }
 
-                    // print turn only if first sector of the turn, or the  race has just begun,
-                    // OR ADD kart has just been rescued
-                    // or last sector is below current, or above but behind in track temporality
+                    // Print turn only if:
+                    //  - there is actually a turn and
+                    //  - it is the first sector of the turn,
+                    //  - or the race has just begun,
+                    //  - or kart has just been rescued
                     if ((turn.dir != NONE) 
                     && ((((turn.start_sector-3)%max_nodes) == id_Node) || ((m_lap == 0) && id_Node == (max_nodes-1)) || m_just_rescued)) {
                         std::string d;
+                        // Get direction as a string
                         if (turn.dir == LEFT) {
                             d = "LEFT";
                         } else if (turn.dir == RIGHT) {
@@ -2025,9 +2033,10 @@ void Kart::update(int ticks)
                             d = "STRAIGHT LINE";
                         }
 
+                        // Print turn direction
                         std::cout << "direction: " << d << std::endl;
 
-                        // do not announce intensity when straight line
+                        // Adapt vocal annoucement to type of turn (whether actually turn or is a straight line)
                         if (turn.dir == STRAIGHT) {
                             printf("start sector: %d\nend sector: %d\n\n", id_Node, turn.end_sector);
                             the_voice->speak(m_turn_dir_string[int(turn.dir)] + SEP + getTurnLength(id_Node, turn.end_sector) + LONG_STRING, true, false);
@@ -2036,13 +2045,17 @@ void Kart::update(int ticks)
                             the_voice->speak(m_turn_dir_string[int(turn.dir)] + m_turn_intensity_string[turn.intensity%TURN_SOUNDS_COUNT] + SEP + getTurnLength(id_Node, turn.end_sector) + LONG_STRING, true, false);
                         }
                         
-                        //m_turn_dir_sounds[int(turn.dir)]->play();
                         m_just_rescued = false;
                     }
 
+                    // Update last printed sector
                     m_last_printed_sector = id_Node;
                 } 
 
+                /* Send data to the arduino:
+                    - direction of turn
+                    - intensity of turn
+                    - angle with respect to next sector */
                 std::string dataToSend = "";
                 dataToSend += '<';
                 dataToSend += direction;
