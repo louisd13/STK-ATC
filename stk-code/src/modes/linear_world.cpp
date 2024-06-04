@@ -17,6 +17,8 @@
 
 #include "modes/linear_world.hpp"
 
+#include "karts/controller/skidding_ai.hpp"
+
 #include "achievements/achievements_manager.hpp"
 #include "config/player_manager.hpp"
 #include "audio/music_manager.hpp"
@@ -273,6 +275,9 @@ void LinearWorld::updateTrackSectors()
     {
         KartInfo& kart_info = m_kart_info[n];
         AbstractKart* kart = m_karts[n].get();
+
+        std::unique_ptr<SkiddingAI> skiddingAI = std::make_unique<SkiddingAI>(kart);
+        
 
         // Nothing to do for karts that are currently being
         // rescued or eliminated

@@ -20,6 +20,9 @@
 #define HEADER_PLAYER_CONTROLLER_HPP
 
 #include "karts/controller/controller.hpp"
+#include "karts/controller/ai_base_lap_controller.hpp"
+#include "karts/controller/skidding_ai.hpp"
+
 
 class AbstractKart;
 class Player;
@@ -37,6 +40,9 @@ protected:
     int            m_penalty_ticks;
 
     virtual void  steer(int ticks, int steer_val);
+
+    AIBaseLapController* m_ai_controller;
+    SkiddingAI* m_skidding_ai;
 
 public:
                  PlayerController(AbstractKart *kart);
@@ -95,6 +101,8 @@ public:
     // ------------------------------------------------------------------------
     /** Called when this kart started too early and got a start penalty. */
     virtual void  displayPenaltyWarning();
+
+    void printAIInfo(unsigned int current_sector, float angle);
 
 };   // class PlayerController
 

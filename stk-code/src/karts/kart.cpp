@@ -1921,6 +1921,11 @@ void Kart::update(int ticks)
         updateKartInfo(world_player);
     }
 
+
+    // if (m_controller->isLocalPlayerController()){
+    //     std::cout << "local player controller" << std::endl;
+    // }
+
     // TODO fix for story mode
     if (world_player) {
         TrackSector* sector_player = world_player->getTrackSector(getWorldKartId());

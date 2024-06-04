@@ -428,3 +428,13 @@ void PlayerController::displayPenaltyWarning()
 {
     m_penalty_ticks = stk_config->m_penalty_ticks;
 }   // displayPenaltyWarning
+
+
+void PlayerController::printAIInfo(unsigned int current_sector, float angle){
+
+    float steer_angle = m_ai_controller->steerToAngle(current_sector, angle);
+
+    // Print the information
+    Log::info("PlayerController", "Current Sector: %u", current_sector);
+    Log::info("PlayerController", "Steering Angle: %f", steer_angle);
+}   

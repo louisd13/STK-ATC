@@ -58,7 +58,7 @@ protected:
     virtual void  newLap(int lap);
     //virtual void setControllerName(const std::string &name);
 
-    float    steerToAngle  (const unsigned int sector, const float angle);
+    //float    steerToAngle  (const unsigned int sector, const float angle);
 
     void     computePath();
     // ------------------------------------------------------------------------
@@ -69,6 +69,7 @@ public:
              AIBaseLapController(AbstractKart *kart);
     virtual ~AIBaseLapController() {};
     virtual void reset();
+    float    steerToAngle  (const unsigned int sector, const float angle);
 };   // AIBaseLapController
 
 #endif
