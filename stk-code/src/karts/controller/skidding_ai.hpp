@@ -304,6 +304,8 @@ public:
     virtual void update      (int ticks);
     virtual void reset       ();
     virtual const irr::core::stringw& getNamePostfix() const;
+    void  findNonCrashingPoint_player(Vec3 *result, int *last_node);
+    unsigned int get_last_node() {return m_last_direction_node;}
 };
 
 #endif

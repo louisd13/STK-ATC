@@ -17,6 +17,8 @@
 
 #include "modes/linear_world.hpp"
 
+#include "karts/controller/skidding_ai.hpp"
+
 #include "achievements/achievements_manager.hpp"
 #include "config/player_manager.hpp"
 #include "audio/music_manager.hpp"
@@ -210,6 +212,20 @@ void LinearWorld::update(int ticks)
     // Do stuff specific to this subtype of race.
     // ------------------------------------------
     updateTrackSectors();
+    // 0 tjrs kart player ????
+    AbstractKart* kart = m_karts[0].get();
+    std::unique_ptr<SkiddingAI> skiddingAI = std::make_unique<SkiddingAI>(kart);
+    Vec3 aim_point;
+    int last_node = Graph::UNKNOWN_SECTOR;
+    Vec3 frontxyz = kart->getFrontXYZ();
+    static int tick_counter = 0;
+    constexpr int ticks2wait = 80;
+    tick_counter += ticks;
+
+    if (tick_counter >= ticks2wait){
+        skiddingAI->findNonCrashingPoint_player(&aim_point, &last_node);
+        tick_counter -= ticks2wait;
+    }
     // Run generic parent stuff that applies to all modes.
     // It especially updates the kart positions.
     // It MUST be done after the update of the distances

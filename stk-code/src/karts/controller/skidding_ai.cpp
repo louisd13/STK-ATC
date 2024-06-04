@@ -46,6 +46,7 @@
 #include "utils/constants.hpp"
 #include "utils/log.hpp"
 #include "utils/vs.hpp"
+#include "utils/get_direction.hpp"
 
 #include <line2d.h>
 
@@ -3150,3 +3151,100 @@ void SkiddingAI::setSteering(float angle, float dt)
 
 
 }   // setSteering
+
+ void SkiddingAI::findNonCrashingPoint_player(Vec3 *aim_position, int *last_node)
+{
+#ifdef AI_DEBUG_KART_HEADING
+    const Vec3 eps(0,0.5f,0);
+    m_curve[CURVE_KART]->clear();
+    m_curve[CURVE_KART]->addPoint(m_kart->getXYZ()+eps);
+    Vec3 forw(0, 0, 50);
+    m_curve[CURVE_KART]->addPoint(m_kart->getTrans()(forw)+eps);
+#endif
+    *last_node = m_next_node_index[m_track_node];
+    float angle = DriveGraph::get()->getAngleToNext(m_track_node,
+                                              m_successor_index[m_track_node]);
+
+    
+    Vec3 direction;
+    Vec3 step_track_coord;
+
+    // The original while(1) loop is replaced with a for loop to avoid
+    // infinite loops (which we had once or twice). Usually the number
+    // of iterations in the while loop is less than 7.
+    for(unsigned int j=0; j<100; j++)
+    {
+        // target_sector is the sector at the longest distance that we can
+        // drive to without crashing with the track.
+        int target_sector = m_next_node_index[*last_node];
+        float angle1 = DriveGraph::get()->getAngleToNext(target_sector,
+                                                m_successor_index[target_sector]);
+        // In very sharp turns this algorithm tends to aim at off track points,
+        // resulting in hitting a corner. So test for this special case and
+        // prevent a too-far look-ahead in this case
+        float diff = normalizeAngle(angle1-angle);
+        if(fabsf(diff)>1.5f)
+        {
+            *aim_position = DriveGraph::get()->getNode(target_sector)
+                                            ->getCenter();
+            //std::cout << "Aim 1: " << aim_position->getX() << ", " << aim_position->getZ() << std::endl;
+            //Vec3 kart_aim_direction1 = *aim_position - m_kart->getXYZ();
+            //std::cout << "Diff1: " << kart_aim_direction1.getX() << ", " << kart_aim_direction1.getZ() << std::endl;
+            return;
+        }
+
+        //direction is a vector from our kart to the sectors we are testing
+        direction = DriveGraph::get()->getNode(target_sector)->getCenter()
+                  - m_kart->getXYZ();
+
+        float len=direction.length();
+        unsigned int steps = (unsigned int)( len / m_kart_length );
+        if( steps < 3 ) steps = 3;
+
+        // That shouldn't happen, but since we had one instance of
+        // STK hanging, add an upper limit here (usually it's at most
+        // 20 steps)
+        if( steps>1000) steps = 1000;
+
+        // Protection against having vel_normal with nan values
+        if(len>0.0f) {
+            direction*= 1.0f/len;
+        }
+
+        Vec3 step_coord;
+        //Test if we crash if we drive towards the target sector
+        for(unsigned int i = 2; i < steps; ++i )
+        {
+            step_coord = m_kart->getXYZ()+direction*m_kart_length * float(i);
+
+            DriveGraph::get()->spatialToTrack(&step_track_coord, step_coord,
+                                             *last_node );
+
+            float distance = fabsf(step_track_coord[0]);
+
+            //If we are outside, the previous node is what we are looking for
+            if ( distance + m_kart_width * 0.5f
+                 > DriveGraph::get()->getNode(*last_node)->getPathWidth() )
+            {
+                *aim_position = DriveGraph::get()->getNode(*last_node)
+                                                ->getCenter();
+                //std::cout << "Aim 2: " << aim_position->getX() << ", " << aim_position->getZ() << std::endl;
+                Vec3 front = m_kart->getFrontXYZ();
+                //std::cout << " front" << front.getX() << ", " << front.getZ() << std::endl;
+                Vec3 kart_pos = m_kart->getXYZ();
+                //std::cout << "kart pos 2" << kart_pos.getX() << ", " << kart_pos.getZ() << std::endl;
+                Vec3 kart_aim_direction2 = *aim_position - m_kart->getXYZ();
+                //std::cout << "Diff2: " << kart_aim_direction2.getX() << ", " << kart_aim_direction2.getZ() << std::endl;
+                int dir = aimDirection(kart_pos.getX(), kart_pos.getZ(), front.getX(), front.getZ(), aim_position->getX(), aim_position->getZ(), 5.0, 30.0);
+                return;
+            }
+        }
+        angle = angle1;
+        *last_node = target_sector;
+    }   // for i<100
+    *aim_position = DriveGraph::get()->getNode(*last_node)->getCenter();
+    //std::cout << "Aim 3: " << aim_position->getX() << ", "  << aim_position->getZ() << std::endl;
+    //Vec3 kart_aim_direction3 = *aim_position - m_kart->getXYZ();
+    //std::cout << "Diff3: " << kart_aim_direction3.getX() << ", " << kart_aim_direction3.getZ() << std::endl;
+
+}   // findNonCrashingPoint
