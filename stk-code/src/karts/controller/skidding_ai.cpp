@@ -47,6 +47,7 @@
 #include "utils/log.hpp"
 #include "utils/vs.hpp"
 #include "utils/get_direction.hpp"
+#include "utils/arduino_com.hpp"
 
 #include <line2d.h>
 
@@ -186,10 +187,10 @@ void SkiddingAI::reset()
     DriveGraph::get()->findRoadSector(m_kart->getXYZ(), &m_track_node);
     if(m_track_node==Graph::UNKNOWN_SECTOR)
     {
-        Log::error(getControllerName().c_str(),
-                   "Invalid starting position for '%s' - not on track"
-                   " - can be ignored.",
-                   m_kart->getIdent().c_str());
+        // Log::error(getControllerName().c_str(),
+        //            "Invalid starting position for '%s' - not on track"
+        //            " - can be ignored.",
+        //            m_kart->getIdent().c_str());
         m_track_node = DriveGraph::get()->findOutOfRoadSector(m_kart->getXYZ());
     }
 
@@ -3236,6 +3237,19 @@ void SkiddingAI::setSteering(float angle, float dt)
                 Vec3 kart_aim_direction2 = *aim_position - m_kart->getXYZ();
                 //std::cout << "Diff2: " << kart_aim_direction2.getX() << ", " << kart_aim_direction2.getZ() << std::endl;
                 int dir = aimDirection(kart_pos.getX(), kart_pos.getZ(), front.getX(), front.getZ(), aim_position->getX(), aim_position->getZ(), 5.0, 30.0);
+                //std::cout << "Direction: " << dir << std::endl;
+
+                std::string ToSend = "";
+                ToSend += '{';
+                ToSend += std::to_string(dir);
+                ToSend += '}';
+
+                if (globalArduinoCom->isConnected()) {
+                    globalArduinoCom->writeSerial(ToSend);
+                    std::cout << ToSend << std::endl;
+                }
+                //arduino.writeSerial(ToSend);
+
                 return;
             }
         }

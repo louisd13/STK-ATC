@@ -219,7 +219,7 @@ void LinearWorld::update(int ticks)
     int last_node = Graph::UNKNOWN_SECTOR;
     Vec3 frontxyz = kart->getFrontXYZ();
     static int tick_counter = 0;
-    constexpr int ticks2wait = 80;
+    constexpr int ticks2wait = 20;
     tick_counter += ticks;
 
     if (tick_counter >= ticks2wait){

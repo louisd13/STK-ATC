@@ -1,6 +1,8 @@
-
 #include "arduino_com.hpp"
 #include <iostream>
+
+// Initialize the global instance pointer
+ArduinoCom* globalArduinoCom = nullptr;
 
 ArduinoCom::ArduinoCom(std::string portName) : portName(portName), connected(false) {
     hSerial = CreateFileA(static_cast<LPCSTR>(portName.c_str()),
@@ -56,4 +58,10 @@ bool ArduinoCom::writeSerial(std::string data) {
     DWORD bytesSent;
     bool success = WriteFile(hSerial, data.c_str(), data.size(), &bytesSent, NULL);
     return success;
+}
+
+void initializeGlobalArduinoCom(std::string portName) {
+    if (globalArduinoCom == nullptr) {
+        globalArduinoCom = new ArduinoCom(portName);
+    }
 }

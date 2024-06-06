@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <string>
 
+
 class ArduinoCom {
 private:
     HANDLE hSerial;
@@ -18,4 +19,7 @@ public:
     bool writeSerial(std::string data);
 };
 
+extern ArduinoCom* globalArduinoCom;
+
+void initializeGlobalArduinoCom(std::string portName);
 #endif

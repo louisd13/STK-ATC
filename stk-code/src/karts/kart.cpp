@@ -105,7 +105,6 @@
 #include <cmath>
 #include <cstdlib>
 
-ArduinoCom arduino("\\\\.\\COM11");
 
 #if defined(WIN32) && !defined(__CYGWIN__)  && !defined(__MINGW32__)
    // Disable warning for using 'this' in base member initializer list
@@ -256,6 +255,8 @@ Kart::Kart (const std::string& ident, unsigned int world_kart_id,
 */
 void Kart::init(RaceManager::KartType type)
 {
+
+    initializeGlobalArduinoCom("\\\\.\\COM11");
     m_type = type;
 
     //////////////////////////
@@ -2051,7 +2052,11 @@ void Kart::update(int ticks)
                 dataToSend += ',';
                 dataToSend += std::to_string(angles[id_Node]);
                 dataToSend += '>';
-                arduino.writeSerial(dataToSend);
+                if (globalArduinoCom->isConnected()) {
+                    globalArduinoCom->writeSerial(dataToSend);
+                    //std::cout << dataToSend << std::endl;
+                }
+                //arduino.writeSerial(dataToSend);
                 //std::cout << dataToSend << std::endl; 
                 
                 tick_counter -= ticks_to_wait;

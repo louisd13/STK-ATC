@@ -1,49 +1,56 @@
 #define LED_PIN 13
 
-#define VIB_PIN1 5 // Thumb  
-#define VIB_PIN2 9 // Droite
-#define VIB_PIN3 6 // Middle finger
-#define VIB_PIN4 10// Gauche
-#define VIB_PIN5 3 // Little finger
+#define VIB_PIN1 6 // majeur
+#define VIB_PIN2 10 // petit doigt
+#define VIB_PIN3 9  // annulaire
+#define VIB_PIN4 5 // index 
 
-unsigned long previousMillis = 0;
-const long interval_1 = 500; 
-const long interval_2 = 200; 
-
-
+#define VIB_PIN5 3
 
 const byte numChars = 32;
 char receivedChars[numChars];
 char tempChars[numChars];  
 
+// First message i get :  left or right / vibration threshold
 char messageFromPC[numChars] = {0};
 int integerFromPC1 = 0;
-//int integerFromPC2 = 0;
 float floatFromPC = 0.0;
 
+// The second message i get : direction to aim
+int integerFromPC2 = 0;
+
 boolean newData = false;
+boolean expectFirstMessage = true;
 
 void setup() {
     Serial.begin(115200);
-    //Serial.println("This demo expects 3 pieces of data - text, an integer and a floating point value");
-    //Serial.println("Enter data in this style <HelloWorld, 12, 24.7>  ");
-    //Serial.println();
-    pinMode(VIB_PIN1 ,OUTPUT); // thumb
-    pinMode(VIB_PIN2 ,OUTPUT); // index
-    pinMode(VIB_PIN3 ,OUTPUT); // middle finger
-    pinMode(VIB_PIN4 ,OUTPUT); // ring finger
-    pinMode(VIB_PIN5 ,OUTPUT); // little finger
+    pinMode(VIB_PIN1 ,OUTPUT);
+    pinMode(VIB_PIN2 ,OUTPUT);
+    pinMode(VIB_PIN3 ,OUTPUT);
+    pinMode(VIB_PIN4 ,OUTPUT); 
+    pinMode(VIB_PIN5 ,OUTPUT);
 }
 
 void loop() {
-    unsigned long currentMillis = millis();
 
-    recvWithStartEndMarkers();
-    if (newData == true) {
-        strcpy(tempChars, receivedChars);
-        parseData();
-        showParsedData(currentMillis);
-        newData = false;
+    if (expectFirstMessage) {
+        recvWithStartEndMarkers();
+        if (newData == true) {
+            strcpy(tempChars, receivedChars);
+            parseData();
+            showParsedData();
+            newData = false;
+            expectFirstMessage = false; 
+        }
+    } else {
+        recvWithStartEndMarkers2();
+        if (newData == true) {
+            strcpy(tempChars, receivedChars);
+            parseData2();
+            showParsedData2();
+            newData = false;
+            expectFirstMessage = true; // Switch back to expect first message next
+        }
     }
 }
 
@@ -78,6 +85,49 @@ void recvWithStartEndMarkers() {
         }
     }
 }
+//============
+
+void recvWithStartEndMarkers2() {
+    static boolean recvInProgress = false;
+    static byte ndx = 0;
+    char startMarker = '{';
+    char endMarker = '}';
+    char rc;
+
+    while (Serial.available() > 0 && newData == false) {
+        rc = Serial.read();
+
+        if (recvInProgress == true) {
+            if (rc != endMarker) {
+                receivedChars[ndx] = rc;
+                ndx++;
+                if (ndx >= numChars) {
+                    ndx = numChars - 1;
+                }
+            }
+            else {
+                receivedChars[ndx] = '\0'; // terminate the string
+                recvInProgress = false;
+                ndx = 0;
+                newData = true;
+            }
+        }
+        else if (rc == startMarker) {
+            recvInProgress = true;
+        }
+    }
+}
+
+void parseData2() {
+    if (newData) {
+        strcpy(tempChars, receivedChars); // this temporary copy is necessary to protect the original data
+                                          // because strtok() used in parseData() replaces the commas with \0
+
+        // Parse the character into an integer using atoi
+        integerFromPC2 = atoi(tempChars); // Convert char to integer
+        newData = false;
+    }
+}
 
 //============
 
@@ -98,74 +148,90 @@ void parseData() {      // split the data into its parts
 
 //============
 
-void showParsedData(unsigned long currentMillis) {
-    //Serial.print("Direction ");
-    //Serial.println(messageFromPC[0]);
-    // Serial.print("Intensity ");
-    //Serial.println(integerFromPC1);
-    // Serial.print("On road ");
-    // Serial.println(integerFromPC2);
-    //rallye(floatFromPC);
-
-    //if (currentMillis - previousMillis >= interval) {
-    //     // Save the last time you ran the function
-      //previousMillis = currentMillis;
-
-      if(messageFromPC[0] == 'l'){
-          processValueLeft(integerFromPC1);
-          analogWrite(VIB_PIN4, LOW);
+void showParsedData() {
+  if(messageFromPC[0] == 'l'){
+      processValueLeft(integerFromPC1);
+      analogWrite(VIB_PIN4, LOW);
         //   //Serial.println("Left close");
-      }
-      else if(messageFromPC[0] == 'r'){
-        processValueRight(integerFromPC1);
-        analogWrite(VIB_PIN2, LOW);
+  }
+  else if(messageFromPC[0] == 'r'){
+      processValueRight(integerFromPC1);
+      analogWrite(VIB_PIN2, LOW);
         //   //Serial.println("Right close");
-      }
-    //}
-    // else{
-    //   analogWrite(VIB_PIN4, LOW);
-    //   analogWrite(VIB_PIN2, LOW);
-    // }
-}
-
-
-void rallye(float f){
-  if(f>2.0){ // go right
-    //Serial.println("Go Right");
-    analogWrite(VIB_PIN2, 25);
-    analogWrite(VIB_PIN3, 0);
-    analogWrite(VIB_PIN4, 0);
-  }
-  else if(f<-2.0){ // go left 
-    Serial.println("Go Left");
-    analogWrite(VIB_PIN2, 0);
-    analogWrite(VIB_PIN3, 0);
-    analogWrite(VIB_PIN4, 25);
-  }
-  else{ // go straight
-    //Serial.println("Go Straight");
-    analogWrite(VIB_PIN2, 0);
-    analogWrite(VIB_PIN3, 0);
-    analogWrite(VIB_PIN4, 0);
   }
 }
 
+void showParsedData2() {
+    if (integerFromPC2 == 0) {
+        analogWrite(VIB_PIN3, 0);
+        analogWrite(VIB_PIN1, 0);
+    } else if (integerFromPC2 == 1) {
+        processValueSlightRight(); 
+    } else if (integerFromPC2 == 2) {
+        processValueSlightLeft(); 
+    } else if (integerFromPC2 == 3) {
+        processValueTooMuchRight(); 
+    } else if (integerFromPC2 == 4) {
+        processValueTooMuchLeft();
+    }
+}
 
-// void processValueLeft(int value) {
-//     if (value == 1) {
-//         // Do something for value 1
-//         analogWrite(VIB_PIN2, 20);
-//         delay(100);
-//         analogWrite(VIB_PIN2, LOW);
-//     } else if (value == 2) {
-//         // Do something for value 2
-//         analogWrite(VIB_PIN2, 23);
-//         delay(100);
-//         analogWrite(VIB_PIN2, LOW);
-//     } else if (value == 0) {
-//       analogWrite(VIB_PIN2,0);
-//     }
-// }
+void processValueSlightRight() {
+    static unsigned long previousMillis = 0;
+    const unsigned long duration = 200; 
+
+    unsigned long currentMillis = millis();
+
+    if (currentMillis - previousMillis >= duration) {
+        previousMillis = currentMillis;
+        analogWrite(VIB_PIN3, 40);
+        delay(100);
+        analogWrite(VIB_PIN3, LOW);
+    }
+}
+
+void processValueSlightLeft() {
+    static unsigned long previousMillis = 0;
+    const unsigned long duration = 200; 
+
+    unsigned long currentMillis = millis();
+
+    if (currentMillis - previousMillis >= duration) {
+        previousMillis = currentMillis;
+        analogWrite(VIB_PIN1, 40);
+        delay(100);
+        analogWrite(VIB_PIN1, LOW);
+    }
+}
+
+void processValueTooMuchRight() {
+    static unsigned long previousMillis = 0;
+    const unsigned long duration = 500; 
+
+    unsigned long currentMillis = millis();
+
+    if (currentMillis - previousMillis >= duration) {
+        previousMillis = currentMillis;
+        analogWrite(VIB_PIN3, 40);
+        delay(100);
+        analogWrite(VIB_PIN3, LOW);
+    }
+}
+
+void processValueTooMuchLeft() {
+    static unsigned long previousMillis = 0;
+    const unsigned long duration = 500; 
+
+    unsigned long currentMillis = millis();
+
+    if (currentMillis - previousMillis >= duration) {
+        previousMillis = currentMillis;
+        analogWrite(VIB_PIN1, 40);
+        delay(100);
+        analogWrite(VIB_PIN1, LOW);
+    }
+}
+
 
 void processValueLeft(int value) {
     static unsigned long previousMillis_1 = 0;
@@ -179,15 +245,14 @@ void processValueLeft(int value) {
     if (value == 1) {
         if (currentMillis - previousMillis_1 >= duration_1) {
             previousMillis_1 = currentMillis;
-            analogWrite(VIB_PIN4, 50);
+            analogWrite(VIB_PIN4, 40);
             delay(100);
             analogWrite(VIB_PIN4, LOW);
         }
     } else if (value == 2) {
         if (currentMillis - previousMillis_2 >= duration_2) {
             previousMillis_2 = currentMillis;
-            //Serial.println("gauche 2");
-            analogWrite(VIB_PIN4, 50);
+            analogWrite(VIB_PIN4, 40);
             delay(100);
             analogWrite(VIB_PIN4, LOW);
         }
@@ -209,14 +274,14 @@ void processValueRight(int value) {
     if (value == 1) {
         if (currentMillis - previousMillis_1 >= duration_1) {
             previousMillis_1 = currentMillis;
-            analogWrite(VIB_PIN2, 50);
+            analogWrite(VIB_PIN2, 40);
             delay(100);
             analogWrite(VIB_PIN2, LOW);
         }
     } else if (value == 2) {
         if (currentMillis - previousMillis_2 >= duration_2) {
             previousMillis_2 = currentMillis;
-            analogWrite(VIB_PIN2, 50);
+            analogWrite(VIB_PIN2, 40);
             delay(100);
             analogWrite(VIB_PIN2, LOW);
         }
@@ -228,21 +293,3 @@ void processValueRight(int value) {
 
 
 
-
-// void processValueRight(int value) {
-//     if (value == 1) {
-//         // Do something for value 1
-//         analogWrite(VIB_PIN4, 20);
-//         // pulse duration
-//         delay(100);
-//         analogWrite(VIB_PIN4, LOW);
-//     } else if (value == 2) {
-//         // Do something for value 2
-//         analogWrite(VIB_PIN4, 23);
-//         delay(100);
-//         analogWrite(VIB_PIN4, LOW);
-
-//     } else if (value == 0) {
-//       analogWrite(VIB_PIN4,0);
-//     }
-// }

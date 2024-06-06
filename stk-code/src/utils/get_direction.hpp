@@ -49,18 +49,18 @@ int aimDirection(float kartX, float kartZ, float frontX, float frontZ, float aim
         return 0; // Aiming correctly
     } else if (theta_deg <= deg_high) {
         if (d_kX * d_aZ - d_kZ * d_aX > 0) {
-            std::cout << "Slightly to the right" << std::endl;
+            //std::cout << "Slightly to the right" << std::endl;
             return 1; // Slightly to the right
         } else {
-            std::cout << "Slightly to the left" << std::endl;
+            //std::cout << "Slightly to the left" << std::endl;
             return 2; // Slightly to the left
         }
     } else {
         if (d_kX * d_aZ - d_kZ * d_aX > 0) {
-            std::cout << "Too much to the right" << std::endl;
+            //std::cout << "Too much to the right" << std::endl;
             return 3; // Too much to the right
         } else {
-            std::cout << "Too much to the left" << std::endl;
+            //std::cout << "Too much to the left" << std::endl;
             return 4; // Too much to the left
         }
     }
