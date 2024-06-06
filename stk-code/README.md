@@ -58,5 +58,6 @@ Real-time beeps indicate the intensity of a turn, using the sectors intensities 
 
 ### Additional control key
 
-To enable a more customizable game, we decided to 
-ANOUK
+To enable a more customizable game, we decided to allocate a new key for the specific needs of our Challenger. The goal of this key is to give out information on whatever the Challenger believed necessary. 
+
+To add a new key, we had to alter numerous files, so many that we could not recall exactly which ones. It was a real treasure hunt to find all the places we had to modify to get a new key to work.
