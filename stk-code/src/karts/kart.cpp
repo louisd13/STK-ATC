@@ -1451,6 +1451,8 @@ void Kart::announceInfos(int id_Node) {
  * \param current_sector The sector the player is currently in, used to determine the number of sectors left in the turn.
  */
 void Kart::announceTurn(TurnInfo turn, int current_sector) {
+    if (turn.dir == NONE) return;
+
     std::string d;
 
     // Get direction as a string
