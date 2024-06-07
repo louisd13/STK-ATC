@@ -1437,27 +1437,27 @@ void Kart::updatePositionAdIfDifferent(int ticks) {
     //} 
 }
 
-
+/**
+ * Method called when pressing button 'I'. Announces infos specific to the player. In the current state, repeats info about the current turn.
+ */
 void Kart::announceInfos() {
     /// rhankkkking
 }
 
-
+/**
+ * Plays a different sound according to whether the player has just overtaken or been overtaken, to announce a change in rank.
+ */
 void Kart::announceRank(bool gainedRank) {
-    //std::cout << "current rank: " << m_race_position << std::endl;
-
-    std::string display = gainedRank ? ":D" : ":(";
-
     if (gainedRank) {
         m_happy_horn->play();
     } else {
         m_sad_horn->play();
-    }
-
-    //std::cout << display << std::endl;
-    beep();     
+    }     
 }
 
+/**
+ * Announces when the player has started a new lap.
+ */
 void Kart::updateKartInfo(LinearWorld* world) {
     Track* track = Track::getCurrentTrack();
     
@@ -1467,7 +1467,6 @@ void Kart::updateKartInfo(LinearWorld* world) {
         if ((m_last_printed_lap == m_lap) || (m_lap == 0)) return;
 
         m_last_printed_lap = m_lap;
-        //std::cout << "started lap: " << m_lap << std::endl;
         the_voice->speak(NEW_LAP_STRING + m_number_string[m_lap-1], true, false);
     }
 }
@@ -1477,6 +1476,12 @@ void Kart::updateKartInfo(LinearWorld* world) {
 // Takes into account edge cases for a == 0 or b == 0 or a == +-180 or b == +-180.
 // In the case of either a or b == 0 and the other == +- 180, the result will depend, but this case is not possible in practice, so no further
 // investigation has been made to solve this issue.
+
+/**
+ * Computes the relative angle between to sectors, a being before b in the direction of travel. Angles are in degrees [-180;180].
+ * \param a The first angle in direction of travel.
+ * \param b The second angle in direction of travel.
+ */
 float Kart::computeRelativeAngle(float a, float b) {
     float diff = b-a;
 
@@ -1484,11 +1489,9 @@ float Kart::computeRelativeAngle(float a, float b) {
         /* if (extract_sign(a) == extract_sign(b)) printf("sign: ");
         if (abs(diff) <= 180) printf("abs(b-a) <= 180: "); */
         return diff;
-    } else if (a > 0) {                         
-        //printf("a > 0: ");
+    } else if (a > 0) {    
         return (180 - a) + (180 + b);
     } else {
-        //printf("b > 0: ");
         return ((-180) - a) - (180 - b);
     }
 }
@@ -1890,17 +1893,6 @@ void Kart::update(int ticks)
 
     info_counter -= ticks;
 
-    // If button I is pressed, announce corresponding info
-    if (m_controls.getInfo()) {
-        if (info_counter <= 0) {
-            announceInfos();
-            info_counter = ticks_info;
-        }
-        
-        // TODO get the position of the kart with respect to others in the race, get position with respect to closest other kart
-
-    }
-
     LinearWorld* world_player = dynamic_cast<LinearWorld*>(World::getWorld());
 
     // only make automatic announcement about local kart
@@ -1922,6 +1914,17 @@ void Kart::update(int ticks)
             DriveNode *node = DriveGraph::get()->getNode(id_Node);
             float angle = 0;
             std::vector<unsigned int> successors;
+
+            // If button I is pressed, announce corresponding info
+            if (m_controls.getInfo()) {
+                if (info_counter <= 0) {
+                    announceInfos();
+                    info_counter = ticks_info;
+                }
+                
+                // TODO get the position of the kart with respect to others in the race, get position with respect to closest other kart
+
+            }
 
             // Counter to avoid repeating the same information for a certain period
             static int tick_counter = 0;
