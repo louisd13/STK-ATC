@@ -2032,7 +2032,7 @@ void Kart::update(int ticks)
                     && ((((turn.start_sector-3)%max_nodes) == id_Node) || ((m_lap == 0) && id_Node == (max_nodes-1)) || m_just_rescued)) {
                         
 
-                        announceTurn(turn);
+                        announceTurn(turn, id_Node);
 
                         // // Get direction as a string
                         // if (turn.dir == LEFT) {
