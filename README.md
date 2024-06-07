@@ -1,6 +1,6 @@
 # ATC Project: Adapting SuperTuxKart for a visually impaired player
 
-To access the official README of the game, please go to OFFICIALSTK_README.md.
+To access the official README of the game, please go to ``stk-code/OFFICIALSTK_README.md``.
 
 This project has been conducted by Louis Duval, Anouk Paulino, Laetitia Schwitter and Marianne Scoglio, in the context of EPFL Assistive Technologies Challenge. The additional code has been produced by Louis Duval and Anouk Paulino.
 
@@ -21,7 +21,7 @@ You can also look for commented printf or cout which will often be were we were 
 
 To express most of the game data that we have been able to collect, we used a TTS software external to the game. We have created a class to call for this TTS' help in audio/tts.
 
-ANOUK
+To make sure the TTS does not freeze the game, we had to call it from threads. This process made it difficult to ensure that no two voices were speaking at the same time. We had to come up with a system of queues and locks to make sure that threads would not speak at the same time and confuse the user. All the related classes are also in audio/tts.
 
 ### General race data
 
