@@ -256,6 +256,8 @@ Kart::Kart (const std::string& ident, unsigned int world_kart_id,
 void Kart::init(RaceManager::KartType type)
 {
 
+    // Linux :  initializeGlobalArduinoCom("/dev/ttyUSB0");
+    // Windows:
     initializeGlobalArduinoCom("\\\\.\\COM11");
     m_type = type;
 

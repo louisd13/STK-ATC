@@ -120,16 +120,12 @@ void AbstractStateManager::pushMenu(Screen* screen)
     }
 
 
-    std::cout << "Ecran : " << screenName << std::endl;
+    //std::cout << "Screen : " << screenName << std::endl;
     std::string ToSend = "";
     ToSend += "Screen : ";
     ToSend += screenName ;
-
     the_voice->speak(ToSend, true, true);
 
-    // if (screenName == "main_menu"){
-    //     std::cout << "Ecran principal" << std::endl;
-    // }
 
 
     // Send tear-down event to previous menu
