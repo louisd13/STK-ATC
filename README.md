@@ -20,13 +20,13 @@ It was necessary to add a tick counter to reduce the frequency of printed (for d
 
 ### Text-To-Speech (TTS)
 
-To express most of the game data that we have been able to collect, we used a TTS software external to the game. We have created a class to call for this 'TTS' help in audio/tts.
+To express most of the game data that we have been able to collect, we used a TTS software external to the game. We have created a class to call for this TTS' help in ``audio/tts``.
 
-To make sure the TTS does not freeze the game, we had to run it in different threads. This process made it difficult to ensure that no two voices were speaking at the same time. We had to come up with a system of queues and locks to make sure that threads would not speak at the same time and confuse the user. All the related classes are also in audio/tts.
+To make sure the TTS does not freeze the game, we had to run it in different threads. This process made it difficult to ensure that no two voices were speaking at the same time. We had to come up with a system of queues and locks to make sure that threads would not speak at the same time and confuse the user. All the related classes are also in ``audio/tts``.
 
 ### General race data
 
-Our Challenger needs to access different data about the race, just like we do. From the kart.cpp file, which allows to access the current race the kart is in, we have retrieved info such as lap number and ranking of the current player. This was mainly done directly in Kart::update.
+Our Challenger needs to access different data about the race, just like we do. From the ``kart.cpp`` file, which allows to access the current race the kart is in, we have retrieved info such as lap number and ranking of the current player. This was mainly done directly in ``Kart::update(...)``.
 
 ### Rallye system
 
@@ -34,13 +34,13 @@ We have designed a rallye system that resembles the ones one can find in a class
 
 Tracks are defined by an XML file, and we expected to perhaps find a precomputed version of the entire track. Unfortunately, it seems that no thing exists in the code, so we had to find a way to get the data by our own means.
 
-The XML file describes nodes. Tracks are made of a fixed number of nodes, that can vary from track to track. These nodes define sectors that follow each other along the track. Using this information and existing methods, we were able to get the angle of the current sector with respect to the start line. By scanning through the entire track, we have computed the angle between a given sector and its direct successor. We were then left with a table indicating the relative angle between the current sector and the next one (Kart::computeRelativeAngle). 
+The XML file describes nodes. Tracks are made of a fixed number of nodes, that can vary from track to track. These nodes define sectors that follow each other along the track. Using this information and existing methods, we were able to get the angle of the current sector with respect to the start line. By scanning through the entire track, we have computed the angle between a given sector and its direct successor. We were then left with a table indicating the relative angle between the current sector and the next one (``Kart::computeRelativeAngle(...)``). 
 
-We have associated an intensity with each angle in this table. The intensity of a turn would be defined by the intensities of sectors composing it (Kart::categorizeAngle). 
+We have associated an intensity with each angle in this table. The intensity of a turn would be defined by the intensities of sectors composing it (``Kart::categorizeAngle(...)``). 
 
-We have then looked for a way of categorizing the turns in a track, also using this angle table and the associated intensities. For instance, we wanted angles in different directions to trigger the creation of a new turn. We have created a state machine (Kart::categorizeAngle) to get all our requirements together. It takes into account several parameters, such as angle direction, intensity, number of angles with no intensity before that, etc. Once a turn was determined, its data was stored along the corresponding sectors for further access.
+We have then looked for a way of categorizing the turns in a track, also using this angle table and the associated intensities. For instance, we wanted angles in different directions to trigger the creation of a new turn. We have created a state machine (``Kart::categorizeAngle(...)``) to get all our requirements together. It takes into account several parameters, such as angle direction, intensity, number of angles with no intensity before that, etc. Once a turn was determined, its data was stored along the corresponding sectors for further access.
 
-With this system, we have been able to get a written representation of the different turns (and also straight lines with Kart::categorizeStraightLines) along a track (Kart::scanTrackForRallye). We were then able to announce the info of the turn a few sectors ahead using TTS.
+With this system, we have been able to get a written representation of the different turns (and also straight lines with ``Kart::categorizeStraightLines()``) along a track (``Kart::scanTrackForRallye(...)``). We were then able to announce the info of the turn a few sectors ahead using TTS.
 
 ### Menu
 
@@ -77,7 +77,7 @@ Even with this track-relative position information, it was still challenging to 
 
 ### Additional ambiant sounds
 
-In addition to vocal indications, we have added a few sounds to make the game more immersive. The files in themselves have been registered in the game through a specific file, and they are used in kart.cpp, in Kart::update.
+In addition to vocal indications, we have added a few sounds to make the game more immersive. The files in themselves have been registered in the game through a specific file, and they are used in ``Kart::update(...)``, located in ``kart.cpp``.
 
 We have added different horn sounds to be played either when the kart overtakes another kart, or when it is overtaken.
 
@@ -91,7 +91,7 @@ To add a new key, we had to alter numerous files, so many that we could not reca
 
 ### No objects
 
-We disabled objects so as not to favor any non-visually impaired player. We have not had the time to add feedback for objects so this was the easy way. To do so, we have changed the default value of object to false.
+We disabled objects so as not to favor any non-visually impaired player. We have not had the time to add feedback for objects so this was the easy way. To do so, we have changed the default value of object to ``false``.
 
 ### Communication with the Arduino for vibratory feedback
 
