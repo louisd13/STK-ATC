@@ -41,7 +41,7 @@ We have then looked for a way of categorizing the turns in a track, also using t
 
 With this system, we have been able to get a written representation of the different turns (and also straight lines with Kart::categorizeStraightLines) along a track (Kart::scanTrackForRallye). We were then able to announce the info of the turn a few sectors ahead using TTS.
 
-### Menu 
+### Menu
 
 As we want our visually-impaired challenger to be as independant as possible, we had to understand how the menu navigation and selection was working. Our objective was to get the name of the widget the player is hovering upon. Then we wanted to give the title of the screen that we are on at the changing of screens. Our challenger wanted to be able to only navigate with the keyboard and no mouse.
 
@@ -53,7 +53,6 @@ The screen names were outputted from functions and files in the (stk-code\src\st
 
 This menu navigation is far from being perfect as they are many different screens but it is sufficient for the basic task of launching a race.
 
-
 To further improve we can modify the xml files of the screens (stk-code\data\gui\screens) and add or modify the text attribute of any button which could then be retrieved by the TTS system. 
 
 For further improvements files and functions to check : 
@@ -62,8 +61,6 @@ Widget.hpp :
 RibbonWidget.hpp : check the all the calls of "void updateSelection(bool to_print = true)" which is a function that calls the focused function just above or any other function that calls this function. 
 Check how the screens are made with what kind of widgets and add a text attribute to a widget in the xml corresponding file if necessary.
 
-
-
 ### Track relative position
 
 In order for our player to understand his position on the track we used the getRelativeDistanceToCenter() function from the TrackSector class (stk-code\src\tracks\track_sector.hpp) which give a float number between -1.0 and 1.0 according to how far the kart is from the middle of the track. It returns 0 if you are perfectly at the middle, -1.0 if you are at the far left of the track and 1.0 at the far right. 
@@ -71,7 +68,6 @@ In order for our player to understand his position on the track we used the getR
 ### Additionnal Guidance 
 
 Even with this track relative position information it was still challenging to understand where to go and at where the kart was aiming at. Inspired by the AI (or bot) implementation of supertuxkart we reused the findNonCrashingPoint_player() function (stk-code\src\karts\controller\skidding_ai.hpp). This function gives the point relative to the point the kart is actually at where the kart would stay on track if going in a straight line towards it. By retrieving aswell the front of the kart coordinates we can then compute the angle the front of the kart should aim at to stay on track. A function in the get_direction.hpp file : "int aimDirection(float kartX, float kartZ, float frontX, float frontZ, float aimX, float aimZ, float deg_low, float deg_high)" in "stk-code\src\utils\get_direction.hpp" returns a integer between 1 and 4 according to where the kart aims at and a threshold of degrees. 
-
 
 ### Additional ambiant sounds
 
@@ -86,6 +82,10 @@ Real-time beeps indicate the intensity of a turn, using the sectors intensities 
 To enable a more customizable game, we decided to allocate a new key for the specific needs of our Challenger. The goal of this key is to give out information on whatever the Challenger believed necessary. 
 
 To add a new key, we had to alter numerous files, so many that we could not recall exactly which ones. It was a real treasure hunt to find all the places we had to modify to get a new key to work.
+
+### No objects
+
+We disabled objects so as not to favor any non-visually impaired player. We have not had the time to add feedback for objects so this was the easy way. To do so, we have changed the default value of object to false.
 
 ### Communication with the Arduino
 
