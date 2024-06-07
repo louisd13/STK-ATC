@@ -1471,14 +1471,11 @@ void Kart::updateKartInfo(LinearWorld* world) {
     }
 }
 
-// Computes the relative angle between to sectors, a being before b in the direction of travel.
-// ANGLES MUST BE IN DEGREES [-180;180] FOR THIS COMPUTATION
-// Takes into account edge cases for a == 0 or b == 0 or a == +-180 or b == +-180.
-// In the case of either a or b == 0 and the other == +- 180, the result will depend, but this case is not possible in practice, so no further
-// investigation has been made to solve this issue.
-
 /**
  * Computes the relative angle between to sectors, a being before b in the direction of travel. Angles are in degrees [-180;180].
+ * Takes into account edge cases for a == 0 or b == 0 or a == +-180 or b == +-180.
+ * In the case of either a or b == 0 and the other == +- 180, the result will depend, but this case is not possible in practice, so no 
+ * further investigation has been made to solve this issue.
  * \param a The first angle in direction of travel.
  * \param b The second angle in direction of travel.
  */
