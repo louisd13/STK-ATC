@@ -1943,7 +1943,7 @@ void Kart::update(int ticks)
             // If button I is pressed, announce corresponding info
             if (m_controls.getInfo()) {
                 if (info_counter <= 0) {
-                    announceInfos(id_Node);
+                    announceInfos(id_Node%max_nodes);
                     info_counter = ticks_info;
                 }
                 
@@ -2037,7 +2037,7 @@ void Kart::update(int ticks)
                     if ((turn.dir != NONE) 
                     && ((((turn.start_sector-3)%max_nodes) == id_Node) || ((m_lap == 0) && id_Node == (max_nodes-1)) || m_just_rescued)) {
                         
-                        announceTurn(turn, id_Node);
+                        announceTurn(turn, id_Node%max_nodes);
 
                         // // Get direction as a string
                         // if (turn.dir == LEFT) {
