@@ -93,6 +93,8 @@ To enable a more customizable game, we decided to allocate a new key for the spe
 
 To add a new key, we had to alter numerous files, so many that we could not recall exactly which ones. It was a real treasure hunt to find all the places we had to modify to get a new key to work.
 
+The key could virtually serve any purpose. The most interesting that we could do within the time we had was to allow the player to get the information of the current turn once again. 
+
 ### No objects
 
 We disabled objects so as not to favor any non-visually impaired player. We have not had the time to add feedback for objects so this was the easy way. To do so, we have changed the default value of object to ``false``.
