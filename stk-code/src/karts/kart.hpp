@@ -348,7 +348,8 @@ protected:
 
     void updatePositionAdIfDifferent(int ticks);
     void announceRank(bool gainedRank);
-    void announceInfos();
+    void announceInfos(int id_Node);
+    void announceTurn(TurnInfo turn, int current_sector);
     void updateKartInfo(LinearWorld* world);
 
     void scanTrackForRallye();

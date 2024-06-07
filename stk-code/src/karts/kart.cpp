@@ -1440,8 +1440,30 @@ void Kart::updatePositionAdIfDifferent(int ticks) {
 /**
  * Method called when pressing button 'I'. Announces infos specific to the player. In the current state, repeats info about the current turn.
  */
-void Kart::announceInfos() {
+void Kart::announceInfos(int id_Node) {
+    TurnInfo turn = turn_characteristics[id_Node];
+    announceTurn(turn, id_Node);
     /// rhankkkking
+}
+
+void Kart::announceTurn(TurnInfo turn, int current_sector) {
+    std::string d;
+
+    // Get direction as a string
+    if (turn.dir == LEFT) {
+        d = "LEFT";
+    } else if (turn.dir == RIGHT) {
+        d = "RIGHT";
+    } else {
+        d = "STRAIGHT LINE";
+    }
+
+    // Adapt vocal annoucement to type of turn (whether actually turn or is a straight line)
+    if (turn.dir == STRAIGHT) {
+        the_voice->speak(m_turn_dir_string[int(turn.dir)] + SEP + getTurnLength(current_sector, turn.end_sector), true, false);
+    } else {
+        the_voice->speak(m_turn_dir_string[int(turn.dir)] + m_turn_intensity_string[turn.intensity%TURN_SOUNDS_COUNT] + SEP + getTurnLength(current_sector, turn.end_sector), true, false);
+    }
 }
 
 /**
@@ -1915,7 +1937,7 @@ void Kart::update(int ticks)
             // If button I is pressed, announce corresponding info
             if (m_controls.getInfo()) {
                 if (info_counter <= 0) {
-                    announceInfos();
+                    announceInfos(id_Node);
                     info_counter = ticks_info;
                 }
                 
@@ -2008,23 +2030,25 @@ void Kart::update(int ticks)
                     //      - or kart has just been rescued
                     if ((turn.dir != NONE) 
                     && ((((turn.start_sector-3)%max_nodes) == id_Node) || ((m_lap == 0) && id_Node == (max_nodes-1)) || m_just_rescued)) {
-                        std::string d;
+                        
 
-                        // Get direction as a string
-                        if (turn.dir == LEFT) {
-                            d = "LEFT";
-                        } else if (turn.dir == RIGHT) {
-                            d = "RIGHT";
-                        } else {
-                            d = "STRAIGHT LINE";
-                        }
+                        announceTurn(turn);
 
-                        // Adapt vocal annoucement to type of turn (whether actually turn or is a straight line)
-                        if (turn.dir == STRAIGHT) {
-                            the_voice->speak(m_turn_dir_string[int(turn.dir)] + SEP + getTurnLength(id_Node, turn.end_sector), true, false);
-                        } else {
-                            the_voice->speak(m_turn_dir_string[int(turn.dir)] + m_turn_intensity_string[turn.intensity%TURN_SOUNDS_COUNT] + SEP + getTurnLength(id_Node, turn.end_sector), true, false);
-                        }
+                        // // Get direction as a string
+                        // if (turn.dir == LEFT) {
+                        //     d = "LEFT";
+                        // } else if (turn.dir == RIGHT) {
+                        //     d = "RIGHT";
+                        // } else {
+                        //     d = "STRAIGHT LINE";
+                        // }
+
+                        // // Adapt vocal annoucement to type of turn (whether actually turn or is a straight line)
+                        // if (turn.dir == STRAIGHT) {
+                        //     the_voice->speak(m_turn_dir_string[int(turn.dir)] + SEP + getTurnLength(id_Node, turn.end_sector), true, false);
+                        // } else {
+                        //     the_voice->speak(m_turn_dir_string[int(turn.dir)] + m_turn_intensity_string[turn.intensity%TURN_SOUNDS_COUNT] + SEP + getTurnLength(id_Node, turn.end_sector), true, false);
+                        // }
                         
                         m_just_rescued = false;
                     }
