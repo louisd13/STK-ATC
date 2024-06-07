@@ -1,9 +1,9 @@
-#define LED_PIN 13
 
-#define VIB_PIN1 6 // majeur
-#define VIB_PIN2 10 // petit doigt
-#define VIB_PIN3 9  // annulaire
-#define VIB_PIN4 5 // index 
+
+#define VIB_PIN1 6 // middle finger 
+#define VIB_PIN2 10 // small finger
+#define VIB_PIN3 9  // ring finger
+#define VIB_PIN4 5 // index finger
 
 #define VIB_PIN5 3
 
@@ -11,13 +11,13 @@ const byte numChars = 32;
 char receivedChars[numChars];
 char tempChars[numChars];  
 
-// First message i get :  left or right / vibration threshold
-char messageFromPC[numChars] = {0};
-int integerFromPC1 = 0;
-float floatFromPC = 0.0;
+// First message we get :  left or right / vibration threshold / dont use the float
+char messageFromPC[numChars] = {0}; // l or r corresponding to the side of the track (left or right)
+int integerFromPC1 = 0; // Vibration intensity thresholds according to distance to the middle of the track
+float floatFromPC = 0.0; // not used
 
-// The second message i get : direction to aim
-int integerFromPC2 = 0;
+// The second message we get : direction to aim
+int integerFromPC2 = 0; // 1,2,3,4 according to where to aim check the function showParsedData2
 
 boolean newData = false;
 boolean expectFirstMessage = true;
@@ -28,7 +28,7 @@ void setup() {
     pinMode(VIB_PIN2 ,OUTPUT);
     pinMode(VIB_PIN3 ,OUTPUT);
     pinMode(VIB_PIN4 ,OUTPUT); 
-    pinMode(VIB_PIN5 ,OUTPUT);
+    //pinMode(VIB_PIN5 ,OUTPUT);
 }
 
 void loop() {
@@ -49,7 +49,7 @@ void loop() {
             parseData2();
             showParsedData2();
             newData = false;
-            expectFirstMessage = true; // Switch back to expect first message next
+            expectFirstMessage = true; 
         }
     }
 }
@@ -120,10 +120,8 @@ void recvWithStartEndMarkers2() {
 
 void parseData2() {
     if (newData) {
-        strcpy(tempChars, receivedChars); // this temporary copy is necessary to protect the original data
-                                          // because strtok() used in parseData() replaces the commas with \0
-
-        // Parse the character into an integer using atoi
+        strcpy(tempChars, receivedChars);
+                                          
         integerFromPC2 = atoi(tempChars); // Convert char to integer
         newData = false;
     }
@@ -150,14 +148,14 @@ void parseData() {      // split the data into its parts
 
 void showParsedData() {
   if(messageFromPC[0] == 'l'){
-      processValueLeft(integerFromPC1);
-      analogWrite(VIB_PIN4, LOW);
-        //   //Serial.println("Left close");
+    // the kart is on the left side of the track 
+    processValueLeft(integerFromPC1);
+    analogWrite(VIB_PIN4, LOW);
   }
   else if(messageFromPC[0] == 'r'){
-      processValueRight(integerFromPC1);
-      analogWrite(VIB_PIN2, LOW);
-        //   //Serial.println("Right close");
+    // the kart is on the right side of the track
+    processValueRight(integerFromPC1);
+    analogWrite(VIB_PIN2, LOW);
   }
 }
 
@@ -178,13 +176,16 @@ void showParsedData2() {
 
 void processValueSlightRight() {
     static unsigned long previousMillis = 0;
+    // DEFINES THE FREQUENCY OF THE VIBRATION
     const unsigned long duration = 200; 
 
     unsigned long currentMillis = millis();
 
     if (currentMillis - previousMillis >= duration) {
         previousMillis = currentMillis;
+        // VIBRATION INTENSITY
         analogWrite(VIB_PIN3, 40);
+        // PULSE DURATION
         delay(100);
         analogWrite(VIB_PIN3, LOW);
     }
@@ -192,13 +193,16 @@ void processValueSlightRight() {
 
 void processValueSlightLeft() {
     static unsigned long previousMillis = 0;
+    // DEFINES THE FREQUENCY OF THE VIBRATION
     const unsigned long duration = 200; 
 
     unsigned long currentMillis = millis();
 
     if (currentMillis - previousMillis >= duration) {
         previousMillis = currentMillis;
+        // VIBRATION INTENSITY
         analogWrite(VIB_PIN1, 40);
+        // PULSE DURATION
         delay(100);
         analogWrite(VIB_PIN1, LOW);
     }
@@ -206,13 +210,16 @@ void processValueSlightLeft() {
 
 void processValueTooMuchRight() {
     static unsigned long previousMillis = 0;
+    // DEFINES THE FREQUENCY OF THE VIBRATION
     const unsigned long duration = 500; 
 
     unsigned long currentMillis = millis();
 
     if (currentMillis - previousMillis >= duration) {
         previousMillis = currentMillis;
+        // VIBRATION INTENSITY
         analogWrite(VIB_PIN3, 40);
+        // PULSE DURATION
         delay(100);
         analogWrite(VIB_PIN3, LOW);
     }
@@ -220,13 +227,16 @@ void processValueTooMuchRight() {
 
 void processValueTooMuchLeft() {
     static unsigned long previousMillis = 0;
+    // DEFINES THE FREQUENCY OF THE VIBRATION
     const unsigned long duration = 500; 
 
     unsigned long currentMillis = millis();
 
     if (currentMillis - previousMillis >= duration) {
         previousMillis = currentMillis;
+        // VIBRATION INTENSITY
         analogWrite(VIB_PIN1, 40);
+        // PULSE DURATION
         delay(100);
         analogWrite(VIB_PIN1, LOW);
     }
@@ -236,6 +246,7 @@ void processValueTooMuchLeft() {
 void processValueLeft(int value) {
     static unsigned long previousMillis_1 = 0;
     static unsigned long previousMillis_2 = 0;
+    // DEFINES THE FREQUENCY OF THE VIBRATION
     const unsigned long duration_1 = 500; 
     const unsigned long duration_2 = 200; 
 
@@ -245,14 +256,18 @@ void processValueLeft(int value) {
     if (value == 1) {
         if (currentMillis - previousMillis_1 >= duration_1) {
             previousMillis_1 = currentMillis;
+            // VIBRATION INTENSITY
             analogWrite(VIB_PIN4, 40);
+            // PULSE DURATION
             delay(100);
             analogWrite(VIB_PIN4, LOW);
         }
     } else if (value == 2) {
         if (currentMillis - previousMillis_2 >= duration_2) {
             previousMillis_2 = currentMillis;
+            // VIBRATION INTENSITY
             analogWrite(VIB_PIN4, 40);
+            // PULSE DURATION
             delay(100);
             analogWrite(VIB_PIN4, LOW);
         }
@@ -266,6 +281,7 @@ void processValueLeft(int value) {
 void processValueRight(int value) {
     static unsigned long previousMillis_1 = 0;
     static unsigned long previousMillis_2 = 0;
+    // DEFINES THE FREQUENCY OF THE VIBRATION
     const unsigned long duration_1 = 500;
     const unsigned long duration_2 = 200; 
 
@@ -274,14 +290,18 @@ void processValueRight(int value) {
     if (value == 1) {
         if (currentMillis - previousMillis_1 >= duration_1) {
             previousMillis_1 = currentMillis;
+            // VIBRATION INTENSITY
             analogWrite(VIB_PIN2, 40);
+            // PULSE DURATION
             delay(100);
             analogWrite(VIB_PIN2, LOW);
         }
     } else if (value == 2) {
         if (currentMillis - previousMillis_2 >= duration_2) {
             previousMillis_2 = currentMillis;
+            // VIBRATION INTENSITY
             analogWrite(VIB_PIN2, 40);
+            // PULSE DURATION
             delay(100);
             analogWrite(VIB_PIN2, LOW);
         }

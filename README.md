@@ -96,3 +96,8 @@ We disabled objects so as not to favor any non-visually impaired player. We have
 ### Communication with the Arduino for vibratory feedback
 
 Depending on the operating system, there are two different `arduino_com` files: `arduino_com_windows.hpp`/`.cpp` and `arduino_com_linux.hpp`/`.cpp`. These files enable the construction of the Arduino object, allowing us to send strings to the Arduino for vibratory feedback. It is necessary to add the corresponding COM port your Arduino is connected to in the `kart.cpp` file at the start of the `void Kart::init(RaceManager::KartType type)` function (`stk-code/src/karts/kart.cpp`, line 261). The data sent to the Arduino is defined and sent in `kart.cpp` and `skidding_ai.cpp`.
+
+### Arduino Code for vibratory feedback
+
+In the `STK_GetData.ino` file there is the arduino code that interprets the data sent from the game. It activates the vibrators according to the data received from the game with different parameters.
+You may tune the parameters such as the pulse duration, frequency and intensity of the vibrations according to your wishes.
