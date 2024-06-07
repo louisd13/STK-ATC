@@ -90,11 +90,12 @@
 #include "utils/string_utils.hpp"
 #include "utils/translation.hpp"
 #include "utils/vs.hpp"
-#include "utils/arduino_com.hpp"
+#include "utils/arduino_com_windows.hpp"
+
+// if on linux uncomment this and comment the above
+//#include "utils/arduino_com_linux.hpp"
+
 #include <math.h>
-
-#include <thread>
-
 #include <ICameraSceneNode.h>
 #include <IDummyTransformationSceneNode.h>
 #include <ISceneManager.h>

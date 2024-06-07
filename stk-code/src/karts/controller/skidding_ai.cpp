@@ -47,7 +47,10 @@
 #include "utils/log.hpp"
 #include "utils/vs.hpp"
 #include "utils/get_direction.hpp"
-#include "utils/arduino_com.hpp"
+#include "utils/arduino_com_windows.hpp"
+
+// if on linux uncomment this and comment the above
+//#include "utils/arduino_com_linux.hpp"
 
 #include <line2d.h>
 
