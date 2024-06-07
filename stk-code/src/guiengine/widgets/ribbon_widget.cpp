@@ -786,8 +786,7 @@ EventPropagation RibbonWidget::focused(const int playerID,  bool printout, bool 
         {
             int selection = m_selection[playerID];
             if (selection < (int)m_active_children.size())
-                // Semble utile quand on change de ribbon
-                std::cout << "i am active child" << std::endl;
+                //std::cout << "active child" << std::endl;
                 m_active_children.get(selection)->focused(playerID);
         }
     }
@@ -843,7 +842,7 @@ EventPropagation RibbonWidget::mouseHovered(Widget* child,
             }
         }
     }
-    std::cout << "selec5 ?" << std::endl;
+    //std::cout << "update selection 5" << std::endl;
     updateSelection(true);
     return EVENT_BLOCK;
 }   // mouseHovered
@@ -940,7 +939,7 @@ EventPropagation RibbonWidget::transmitEvent(Widget* w,
                 break;
             }
         }
-        std::cout << "selec6 ?" << std::endl;
+        //std::cout << "update selection 6" << std::endl;
         updateSelection(false);
     }
 

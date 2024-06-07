@@ -237,7 +237,7 @@ Kart::Kart (const std::string& ident, unsigned int world_kart_id,
 
     // init the number of nodes in the track
     max_nodes = DriveGraph::get()->getNumNodes();
-    printf("MAX NODES: %d\n", max_nodes);
+    //printf("MAX NODES: %d\n", max_nodes);
 
     m_last_printed_sector = -1;
     m_last_printed_lap = -1;
@@ -1454,7 +1454,7 @@ void Kart::announceRank(bool gainedRank) {
         m_sad_horn->play();
     }
 
-    std::cout << display << std::endl;
+    //std::cout << display << std::endl;
     beep();     
 }
 
@@ -1467,7 +1467,7 @@ void Kart::updateKartInfo(LinearWorld* world) {
         if ((m_last_printed_lap == m_lap) || (m_lap == 0)) return;
 
         m_last_printed_lap = m_lap;
-        std::cout << "started lap: " << m_lap << std::endl;
+        //std::cout << "started lap: " << m_lap << std::endl;
         the_voice->speak(NEW_LAP_STRING + m_number_string[m_lap-1], true, false);
     }
 }
@@ -1520,13 +1520,13 @@ int Kart::categorizeAngle(float a) {
 void Kart::storeTurn(TurnDirection direction, int intensity, int start_sector, int end_sector) {
     int tweaked_end = (end_sector < start_sector) ? (end_sector + max_nodes) : end_sector;
 
-    printf("STORE TURN OF INTENSITY %d (start: %d, end: %d) IN ", intensity, start_sector, end_sector);
+    //printf("STORE TURN OF INTENSITY %d (start: %d, end: %d) IN ", intensity, start_sector, end_sector);
 
     int i = start_sector;
     while (i < tweaked_end) {
         // store info for each node on the turn
         int index = i%max_nodes;
-        printf("%d ", index);
+        //printf("%d ", index);
         turn_characteristics[index].dir = direction;
         turn_characteristics[index].intensity = intensity;
         turn_characteristics[index].start_sector = start_sector;
@@ -1535,7 +1535,7 @@ void Kart::storeTurn(TurnDirection direction, int intensity, int start_sector, i
         ++i;
     }
 
-    printf("\nSTOP STORING AFTER %d\n", i);
+    //printf("\nSTOP STORING AFTER %d\n", i);
 }
 
 // store straight line info in every sector composing the line
@@ -1703,14 +1703,14 @@ void Kart::scanTrackForRallye() {
 
     // print
     for (int i = 0; i < max_nodes; ++i) {
-        printf("(i, relative angle to next sector, category): (%d, %f, %d)\n", i, angles[i], angle_category[i]);
+        //printf("(i, relative angle to next sector, category): (%d, %f, %d)\n", i, angles[i], angle_category[i]);
     }
 
     categorizeTurns(angle_category, angles);
 
     categorizeStraightLines();
 
-    printf("turn characteristics");
+    //printf("turn characteristics");
     for (int i = 0; i < max_nodes; ++i) {
         TurnInfo turn = turn_characteristics[i];
         if (turn.dir != NONE) {
@@ -1722,9 +1722,9 @@ void Kart::scanTrackForRallye() {
             } else {
                 d = "straight line";
             }
-            printf("\n(dir, start, end): (%s, %d, %d)\n", d, turn.start_sector, turn.end_sector);
+            //printf("\n(dir, start, end): (%s, %d, %d)\n", d, turn.start_sector, turn.end_sector);
         } else {
-            printf("NONE");
+            //printf("NONE");
         }
         
     }
@@ -1752,7 +1752,7 @@ void Kart::categorizeStraightLines() {
 
             // if there was another turn before that one, compare to see if straight line between turns is long enough to report
             if ((last_turn_end != -1) && ((turn.start_sector - last_turn_end) > MIN_STRAIGHT_SECTORS_TO_REPORT)) {
-                printf("LAST TURN END: %d\nNXT_START_SECTOR: %d\nMAX NODES: %d\n", last_turn_end, turn.start_sector, max_nodes);
+                //printf("LAST TURN END: %d\nNXT_START_SECTOR: %d\nMAX NODES: %d\n", last_turn_end, turn.start_sector, max_nodes);
                 // store straight line
                 storeStraightLine(last_turn_end, turn.start_sector);
             }
@@ -1765,8 +1765,8 @@ void Kart::categorizeStraightLines() {
     // assuming that at least one turn was encountered during the race
     if ((first_turn_start + max_nodes - last_turn_end) > MIN_STRAIGHT_SECTORS_TO_REPORT) { 
 
-        printf("WHOOP\n");
-        printf("LAST TURN END: %d\nFIRST_TURN_START: %d\nMAX NODES: %d\n", last_turn_end, first_turn_start, max_nodes);
+        //printf("WHOOP\n");
+        //printf("LAST TURN END: %d\nFIRST_TURN_START: %d\nMAX NODES: %d\n", last_turn_end, first_turn_start, max_nodes);
         // store straight line at last turn end
         storeStraightLine(last_turn_end, first_turn_start);
     }
@@ -1776,9 +1776,9 @@ void Kart::categorizeStraightLines() {
 
 void Kart::setTurnCharacteristics(TurnBasics turn, float angle) {
     int index = turn.sector_start;
-    printf("new turn\n");
+    //printf("new turn\n");
     for (int i = 0; i < TurnBasics::TURN_INTENSITIES; ++i) {
-        printf("intensity: %d, n: %d\n", i, turn.intensities[i]);
+        //printf("intensity: %d, n: %d\n", i, turn.intensities[i]);
     }
 
     storeTurn(getAngleDirection(angle), getTurnIntensity(turn.intensities), index, turn.sector_end);
@@ -2025,14 +2025,14 @@ void Kart::update(int ticks)
                             d = "STRAIGHT LINE";
                         }
 
-                        std::cout << "direction: " << d << std::endl;
+                        //std::cout << "direction: " << d << std::endl;
 
                         // do not announce intensity when straight line
                         if (turn.dir == STRAIGHT) {
-                            printf("start sector: %d\nend sector: %d\n\n", id_Node, turn.end_sector);
+                            //printf("start sector: %d\nend sector: %d\n\n", id_Node, turn.end_sector);
                             the_voice->speak(m_turn_dir_string[int(turn.dir)] + SEP + getTurnLength(id_Node, turn.end_sector) + LONG_STRING, true, false);
                         } else {
-                            printf("intensity: %d\nstart sector: %d\nend sector: %d\n\n", turn.intensity, id_Node, turn.end_sector);
+                            //printf("intensity: %d\nstart sector: %d\nend sector: %d\n\n", turn.intensity, id_Node, turn.end_sector);
                             the_voice->speak(m_turn_dir_string[int(turn.dir)] + m_turn_intensity_string[turn.intensity%TURN_SOUNDS_COUNT] + SEP + getTurnLength(id_Node, turn.end_sector) + LONG_STRING, true, false);
                         }
                         

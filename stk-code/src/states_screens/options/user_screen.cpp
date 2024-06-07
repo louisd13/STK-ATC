@@ -120,13 +120,13 @@ void BaseUserScreen::init()
     m_password_tb->setPasswordBox(true, L'*');
 
     
-    const wchar_t* wideCStr = L"Hello, Irrlicht!";
-    irr::core::stringw wideString(wideCStr);
-    m_username_tb->setText(wideString);
-    stringw text = m_username_tb->Widget::getText();
-    std::wstring ws(text.c_str());
-    std::string str(ws.begin(), ws.end());
-    std::cout << str << "frf" << std::endl;
+    // const wchar_t* wideCStr = L"Hello, Irrlicht!";
+    // irr::core::stringw wideString(wideCStr);
+    // m_username_tb->setText(wideString);
+    // stringw text = m_username_tb->Widget::getText();
+    // std::wstring ws(text.c_str());
+    // std::string str(ws.begin(), ws.end());
+    // std::cout << str << "frf" << std::endl;
     // The behaviour of the screen is slightly different at startup, i.e.
     // when it is the first screen: cancel will exit the game, and in
     // this case no 'back' error should be shown.

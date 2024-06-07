@@ -52,6 +52,7 @@
 #include "utils/constants.hpp"
 #include "utils/string_utils.hpp"
 #include "utils/translation.hpp"
+#include "utils/make_unique.hpp"
 
 #include <climits>
 #include <iostream>
@@ -211,21 +212,49 @@ void LinearWorld::update(int ticks)
 
     // Do stuff specific to this subtype of race.
     // ------------------------------------------
+    int global_player_id = 0;
+    int local_player_id = 0;
     updateTrackSectors();
-    // 0 tjrs kart player ????
-    AbstractKart* kart = m_karts[0].get();
-    std::unique_ptr<SkiddingAI> skiddingAI = std::make_unique<SkiddingAI>(kart);
+
+    const int np = RaceManager::get()->getNumLocalPlayers();
+    const int nai = RaceManager::get()->getNumberOfKarts() - np;
+
     Vec3 aim_point;
     int last_node = Graph::UNKNOWN_SECTOR;
-    Vec3 frontxyz = kart->getFrontXYZ();
     static int tick_counter = 0;
     constexpr int ticks2wait = 20;
     tick_counter += ticks;
-
-    if (tick_counter >= ticks2wait){
+ 
+    if (nai == 0){
+        AbstractKart* kart = m_karts[np].get();
+        std::unique_ptr<SkiddingAI> skiddingAI = make_unique<SkiddingAI>(kart);
         skiddingAI->findNonCrashingPoint_player(&aim_point, &last_node);
-        tick_counter -= ticks2wait;
+
     }
+    else{
+        AbstractKart* kart = m_karts[nai].get();
+        std::unique_ptr<SkiddingAI> skiddingAI = make_unique<SkiddingAI>(kart);
+        skiddingAI->findNonCrashingPoint_player(&aim_point, &last_node);
+    }
+
+
+    //AbstractKart* kart = m_karts[nai].get();
+    //std::unique_ptr<SkiddingAI> skiddingAI = std::make_unique<SkiddingAI>(kart); //   C++ 14 necessary
+
+
+    // std::unique_ptr<SkiddingAI> skiddingAI = make_unique<SkiddingAI>(kart);
+    // Vec3 aim_point;
+    // int last_node = Graph::UNKNOWN_SECTOR;
+    // static int tick_counter = 0;
+    // constexpr int ticks2wait = 20;
+    // tick_counter += ticks;
+
+    // if (tick_counter >= ticks2wait){
+    //     skiddingAI->findNonCrashingPoint_player(&aim_point, &last_node);
+    //     tick_counter -= ticks2wait;
+    // }
+
+
     // Run generic parent stuff that applies to all modes.
     // It especially updates the kart positions.
     // It MUST be done after the update of the distances

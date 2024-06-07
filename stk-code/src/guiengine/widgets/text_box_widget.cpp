@@ -178,16 +178,16 @@ void TextBoxWidget::setTextBoxType(TextBoxType t)
 EventPropagation TextBoxWidget::focused(const int playerID, bool printout, bool changed_ribbon)
 {
     assert(playerID == 0); // No support for multiple players in text areas!
-    stringw text = this->Widget::getText();
-    int idd = this->getID();
-    if (text.empty()) {
-        std::cout << "TextBoxWidget does not contain any text." << idd << std::endl;
-    } else {
-        std::wstring ws(text.c_str());
-        std::string str(ws.begin(), ws.end());
-        // prints what is written
-        std::cout << "Text box content: " << str << ", ID: " << idd << std::endl;
-    }
+    // stringw text = this->Widget::getText();
+    // int id = this->getID();
+    // if (text.empty()) {
+    //     std::cout << "TextBoxWidget does not contain any text." << id << std::endl;
+    // } else {
+    //     std::wstring ws(text.c_str());
+    //     std::string str(ws.begin(), ws.end());
+    //     // prints what is written
+    //     std::cout << "Text box content: " << str << ", ID: " << id << std::endl;
+    // }
     // special case : to work, the text box must receive "irrLicht focus", STK focus is not enough
     GUIEngine::getGUIEnv()->setFocus(m_element);
     setWithinATextBox(true);

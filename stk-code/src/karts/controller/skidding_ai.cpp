@@ -3246,7 +3246,7 @@ void SkiddingAI::setSteering(float angle, float dt)
 
                 if (globalArduinoCom->isConnected()) {
                     globalArduinoCom->writeSerial(ToSend);
-                    std::cout << ToSend << std::endl;
+                    //std::cout << ToSend << std::endl;
                 }
                 //arduino.writeSerial(ToSend);
 

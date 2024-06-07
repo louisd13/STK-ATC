@@ -68,10 +68,10 @@ EventPropagation CheckBoxWidget::transmitEvent(Widget* w,
 EventPropagation CheckBoxWidget::focused(const int playerID, bool printout, bool changed_ribbon)
 {
     assert(playerID == 0); // Assuming single player support for now
-    stringw text = this->Widget::getText();
-    std::wstring ws(text.c_str());
-    std::string str(ws.begin(), ws.end());
-    std::cout << "cbw:" << str<<std::endl;
+    // stringw text = this->Widget::getText();
+    // std::wstring ws(text.c_str());
+    // std::string str(ws.begin(), ws.end());
+    // std::cout << "cbw:" << str<<std::endl;
     // Special case: to work, the checkbox must receive "irrLicht focus", STK focus is not enough
     GUIEngine::getGUIEnv()->setFocus(m_element);
     return EVENT_LET;
