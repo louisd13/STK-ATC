@@ -256,6 +256,8 @@ Kart::Kart (const std::string& ident, unsigned int world_kart_id,
 void Kart::init(RaceManager::KartType type)
 {
 
+    // Linux :  initializeGlobalArduinoCom("/dev/ttyUSB0");
+    // Windows:
     initializeGlobalArduinoCom("\\\\.\\COM11");
     m_type = type;
 
@@ -1785,14 +1787,11 @@ void Kart::setTurnCharacteristics(TurnBasics turn, float angle) {
 
 // Returns the highest intensity within turn
 int Kart::getTurnIntensity(int* intensities) {
-    //int max_intensity = 0;
-    //int n_angles_in_max = 0;
 
     for (int i = TurnBasics::TURN_INTENSITIES-1; i >=0; --i) {
         int value = intensities[i];
         if (value > 0) {
            return i;
-            //n_angles_in_max = value;
         }
     }
 }

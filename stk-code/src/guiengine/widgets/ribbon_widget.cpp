@@ -62,7 +62,7 @@ RibbonWidget::RibbonWidget(const RibbonType type) : Widget(WTYPE_RIBBON)
 
     m_check_inside_me = true;
     m_supports_multiplayer = (type == RIBBON_TOOLBAR);
-    std::cout << "selec1 ?" << std::endl;
+    //std::cout << "update selection 1" << std::endl;
     updateSelection(true);
 }   // RibbonWidget
 
@@ -524,7 +524,7 @@ void RibbonWidget::add()
     id = m_element->getID();
     m_element->setTabOrder(id);
     m_element->setTabGroup(false);
-    std::cout << "selec2 ?" << std::endl;
+    //std::cout << "update selection 2" << std::endl;
     updateSelection(false);
 
     if (!m_is_visible)
@@ -605,7 +605,7 @@ void RibbonWidget::select(std::string item, const int mousePlayerID)
         if (m_active_children[i].m_properties[PROP_ID] == item)
         {
             m_selection[mousePlayerID] = i;
-            std::cout << "selec3 ?" << std::endl;
+            //std::cout << "update selection 3" << std::endl;
             updateSelection(true);
             return;
         }
@@ -650,7 +650,7 @@ EventPropagation RibbonWidget::moveToNextItem(const bool horizontally, const boo
 
     if (m_selection[playerID] == old_selection && !horizontally)
         return EVENT_BLOCK;
-    std::cout << "selec4 ?" << std::endl;
+    //std::cout << "update selection 4" << std::endl;
     updateSelection(true);
 
     if (m_ribbon_type == RIBBON_COMBO || m_ribbon_type == RIBBON_TABS ||
@@ -751,10 +751,9 @@ void RibbonWidget::selectNextActiveWidget(const bool horizontally, const bool re
 EventPropagation RibbonWidget::focused(const int playerID,  bool printout, bool changed_ribbon)
 {
 
-
     if (getCurrentScreen() != NULL){
         std::string screenName = getCurrentScreen()->getName();
-        //std::cout << "iconscreen:" << screenName << std::endl;
+        //  Changed ribbon 
         if((screenName == "karts.stkgui") || (screenName == "tracks_and_gp.stkgui") ){
             changed_ribbon = false;
         }
@@ -763,7 +762,6 @@ EventPropagation RibbonWidget::focused(const int playerID,  bool printout, bool 
         }
     }
 
-    // rajouter des conditions ici ? 
     Widget::focused(playerID, false, changed_ribbon);
 
     if (m_active_children.size() < 1) return EVENT_LET; // empty ribbon

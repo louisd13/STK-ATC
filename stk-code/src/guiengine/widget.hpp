@@ -228,20 +228,16 @@ namespace GUIEngine
         /** override in children if you need to know when the widget is focused.
           * \return whether to block event */
         virtual EventPropagation  focused(const int playerID, bool printout = true, bool changed_ribbon = true) { 
-          // std::ostringstream oss;
-          // oss << "playerID: " << playerID << ", printout: " << printout << ", changed_ribbon: " << changed_ribbon;
-          // logFunctionCall("Widget::focused", oss.str());
-          // pas mal du tout sauf pour les doubles listes (karts et maps)
-          // Check if 'this' is an instance of DynamicRibbonWidget
+
+          // Check if an instance of DynamicRibbonWidget
           if ((m_type == WTYPE_RIBBON) && (changed_ribbon)) {
-            std::cout << "Changer de bandeau" << std::endl;
+            //std::cout << "Changed Ribbon" << std::endl;
           }
 
           if(printout){
-            // If it's not DynamicRibbonWidget, proceed with the normal behavior
             std::string text = getTextAsString();
-            std::cout << "OUTPUT : "<< text <<std::endl;
-            // True True pas si mal
+
+            // add other conditions 
             if (text != "Standard") {
               the_voice->speak(text,true,false);
             }

@@ -14,6 +14,9 @@ In the first two weeks of getting to know SuperTuxKart, most of our time was spe
 
 ## Additional features
 
+If you want to check the code modification completely you can compare to this version of STK... on git 
+You can also look for commented printf or cout which will often be were we were doing debbuging, it was necessary to add a tick counter to reduce the frequency of outputted information as the update time (dt) is pretty fast.
+
 ### Text-To-Speech
 
 To express most of the game data that we have been able to collect, we used a TTS software external to the game. We have created a class to call for this TTS' help in audio/tts.
@@ -38,15 +41,37 @@ We have then looked for a way of categorizing the turns in a track, also using t
 
 With this system, we have been able to get a written representation of the different turns (and also straight lines) along a track. We were then able to announce the info of the turn a few sectors ahead using TTS.
 
-### Menu
+### Menu 
 
-LOUIS
+As we want our visually-impaired challenger to be as independant as possible, we had to understand how the menu navigation and selection was working. Our objective was to get the name of the widget the player is hovering upon. Then we wanted to give the title of the screen that we are on at the changing of screens. Our challenger wanted to be able to only navigate with the keyboard and no mouse.
 
-### Guidance (test AI thing)
+The game is composed of many screens and sometimes dialog screens (stk-code\src\states_screens) which all have different layouts and elements. Most of the clickable / selectable elements of the screens are made from a GUI class called Widget in the (src/guiengine) directory.
+Many more specific widgets were then made from this base class and all had different behaviour and purposes in (src/guiengine/widgets) directory. At first we thought we could just output the tag of a widget in this base class which would then spread to the whole game screens unfortunately a lot of weird behaviours were created from such modifications.
 
-LOUIS
+That is why it was necessary to understand as much as possible the working of the game menu navigation. We made many printf to the terminal to understand when the focus function was called and added booleans so that we output via speech the name of the widget when necessary.
+The screen names were outputted from functions and files in the (stk-code\src\states_screens).
 
-### Anything else?
+This menu navigation is far from being perfect as they are many different screens but it is sufficient for the basic task of launching a race.
+
+
+To further improve we can modify the xml files of the screens (stk-code\data\gui\screens) and add or modify the text attribute of any button which could then be retrieved by the TTS system. 
+
+For further improvements files and functions to check : 
+Widget.hpp : 
+- virtual EventPropagation focused(const int playerID, bool printout = true, bool changed_ribbon = true) where we actually use the TTS function. 
+RibbonWidget.hpp : check the all the calls of "void updateSelection(bool to_print = true)" which is a function that calls the focused function just above or any other function that calls this function. 
+Check how the screens are made with what kind of widgets and add a text attribute to a widget in the xml corresponding file if necessary.
+
+
+
+### Track relative position
+
+In order for our player to understand his position on the track we used the getRelativeDistanceToCenter() function from the TrackSector class (stk-code\src\tracks\track_sector.hpp) which give a float number between -1.0 and 1.0 according to how far the kart is from the middle of the track. It returns 0 if you are perfectly at the middle, -1.0 if you are at the far left of the track and 1.0 at the far right. 
+
+### Additionnal Guidance 
+
+Even with this track relative position information it was still challenging to understand where to go and at where the kart was aiming at. Inspired by the AI (or bot) implementation of supertuxkart we reused the findNonCrashingPoint_player() function (stk-code\src\karts\controller\skidding_ai.hpp). This function gives the point relative to the point the kart is actually at where the kart would stay on track if going in a straight line towards it. By retrieving aswell the front of the kart coordinates we can then compute the angle the front of the kart should aim at to stay on track. A function in the get_direction.hpp file : "int aimDirection(float kartX, float kartZ, float frontX, float frontZ, float aimX, float aimZ, float deg_low, float deg_high)" in "stk-code\src\utils\get_direction.hpp" returns a integer between 1 and 4 according to where the kart aims at and a threshold of degrees. 
+
 
 ### Additional ambiant sounds
 
@@ -61,3 +86,8 @@ Real-time beeps indicate the intensity of a turn, using the sectors intensities 
 To enable a more customizable game, we decided to allocate a new key for the specific needs of our Challenger. The goal of this key is to give out information on whatever the Challenger believed necessary. 
 
 To add a new key, we had to alter numerous files, so many that we could not recall exactly which ones. It was a real treasure hunt to find all the places we had to modify to get a new key to work.
+
+### Communication with the Arduino
+
+Depending on the operating system there is two different arduino_communication.hpp and .cpp files. These files allow the construction of the arduino object so that we can send strings to it for the vibratory feedback. It is necessary to add the corresponding com port your arduino is connected at in the kart.cpp file at the start of the "void Kart::init(RaceManager::KartType type)" function (stk-code\src\karts\kart.cpp).
+The data sent to the arduino is defined and sent in kart.cpp and skidding_ai.cpp.
