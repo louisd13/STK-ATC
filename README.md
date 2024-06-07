@@ -50,19 +50,19 @@ The game consists of many screens and sometimes dialog screens, located in `stk-
 
 Therefore, it was necessary to understand the workings of the game menu navigation as thoroughly as possible. We used many printf statements to the terminal to understand when the `focused()` function (see the "further improvements" section) was called and added booleans to output via speech the name of the widget when necessary. The screen names were output from functions and files in the `stk-code/src/states_screens` directory.
 
-This menu navigation is far from perfect, as there are many different screens, but it is sufficient for the basic task of launching a race.
+This menu navigation is far from perfect, as there are many different screens, but it is sufficient for the basic task of launching a race. There is still some widgets names that are returned multiples times or some that don't work perfectly. 
 
 To further improve, we can modify the XML files of the screens (`stk-code/data/gui/screens`) and add or modify the text attribute of any button, which could then be retrieved by the TTS system.
 
 **Further improvements**
+
 Files and functions to check : 
-**Widget.hpp** : 
-- virtual EventPropagation focused(const int playerID, bool printout = true, bool changed_ribbon = true) where we actually use the TTS function. 
 
-**RibbonWidget.hpp** : check all the calls of "void updateSelection(bool to_print = true)" which is a function that calls the focused function just above. Other functions may calls this function aswell. 
+- **Widget.hpp** : `virtual EventPropagation focused(const int playerID, bool printout = true, bool changed_ribbon = true)` where we actually use the TTS function for all widgets. 
 
-**states_screens directory**
-Check how the screens are made with what kind of widgets to adapt and add a text attribute to a widget in the xml corresponding file if necessary.
+- **RibbonWidget.hpp** : check all the calls of "void updateSelection(bool to_print = true)" which is a function that calls the focused function just above. Other functions may calls this function aswell. 
+
+- **states_screens directory** : Check how the screens are made with what kind of widgets to adapt and add a text attribute to a widget in the xml corresponding file if necessary.
 
 Tuning the booleans according to the screens or adding logic to some calls would allow a better experience, even if it is not really future-proof for upcoming game updates.
 
