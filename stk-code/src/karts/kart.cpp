@@ -1726,25 +1726,6 @@ void Kart::scanTrackForRallye() {
     categorizeTurns(angle_category, angles);
 
     categorizeStraightLines();
-
-    printf("turn characteristics");
-    for (int i = 0; i < max_nodes; ++i) {
-        TurnInfo turn = turn_characteristics[i];
-        if (turn.dir != NONE) {
-            std::string d;
-            if (turn.dir == LEFT) {
-                d = "left";
-            } else if (turn.dir == RIGHT) {
-                d = "right";
-            } else {
-                d = "straight line";
-            }
-            printf("\n(dir, start, end): (%s, %d, %d)\n", d, turn.start_sector, turn.end_sector);
-        } else {
-            printf("NONE");
-        }
-        
-    // }
 }
 
 /** Helper function that sequentially scans turn_characteristics to analyze which parts of the track are straight lines. It stores the
