@@ -1946,9 +1946,6 @@ void Kart::update(int ticks)
                     announceInfos(id_Node%max_nodes);
                     info_counter = ticks_info;
                 }
-                
-                // TODO get the position of the kart with respect to others in the race, get position with respect to closest other kart
-
             }
 
             // Counter to avoid repeating the same information for a certain period
@@ -2038,22 +2035,6 @@ void Kart::update(int ticks)
                     && ((((turn.start_sector-3)%max_nodes) == id_Node) || ((m_lap == 0) && id_Node == (max_nodes-1)) || m_just_rescued)) {
                         
                         announceTurn(turn, id_Node%max_nodes);
-
-                        // // Get direction as a string
-                        // if (turn.dir == LEFT) {
-                        //     d = "LEFT";
-                        // } else if (turn.dir == RIGHT) {
-                        //     d = "RIGHT";
-                        // } else {
-                        //     d = "STRAIGHT LINE";
-                        // }
-
-                        // // Adapt vocal annoucement to type of turn (whether actually turn or is a straight line)
-                        // if (turn.dir == STRAIGHT) {
-                        //     the_voice->speak(m_turn_dir_string[int(turn.dir)] + SEP + getTurnLength(id_Node, turn.end_sector), true, false);
-                        // } else {
-                        //     the_voice->speak(m_turn_dir_string[int(turn.dir)] + m_turn_intensity_string[turn.intensity%TURN_SOUNDS_COUNT] + SEP + getTurnLength(id_Node, turn.end_sector), true, false);
-                        // }
                         
                         m_just_rescued = false;
                     }
