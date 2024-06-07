@@ -5,6 +5,9 @@
 #include <termios.h>
 #include <cstring>
 
+// Initialize the global instance pointer
+ArduinoCom* globalArduinoCom = nullptr;
+
 ArduinoCom::ArduinoCom(std::string portName) : portName(portName), connected(false) {
     hSerial = open(portName.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
     if (hSerial == -1) {

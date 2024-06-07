@@ -49,7 +49,7 @@
 #include "utils/get_direction.hpp"
 #include "utils/arduino_com_windows.hpp"
 
-// if on linux uncomment this and comment the above
+// if on linux uncomment this and delete the above
 //#include "utils/arduino_com_linux.hpp"
 
 #include <line2d.h>
@@ -3156,7 +3156,7 @@ void SkiddingAI::setSteering(float angle, float dt)
 
 }   // setSteering
 
- void SkiddingAI::findNonCrashingPoint_player(Vec3 *aim_position, int *last_node)
+void SkiddingAI::findNonCrashingPoint_player(Vec3 *aim_position, int *last_node)
 {
 #ifdef AI_DEBUG_KART_HEADING
     const Vec3 eps(0,0.5f,0);

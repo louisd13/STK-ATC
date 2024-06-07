@@ -127,6 +127,7 @@ void BaseUserScreen::init()
     // std::wstring ws(text.c_str());
     // std::string str(ws.begin(), ws.end());
     // std::cout << str << "frf" << std::endl;
+    
     // The behaviour of the screen is slightly different at startup, i.e.
     // when it is the first screen: cancel will exit the game, and in
     // this case no 'back' error should be shown.
@@ -188,16 +189,16 @@ void BaseUserScreen::init()
         return;
     }
     m_auto_login = false;
-    // RW 
-    RibbonWidget* rw= getWidget<RibbonWidget>("options");
-    RWUserScreenHoverListener* rwUserScreenHoverListener = new RWUserScreenHoverListener(this, rw);
-    rw->setListener(rwUserScreenHoverListener);
+    // // RW 
+    // RibbonWidget* rw= getWidget<RibbonWidget>("options");
+    // RWUserScreenHoverListener* rwUserScreenHoverListener = new RWUserScreenHoverListener(this, rw);
+    // rw->setListener(rwUserScreenHoverListener);
 
 
-    // Dynamic RW
-    DynamicRibbonWidget* drw = getWidget<DynamicRibbonWidget>("players");
-    DynamicUserScreenHoverListener* dynamicUserScreenHoverListener = new DynamicUserScreenHoverListener(this);
-    drw->registerHoverListener(dynamicUserScreenHoverListener);
+    // // Dynamic RW
+    // DynamicRibbonWidget* drw = getWidget<DynamicRibbonWidget>("players");
+    // DynamicUserScreenHoverListener* dynamicUserScreenHoverListener = new DynamicUserScreenHoverListener(this);
+    // drw->registerHoverListener(dynamicUserScreenHoverListener);
 
 }   // init
 

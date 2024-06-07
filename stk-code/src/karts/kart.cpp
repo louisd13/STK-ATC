@@ -92,7 +92,7 @@
 #include "utils/vs.hpp"
 #include "utils/arduino_com_windows.hpp"
 
-// if on linux uncomment this and comment the above
+// if on linux uncomment this and delete the above
 //#include "utils/arduino_com_linux.hpp"
 
 #include <math.h>
@@ -1919,12 +1919,8 @@ void Kart::update(int ticks)
             int id_Node = sector_player->getCurrentGraphNode();
             bool onroad = sector_player->isOnRoad();
             Track* currentTrack = Track::getCurrentTrack();
-
             DriveNode *node = DriveGraph::get()->getNode(id_Node);
-
-
             float angle = 0;
-            
             std::vector<unsigned int> successors;
 
             // Counter to avoid repeating the same information for a certain period

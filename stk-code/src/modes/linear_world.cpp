@@ -212,8 +212,7 @@ void LinearWorld::update(int ticks)
 
     // Do stuff specific to this subtype of race.
     // ------------------------------------------
-    int global_player_id = 0;
-    int local_player_id = 0;
+
     updateTrackSectors();
 
     const int np = RaceManager::get()->getNumLocalPlayers();
@@ -221,9 +220,6 @@ void LinearWorld::update(int ticks)
 
     Vec3 aim_point;
     int last_node = Graph::UNKNOWN_SECTOR;
-    static int tick_counter = 0;
-    constexpr int ticks2wait = 20;
-    tick_counter += ticks;
  
     if (nai == 0){
         AbstractKart* kart = m_karts[np].get();
@@ -240,20 +236,6 @@ void LinearWorld::update(int ticks)
 
     //AbstractKart* kart = m_karts[nai].get();
     //std::unique_ptr<SkiddingAI> skiddingAI = std::make_unique<SkiddingAI>(kart); //   C++ 14 necessary
-
-
-    // std::unique_ptr<SkiddingAI> skiddingAI = make_unique<SkiddingAI>(kart);
-    // Vec3 aim_point;
-    // int last_node = Graph::UNKNOWN_SECTOR;
-    // static int tick_counter = 0;
-    // constexpr int ticks2wait = 20;
-    // tick_counter += ticks;
-
-    // if (tick_counter >= ticks2wait){
-    //     skiddingAI->findNonCrashingPoint_player(&aim_point, &last_node);
-    //     tick_counter -= ticks2wait;
-    // }
-
 
     // Run generic parent stuff that applies to all modes.
     // It especially updates the kart positions.

@@ -17,4 +17,7 @@ public:
     bool writeSerial(std::string data);
 };
 
+extern ArduinoCom* globalArduinoCom;
+
+void initializeGlobalArduinoCom(std::string portName);
 #endif
