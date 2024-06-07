@@ -28,6 +28,10 @@ To make sure the TTS does not freeze the game, we had to run it in different thr
 
 Our Challenger needs to access different data about the race, just like we do. From the ``kart.cpp`` file, which allows to access the current race the kart is in, we have retrieved info such as lap number and ranking of the current player. This was mainly done directly in ``Kart::update(...)``.
 
+Specifically, we have collected the number of lap, rank, whether the player was out of the road, whether the player was in a wall (edge of road + no speed), whether the player has just been rescued.
+
+One other information was collected in ``linear_world.cpp``: whether the player is in the wrong way.
+
 ### Rallye system
 
 We have designed a rallye system that resembles the ones one can find in a classic race game. The goal of this system is therefore to announce the characteristics of a turn in advance: direction, intensity, length. The rallye system has been entirely implemented in kart.cpp since it is dependent on the position of the current player.
