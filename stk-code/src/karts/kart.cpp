@@ -221,10 +221,9 @@ Kart::Kart (const std::string& ident, unsigned int world_kart_id,
     LEFT_WALL_STRING = "Wall, go right";
     RIGHT_WALL_STRING = "Wall, go left";
     WRONG_WAY_STRING = "Wrong way";
-    SAUVETAGE = "Being saved";
+    SAUVETAGE = "Rescued";
     SEP = ". ";
-    LONG_STRING = "sectors long";
-    NEW_LAP_STRING = "Starting lap ";
+    NEW_LAP_STRING = "Lap ";
     
 
     m_turn_dir_string.push_back("left");
@@ -2029,10 +2028,10 @@ void Kart::update(int ticks)
                         // Adapt vocal annoucement to type of turn (whether actually turn or is a straight line)
                         if (turn.dir == STRAIGHT) {
                             //printf("start sector: %d\nend sector: %d\n\n", id_Node, turn.end_sector);
-                            the_voice->speak(m_turn_dir_string[int(turn.dir)] + SEP + getTurnLength(id_Node, turn.end_sector) + LONG_STRING, true, false);
+                            the_voice->speak(m_turn_dir_string[int(turn.dir)] + SEP + getTurnLength(id_Node, turn.end_sector), true, false);
                         } else {
                             //printf("intensity: %d\nstart sector: %d\nend sector: %d\n\n", turn.intensity, id_Node, turn.end_sector);
-                            the_voice->speak(m_turn_dir_string[int(turn.dir)] + m_turn_intensity_string[turn.intensity%TURN_SOUNDS_COUNT] + SEP + getTurnLength(id_Node, turn.end_sector) + LONG_STRING, true, false);
+                            the_voice->speak(m_turn_dir_string[int(turn.dir)] + m_turn_intensity_string[turn.intensity%TURN_SOUNDS_COUNT] + SEP + getTurnLength(id_Node, turn.end_sector), true, false);
                         }
                         
                         //m_turn_dir_sounds[int(turn.dir)]->play();

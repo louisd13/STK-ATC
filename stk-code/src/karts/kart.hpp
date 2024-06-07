@@ -319,7 +319,6 @@ protected:
     std::string RIGHT_WALL_STRING;
     std::string WRONG_WAY_STRING;
     std::string SEP;
-    std::string LONG_STRING;
     std::string SAUVETAGE;
     std::string NEW_LAP_STRING;
 
