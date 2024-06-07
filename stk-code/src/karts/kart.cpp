@@ -1443,9 +1443,13 @@ void Kart::updatePositionAdIfDifferent(int ticks) {
 void Kart::announceInfos(int id_Node) {
     TurnInfo turn = turn_characteristics[id_Node];
     announceTurn(turn, id_Node);
-    /// rhankkkking
 }
 
+/**
+ * Announce turn with TTS.
+ * \param turn The turn to announce.
+ * \param current_sector The sector the player is currently in, used to determine the number of sectors left in the turn.
+ */
 void Kart::announceTurn(TurnInfo turn, int current_sector) {
     std::string d;
 
@@ -2031,7 +2035,6 @@ void Kart::update(int ticks)
                     if ((turn.dir != NONE) 
                     && ((((turn.start_sector-3)%max_nodes) == id_Node) || ((m_lap == 0) && id_Node == (max_nodes-1)) || m_just_rescued)) {
                         
-
                         announceTurn(turn, id_Node);
 
                         // // Get direction as a string
