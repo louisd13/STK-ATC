@@ -107,3 +107,5 @@ Depending on the operating system, there are two different `arduino_com` files: 
 
 In the `STK_GetData.ino` file there is the arduino code that interprets the data sent from the game. It activates the vibrators according to the data received from the game with different parameters.
 You may tune the parameters such as the pulse duration, frequency and intensity of the vibrations according to your wishes.
+Two arduino_com_xxx.hpp / cpp files are available according if you use windows or linux operating system. You can delete the one you are not compatible with and comment / uncomment the corresponding inclues in `stk-code\src\karts\controller\skidding_ai.cpp` and `stk-code\src\karts\kart.cpp`.
+You can also change your COM Port of your arduino in the kart.cpp file line 261 in the `Kart::init(RaceManager::KartType type)` function.
